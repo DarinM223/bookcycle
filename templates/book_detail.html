@@ -12,15 +12,15 @@
         <meta property="og:site_name" content="BookCycle" />
         
         <!-- CSS -->
-        <link href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-        <link href="css/main.css" rel="stylesheet" type="text/css" />
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link href="/public/css/main.css" rel="stylesheet" type="text/css" />
         
         <!-- JavaScript -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
 
-        <script src="js/main.js"></script>
+        <script src="/js/main.js"></script>
     </head>
     <body>
         <div id="wrap">
@@ -42,37 +42,37 @@
 
                             <div class="row buy-detail-head">
                                 <div class="small-7 columns">
-                                    Book Title: title
+                                  Book Title: {{.Title}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Author: author
+                                  Book Author: {{.Author}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Version: version
+                                  Book Version: {{.Version}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Class: class
+                                  Book Class: {{.Class}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Professor: professor
+                                  Book Professor: {{.Professor}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Price: price
+                                  Book Price: {{.Price}}
                                 </div>
                             </div>
                             <div class="row buy-detail">
                                 <div class="small-7 columns">
-                                    Book Condition: 10
+                                  Book Condition: {{.Condition}}
                                 </div>
                             </div>
                             <div class="row buy-detail-tail">
