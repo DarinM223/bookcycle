@@ -1,0 +1,116 @@
+#wrap {
+	max-width: 1040px;
+	padding-top: 0.5em;
+	padding-bottom: 2.5rem;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	overflow: hidden;
+}
+header {
+	overflow: auto;
+	margin-bottom: 5%;
+}
+
+header .logo {
+	float: left;
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-right: 0.5rem;
+}
+
+header .user-info {
+	float: left;
+	font-size: 0.9rem;
+	margin-left: 1rem;
+	margin-top: 0.4rem;
+}
+
+.log-out {
+	margin-left: 1rem;
+}
+
+main.home {
+	padding-top: 5%;
+}
+
+input#search {
+	font-size: 1.8rem;
+	height: auto;
+	margin-bottom: 3rem;
+	width: 80%;
+	display: inline;
+	border: none;
+	box-shadow: none;
+	background: #fafafa;
+}
+input#search:focus {
+	background: white;
+}
+button#search {
+	width: 19.5%;
+	top: -5px;
+}
+
+.result {
+	border: thin solid lightgrey;
+	margin-bottom: 1rem;
+}
+
+
+.username {
+	color: #0078a0;
+	font-weight: bold;
+}
+
+.rating, .sales, .purchases {
+	color: grey;
+}
+
+.login-logo {
+	text-align: center;
+	color: #0078a0;
+	font-weight: bold;
+	margin: 1rem auto;
+}
+
+.book-detail {
+	border-bottom: thin solid lightgrey;
+	padding: 1rem;
+}
+
+.book-detail:hover {
+	background-color: rgba(0,140,186,0.5);
+}
+
+.book-detail-header {
+	border-top: thin solid lightgrey;
+	border-bottom: thin solid lightgrey;
+	padding: 1rem;
+}
+
+.buy-detail-head {
+	border-top: thin solid lightgrey;
+	color: #0078a0;
+	padding: 1rem;
+}
+
+.buy-detail {
+	padding: 1rem;
+	color: #0078a0;
+}
+
+.buy-detail-tail {
+	border-bottom: thin solid lightgrey;
+	color: #0078a0;
+	padding: 1rem;
+}
+
+a#sell {
+	float: right;
+	padding: 0.7rem;
+}
+
+.book-info {
+	text-align: center;
+}
