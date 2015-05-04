@@ -1,10 +1,13 @@
 package main
 
 type User struct {
-	Id     int     `sql:"AUTO_INCREMENT"`
-	Rating float64 `sql:"not null" sql:"default:0"`
-	Email  string  `sql:"not null"`
-	Phone  int
+	Id        int `sql:"AUTO_INCREMENT"`
+	Firstname string
+	Lastname  string
+	Username  string  `sql:"not null"`
+	Rating    float64 `sql:"not null" sql:"default:0"`
+	Email     string  `sql:"not null"`
+	Phone     int
 }
 
 type Book struct {

@@ -12,12 +12,12 @@
         <meta property="og:site_name" content="BookCycle" />
         
         <!-- CSS -->
-        <link href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link href="css/main.css" rel="stylesheet" type="text/css" />
         
         <!-- JavaScript -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
         
 
@@ -40,8 +40,8 @@
                         <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
                     
                         <div class="large-4 columns user-permissions">
-                            <h2 class="username">nbedi</h2>
-                            <h4 class="rating">Rating: 3.5/5</h4>
+                          <h2 class="username">{{.Username}}</h2>
+                          <h4 class="rating">Rating: {{.Rating}}/5</h4>
                             <h4 class="sales">Number of sales: 5</h4>
                             <h4 class="purchases">Number of purchases: 3</h4>
                         </div>
@@ -50,18 +50,18 @@
                             <div class="row">
                                 <div class="large-6 columns">
                                     <label for="first_name">First name</label>
-                                    <input type="text" id="first_name" name="first_name" placeholder="Joe" value="Neil" />
+                                    <input type="text" id="first_name" name="first_name" placeholder="Joe" value="{{.Firstname}}" />
                                 </div>
                                 <div class="large-6 columns">
                                     <label for="last_name">Last name</label>
-                                    <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="Bedi" />
+                                    <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="{{.Lastname}}" />
                                 </div>
                             </div>
                             <label for="email">Email address</label>
-                            <input type="email" name="email" value="nbedi@media.ucla.edu" />
+                            <input type="email" name="email" value="{{.Email}}" />
 
-                            <label for="email">Phone number</label>
-                            <input type="email" name="email" value="000-000-0000" />
+                            <label for="phone">Phone number</label>
+                            <input type="text" name="phone" value="{{.Phone}}" />
                     
                             <label for="password">Change password</label>
                             <input type="password" id="password1" name="password1" placeholder="password" />
