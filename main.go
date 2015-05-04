@@ -23,7 +23,8 @@ func main() {
 	// localhost:blah/public/css/main.css
 	http.Handle("/public", fs)
 	r.HandleFunc("/", RootHandler)
-	r.Methods("GET").Path("/users/{id}").HandlerFunc(UserHandler)
+	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(NewUserNewTemplate().Handler)
+	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(NewUserEditTemplate().Handler)
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
 	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
@@ -39,31 +40,6 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.Execute(w, nil)
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-	user_id := mux.Vars(r)["id"]
-	fmt.Println(user_id)
-	if r.Method == "GET" {
-		// Test user to test that it populates the template with fields
-		test_user := User{
-			Username:  "testuser",
-			Firstname: "Test",
-			Lastname:  "User",
-			Rating:    4.5,
-			Email:     "testuser@test.com",
-			Phone:     123456789,
-		}
-
-		t, err := template.ParseFiles("templates/user_detail.html")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		t.Execute(w, test_user)
-	} else {
-		http.NotFound(w, r)
-	}
 }
 
 func BookHandler(w http.ResponseWriter, r *http.Request) {
