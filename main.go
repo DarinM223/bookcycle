@@ -25,6 +25,7 @@ func main() {
 	r.HandleFunc("/", RootHandler)
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
+	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
 
 	fmt.Println("Listening...")
 	http.ListenAndServe(":8080", r)
@@ -76,6 +77,27 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	} else if r.Method == "POST" {
 		// TODO: implement this
+	} else {
+		http.NotFound(w, r)
+	}
+}
+
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" { // display search page
+		t, err := template.ParseFiles("templates/search.html")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		t.Execute(w, nil)
+	} else if r.Method == "POST" { // display search results page
+		t, err := template.ParseFiles("templates/search_results.html")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		// TODO: set the template variable so you can show some actual search results
+		t.Execute(w, nil)
 	} else {
 		http.NotFound(w, r)
 	}
