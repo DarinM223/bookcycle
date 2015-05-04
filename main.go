@@ -17,11 +17,10 @@ func main() {
 		return
 	}
 
-	fs := http.FileServer(http.Dir("./static"))
+	fs := http.FileServer(http.Dir("./static/"))
 	r := mux.NewRouter()
 	// ./static/css/main.css maps to
-	// localhost:blah/public/css/main.css
-	http.Handle("/public", fs)
+	// localhost:blah/css/main.css
 	r.HandleFunc("/", RootHandler)
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(NewUserNewTemplate().Handler)
 	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(NewUserEditTemplate().Handler)
@@ -29,6 +28,7 @@ func main() {
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
 	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
 
+	r.PathPrefix("/").Handler(fs)
 	fmt.Println("Listening...")
 	http.ListenAndServe(":8080", r)
 }
