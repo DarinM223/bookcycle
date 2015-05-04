@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
 )
 
 func main() {
 	fs := http.FileServer(http.Dir("./static"))
+	r := mux.NewRouter()
 	// ./static/css/main.css maps to
 	// localhost:blah/public/css/main.css
-	http.Handle("/public", fs)
-	http.HandleFunc("/", RootHandler)
+	r.Handle("/public", fs)
+	r.HandleFunc("/", RootHandler)
 
 	fmt.Println("Listening...")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", r)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
