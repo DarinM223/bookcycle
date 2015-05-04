@@ -2,8 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 )
 
 func main() {
-	fmt.Println("Hello wor ld!")
+	fs := http.FileServer(http.Dir("./static"))
+	// ./static/css/main.css maps to
+	// localhost:blah/css/main.css
+	http.Handle("/", fs)
+	fmt.Println("Listening...")
+	http.ListenAndServe(":8080", nil)
 }
