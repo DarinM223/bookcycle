@@ -21,8 +21,9 @@ func main() {
 	r := mux.NewRouter()
 	// ./static/css/main.css maps to
 	// localhost:blah/public/css/main.css
-	http.Handle("/public/", fs)
+	http.Handle("/public", fs)
 	r.HandleFunc("/", RootHandler)
+	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
 
 	fmt.Println("Listening...")
@@ -41,20 +42,41 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 func BookHandler(w http.ResponseWriter, r *http.Request) {
 	book_id := mux.Vars(r)["id"]
 	fmt.Println(book_id)
-	test_book := Book{
-		Title:     "Sample book",
-		Author:    "Sample author",
-		Class:     "Sample class",
-		Professor: "Sample professor",
-		Version:   "Sample version",
-		Price:     "Sample price",
-		Condition: "Sample condition",
-	}
+	if r.Method == "GET" {
+		test_book := Book{
+			Title:     "Sample book",
+			Author:    "Sample author",
+			Class:     "Sample class",
+			Professor: "Sample professor",
+			Version:   "Sample version",
+			Price:     "Sample price",
+			Condition: "Sample condition",
+		}
 
-	t, err := template.ParseFiles("templates/book_detail.html")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+		t, err := template.ParseFiles("templates/book_detail.html")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		t.Execute(w, test_book)
+	} else if r.Method == "DELETE" {
+		// TODO: implement this
+	} else {
+		http.NotFound(w, r)
 	}
-	t.Execute(w, test_book)
+}
+
+func NewBookHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		t, err := template.ParseFiles("templates/new_book.html")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		t.Execute(w, nil)
+	} else if r.Method == "POST" {
+		// TODO: implement this
+	} else {
+		http.NotFound(w, r)
+	}
 }
