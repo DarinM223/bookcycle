@@ -1,99 +1,87 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
-        <link href="favicon.ico" rel="icon" type="image/x-icon" />
-        <title>BookCycle</title>
-        
-        <!-- Open Graph -->
-        <meta property="og:title" content="Buying and selling books at UCLA" />
-        <meta property="og:site_name" content="BookCycle" />
-        
-        <!-- CSS -->
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-        <link href="/css/main.css" rel="stylesheet" type="text/css" />
-        
-        <!-- JavaScript -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <script src="js/main.js"></script>
-    </head>
-    <body>
-        <div id="wrap">
-            <header>
-                    <a class="logo" href="/">BookCycle</a>
-                    <div class="user-info">
-                        <a class="user-settings" href="/user-details.html">UserName</a>
-                        <a class="log-out" href="/">Log Out</a>
-                    </div>
-                    <a class="button small" id="sell" href="/post-details.html"><i class="fa fa-plus"></i> Sell Book</a>
-            </header>
-            <main class="story-detail">
-                <div class="row">
-                    <form id="post-edit" method="post">
-                        <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
-                        
-                    
-                        <div class="large-7 large-centered columns">
-                            <label for="title">Book Title</label>
-                            <input type="text" id="title" name="title" placeholder="title here" value="" />
+<link href="favicon.ico" rel="icon" type="image/x-icon" />
+<title>BookCycle</title>
 
-                            <label for="author">Book Author</label>
-                            <input type="text" id="author" name="author" placeholder="author here" value="" />
+<!-- Open Graph -->
+<meta property="og:title" content="Buying and selling books at UCLA" />
+<meta property="og:site_name" content="BookCycle" />
 
-                            <label for="version">Book Version</label>
-                            <input type="text" id="version" name="version" placeholder="version here" value="" />
+<!-- CSS -->
+<link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
 
-                            <label for="version">Book Class</label>
-                            <input type="text" id="class" name="class" placeholder="class here" value="" />
+<!-- JavaScript -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
 
-                            <label for="version">Book Professor</label>
-                            <input type="text" id="professor" name="professor" placeholder="professor here" value="" />
+<script src="js/main.js"></script>
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <a class="logo" href="/">BookCycle</a>
+    <div class="user-info">
+      <a class="user-settings" href="/user-details.html">UserName</a>
+      <a class="log-out" href="/">Log Out</a>
+    </div>
+    <a class="button small" id="sell" href="/post-details.html"><i class="fa fa-plus"></i> Sell Book</a>
+  </header>
+  <main class="story-detail">
+  <div class="row">
+    <form id="post-edit" method="post" action="/books/new">
+      <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
 
-                            <label for="version">Book Price</label>
-                            <input type="text" id="price" name="price" placeholder="price here" value="" />
 
-                            <label for="version">Book Condition (1-10)</label>
-                            <input type="text" id="condition" name="condition" placeholder="condition here" value="" />
-                    
-                            <label for="details">Other Information</label>
-                            <textarea type="text" id="details" name="details" placeholder="other information here" rows="5"></textarea>
+      <div class="large-7 large-centered columns">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title" placeholder="title here" value="" />
 
-                            <div class="small-6 columns">
-                                <a class="button expand success small" href="/search-results.html">Save posting</a>
-                            </div>
-                            <div class="small-6 columns">
-                                <a class="button expand alert small" href="search-results.html">Delete posting</a>
-                            </div>
-                            <!-- <a class="button expand small" href="/art-detail.html">Add art request</a> -->
-                        </div>
-                    <!-- 
-                        <div class="large-5 columns">
-                            <a class="button expand success">Save posting</a>
-                            <a class="button expand alert">Delete posting</a>
+        <label for="author">Book Author</label>
+        <input type="text" id="author" name="author" placeholder="author here" value="" />
 
-                            <label for="details">Sources</label>
-                            <textarea type="text" id="sources" name="sources" placeholder="sources here" rows="9"></textarea>
+        <label for="version">Book Version</label>
+        <input type="text" id="version" name="version" placeholder="version here" value="" />
 
-                            <label for="details">Infobox</label>
-                            <textarea type="text" id="infobox" name="infobox" placeholder="bullet box, by the numbers, etc. here" rows="6"></textarea>
-                        </div> -->
-                        <div class="row">
-                            
-                        </div>
-                    </form>
-                </div><!-- end div.row -->
-            </main>
-            <footer></footer>
+        <label for="version">Book Class</label>
+        <input type="text" id="class" name="class" placeholder="class here" value="" />
+
+        <label for="version">Book Professor</label>
+        <input type="text" id="professor" name="professor" placeholder="professor here" value="" />
+
+        <label for="version">Book Price</label>
+        <input type="text" id="price" name="price" placeholder="price here" value="" />
+
+        <label for="version">Book Condition (1-10)</label>
+        <input type="text" id="condition" name="condition" placeholder="condition here" value="" />
+
+        <label for="details">Other Information</label>
+        <textarea type="text" id="details" name="details" placeholder="other information here" rows="5"></textarea>
+
+        <div class="small-6 columns">
+          <input type="submit" class="button expand success small" value="Save posting"/>
         </div>
-    </body>
-    <script>
-        $(function() {
-          $(document).foundation();
-        });
-    </script>
+        <div class="small-6 columns">
+          <a class="button expand alert small" href="search-results.html">Delete posting</a>
+        </div>
+      </div>
+      <div class="row">
+
+      </div>
+    </form>
+  </div>
+  </main>
+  <footer></footer>
+</div>
+</body>
+<script>
+$(function() {
+    $(document).foundation();
+});
+</script>
 </html>

@@ -37,8 +37,8 @@ func main() {
 	r.Methods("GET").Path("/logout").HandlerFunc(LogoutHandler)
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
-	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
-	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
+	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
+	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
 
 	r.PathPrefix("/").Handler(fs)
