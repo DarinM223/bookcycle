@@ -1,10 +1,9 @@
 package main
 
 import (
-	"encoding/gob"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"html/template"
@@ -17,16 +16,8 @@ func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) 
 	}
 }
 
-var store = sessions.NewCookieStore([]byte("helloworld"))
-
 func main() {
-	store.Options = &sessions.Options{
-		//Domain:   "localhost",
-		Path:     "/",
-		MaxAge:   3600 * 8,
-		HttpOnly: true,
-	}
-	gob.Register(&User{})
+	InitSessions("bookcycle")
 
 	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
 	if err != nil {
@@ -74,39 +65,21 @@ func showUserPage(w http.ResponseWriter, u User) {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	sess, err := store.Get(r, "bookcycle")
+	user, err := CurrentUser(r, w)
 	if err != nil {
 		showLoginPage(w)
 	} else {
-		if user, ok := sess.Values["user"]; ok {
-			if user != nil {
-				showUserPage(w, *user.(*User))
-			} else {
-				showLoginPage(w)
-			}
-		} else {
-			showLoginPage(w)
-		}
+		showUserPage(w, user)
 	}
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	sess, err := store.Get(r, "bookcycle")
+	err := LogoutUser(r, w)
 	if err != nil {
-		http.Error(w, "You are not logged in!", http.StatusUnauthorized)
-	} else {
-		if _, ok := sess.Values["user"]; ok {
-			delete(sess.Values, "user")
-			err := sess.Save(r, w)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return
-			}
-			http.Redirect(w, r, "/", http.StatusFound)
-		} else {
-			http.Error(w, "You are not logged in!", http.StatusUnauthorized)
-		}
+		http.Error(w, "You are not logged in", http.StatusUnauthorized)
+		return
 	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
@@ -115,34 +88,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		email_field := r.PostFormValue("email")
 		password_field := r.PostFormValue("password")
 
-		sess, err := store.Get(r, "bookcycle")
-		if err != nil {
-			sess, err = store.New(r, "bookcycle")
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-			}
-		}
-		if _, ok := sess.Values["user"]; ok {
-			http.Error(w, "User is already logged in!", http.StatusUnauthorized)
-		} else {
+		validateFn := func() (User, error) {
 			var user User
 			result := db.First(&user, "email = ?", email_field)
 			if result.Error != nil {
-				http.Error(w, "Email or password is incorrect", http.StatusUnauthorized)
-			} else {
-				if user.Validate(password_field) {
-					sess.Values["user"] = user
-					err := sess.Save(r, w)
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusUnauthorized)
-						return
-					}
-					http.Redirect(w, r, "/", http.StatusFound)
-				} else {
-					http.Error(w, "Email or password is incorrect", http.StatusUnauthorized)
-				}
+				return User{}, errors.New("Email or password is incorrect")
 			}
+			if user.Validate(password_field) {
+				return user, nil
+			}
+			return User{}, errors.New("Email or password is incorrect")
 		}
+		err := LoginUser(r, w, validateFn)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		http.NotFound(w, r)
 	}
