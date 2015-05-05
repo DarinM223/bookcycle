@@ -43,6 +43,7 @@ func main() {
 	// localhost:blah/css/main.css
 	r.HandleFunc("/", RootHandler)
 	r.Methods("POST").Path("/login").HandlerFunc(DBInject(LoginHandler, db))
+	r.Methods("GET").Path("/logout").HandlerFunc(LogoutHandler)
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
@@ -78,9 +79,32 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		showLoginPage(w)
 	} else {
 		if user, ok := sess.Values["user"]; ok {
-			showUserPage(w, *user.(*User))
+			if user != nil {
+				showUserPage(w, *user.(*User))
+			} else {
+				showLoginPage(w)
+			}
 		} else {
 			showLoginPage(w)
+		}
+	}
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	sess, err := store.Get(r, "bookcycle")
+	if err != nil {
+		http.Error(w, "You are not logged in!", http.StatusUnauthorized)
+	} else {
+		if _, ok := sess.Values["user"]; ok {
+			delete(sess.Values, "user")
+			err := sess.Save(r, w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+				return
+			}
+			http.Redirect(w, r, "/", http.StatusFound)
+		} else {
+			http.Error(w, "You are not logged in!", http.StatusUnauthorized)
 		}
 	}
 }
