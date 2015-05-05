@@ -52,5 +52,6 @@ type Book struct {
 	Version   string `sql:"not null"`
 	Price     string `sql:"not null"`
 	Condition string `sql:"not null"`
-	UserId    int    `sql:"index"`
+	Details   string
+	UserId    int `sql:"index"`
 }

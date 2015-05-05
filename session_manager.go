@@ -38,9 +38,9 @@ func CurrentUser(r *http.Request, w http.ResponseWriter) (User, error) {
 }
 
 func LoginUser(r *http.Request, w http.ResponseWriter, validateFn func() (User, error)) error {
-	sess, err := store.Get(r, "bookcycle")
+	sess, err := store.Get(r, sessionName)
 	if err != nil {
-		sess, err = store.New(r, "bookcycle")
+		sess, err = store.New(r, sessionName)
 		if err != nil {
 			return err
 		}
@@ -64,7 +64,7 @@ func LoginUser(r *http.Request, w http.ResponseWriter, validateFn func() (User, 
 }
 
 func LogoutUser(r *http.Request, w http.ResponseWriter) error {
-	sess, err := store.Get(r, "bookcycle")
+	sess, err := store.Get(r, sessionName)
 	if err != nil {
 		return err
 	}

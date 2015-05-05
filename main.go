@@ -110,19 +110,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 }
 
-func BookHandler(w http.ResponseWriter, r *http.Request) {
+func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	book_id := mux.Vars(r)["id"]
 	fmt.Println(book_id)
 	if r.Method == "GET" {
-		// Test book to test that it populates the template with fields
-		test_book := Book{
-			Title:     "Sample book",
-			Author:    "Sample author",
-			Class:     "Sample class",
-			Professor: "Sample professor",
-			Version:   "Sample version",
-			Price:     "Sample price",
-			Condition: "Sample condition",
+		var book Book
+		result := db.First(&book, book_id)
+		if result.Error != nil {
+			http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+			return
 		}
 
 		t, err := template.ParseFiles("templates/book_detail.html")
@@ -130,7 +126,7 @@ func BookHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err.Error())
 			return
 		}
-		t.Execute(w, test_book)
+		t.Execute(w, book)
 	} else if r.Method == "DELETE" {
 		// TODO: implement this
 	} else {
@@ -138,7 +134,7 @@ func BookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewBookHandler(w http.ResponseWriter, r *http.Request) {
+func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
 		t, err := template.ParseFiles("templates/new_book.html")
 		if err != nil {
@@ -148,6 +144,22 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	} else if r.Method == "POST" {
 		// TODO: implement this
+		current_user, err := CurrentUser(r, w)
+		if err != nil {
+			http.Error(w, "You have to be logged in to add a book", http.StatusUnauthorized)
+			return
+		}
+		book, err := NewMuxBookFactory().NewFormBook(r, current_user.Id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+		result := db.Create(&book)
+		if result.Error != nil {
+			http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		http.NotFound(w, r)
 	}
