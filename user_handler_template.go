@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"html/template"
 	"net/http"
 )
 
 type Routes interface {
-	User(r *http.Request) User
-	GetRoute(w http.ResponseWriter, r *http.Request)
-	PostRoute(w http.ResponseWriter, r *http.Request)
+	user(r *http.Request) User
+	getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
+	postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
 }
 
 type UserHandler interface {
@@ -27,12 +28,12 @@ func (u UserHandlerTemplate) Error() error {
 	return u.err
 }
 
-func (u UserHandlerTemplate) User(r *http.Request) User {
+func (u UserHandlerTemplate) user(r *http.Request) User {
 	return u.userFactory.NewEmptyUser()
 }
 
-func (u *UserHandlerTemplate) GetRoute(w http.ResponseWriter, r *http.Request) {
-	user := u.i.User(r)
+func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	user := u.i.user(r)
 	t, err := template.ParseFiles("templates/user_detail.html")
 	if err != nil {
 		u.err = err
@@ -41,15 +42,21 @@ func (u *UserHandlerTemplate) GetRoute(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, user)
 }
 
-func (u UserHandlerTemplate) PostRoute(w http.ResponseWriter, r *http.Request) {}
+func (u UserHandlerTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {}
 
-func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request) {
+func (u UserHandlerTemplate) handler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
-		u.i.GetRoute(w, r)
+		u.i.getRoute(w, r, db)
 	} else if r.Method == "POST" {
-		u.i.PostRoute(w, r)
+		u.i.postRoute(w, r, db)
 	} else {
 		http.NotFound(w, r)
+	}
+}
+
+func (u UserHandlerTemplate) Handler(db gorm.DB) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u.handler(w, r, db)
 	}
 }
 
@@ -65,18 +72,23 @@ func NewUserNewTemplate() UserNewTemplate {
 	return b
 }
 
-func (u UserNewTemplate) User(r *http.Request) User {
+func (u UserNewTemplate) user(r *http.Request) User {
 	return u.userFactory.NewEmptyUser()
 }
 
-func (u UserNewTemplate) PostRoute(w http.ResponseWriter, r *http.Request) {
+func (u UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	new_user, err := u.userFactory.NewFormUser(r)
 	fmt.Println(new_user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	// TODO: save new user to database
+	result := db.Create(&new_user)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 type UserEditTemplate struct {
@@ -91,7 +103,7 @@ func NewUserEditTemplate() UserEditTemplate {
 	return b
 }
 
-func (u UserEditTemplate) User(r *http.Request) User {
+func (u UserEditTemplate) user(r *http.Request) User {
 	user, err := u.userFactory.NewUser(r, "id")
 	if err != nil {
 		user = u.userFactory.NewEmptyUser()
@@ -99,6 +111,6 @@ func (u UserEditTemplate) User(r *http.Request) User {
 	return user
 }
 
-func (u UserEditTemplate) PostRoute(w http.ResponseWriter, r *http.Request) {
+func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	// TODO: implement edit existing user
 }

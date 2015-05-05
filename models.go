@@ -14,6 +14,7 @@ type User struct {
 	Email     string  `sql:"not null; unique"`
 	Phone     int
 	Password  string `sql:"not null"`
+	Books     []Book
 }
 
 func NewUser(firstname string, lastname string, email string,

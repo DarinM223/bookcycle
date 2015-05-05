@@ -11,19 +11,21 @@ import (
 
 func main() {
 	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
-	_ = db
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
+	defer db.Close()
+	db.LogMode(true)
+	db.AutoMigrate(&User{}, &Book{})
 
 	fs := http.FileServer(http.Dir("./static/"))
 	r := mux.NewRouter()
 	// ./static/css/main.css maps to
 	// localhost:blah/css/main.css
 	r.HandleFunc("/", RootHandler)
-	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(NewUserNewTemplate().Handler)
-	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(NewUserEditTemplate().Handler)
+	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(NewUserNewTemplate().Handler(db))
+	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(NewUserEditTemplate().Handler(db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
 	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
