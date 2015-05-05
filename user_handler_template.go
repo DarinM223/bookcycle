@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -69,7 +70,13 @@ func (u UserNewTemplate) User(r *http.Request) User {
 }
 
 func (u UserNewTemplate) PostRoute(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement add new user
+	new_user, err := u.userFactory.NewFormUser(r)
+	fmt.Println(new_user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	// TODO: save new user to database
 }
 
 type UserEditTemplate struct {
@@ -85,7 +92,11 @@ func NewUserEditTemplate() UserEditTemplate {
 }
 
 func (u UserEditTemplate) User(r *http.Request) User {
-	return u.userFactory.NewUser(r, "id")
+	user, err := u.userFactory.NewUser(r, "id")
+	if err != nil {
+		user = u.userFactory.NewEmptyUser()
+	}
+	return user
 }
 
 func (u UserEditTemplate) PostRoute(w http.ResponseWriter, r *http.Request) {
