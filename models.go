@@ -39,6 +39,10 @@ func NewUser(firstname string, lastname string, email string,
 	}, nil
 }
 
+func (u User) Validate(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)) == nil
+}
+
 type Book struct {
 	Id        int    `sql:"AUTO_INCREMENT"`
 	Title     string `sql:"not null"`

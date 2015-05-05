@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	"html/template"
@@ -15,7 +17,17 @@ func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) 
 	}
 }
 
+var store = sessions.NewCookieStore([]byte("helloworld"))
+
 func main() {
+	store.Options = &sessions.Options{
+		//Domain:   "localhost",
+		Path:     "/",
+		MaxAge:   3600 * 8,
+		HttpOnly: true,
+	}
+	gob.Register(&User{})
+
 	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -30,6 +42,7 @@ func main() {
 	// ./static/css/main.css maps to
 	// localhost:blah/css/main.css
 	r.HandleFunc("/", RootHandler)
+	r.Methods("POST").Path("/login").HandlerFunc(DBInject(LoginHandler, db))
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
@@ -41,13 +54,74 @@ func main() {
 	http.ListenAndServe(":8080", r)
 }
 
-func RootHandler(w http.ResponseWriter, r *http.Request) {
+func showLoginPage(w http.ResponseWriter) {
 	t, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	t.Execute(w, nil)
+}
+
+func showUserPage(w http.ResponseWriter, u User) {
+	t, err := template.ParseFiles("templates/loggedin.html")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	t.Execute(w, u)
+}
+
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+	sess, err := store.Get(r, "bookcycle")
+	if err != nil {
+		showLoginPage(w)
+	} else {
+		if user, ok := sess.Values["user"]; ok {
+			showUserPage(w, *user.(*User))
+		} else {
+			showLoginPage(w)
+		}
+	}
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	if r.Method == "POST" {
+		r.ParseForm()
+		email_field := r.PostFormValue("email")
+		password_field := r.PostFormValue("password")
+
+		sess, err := store.Get(r, "bookcycle")
+		if err != nil {
+			sess, err = store.New(r, "bookcycle")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+			}
+		}
+		if _, ok := sess.Values["user"]; ok {
+			http.Error(w, "User is already logged in!", http.StatusUnauthorized)
+		} else {
+			var user User
+			result := db.First(&user, "email = ?", email_field)
+			if result.Error != nil {
+				http.Error(w, "Email or password is incorrect", http.StatusUnauthorized)
+			} else {
+				if user.Validate(password_field) {
+					sess.Values["user"] = user
+					err := sess.Save(r, w)
+					if err != nil {
+						http.Error(w, err.Error(), http.StatusUnauthorized)
+						return
+					}
+					http.Redirect(w, r, "/", http.StatusFound)
+				} else {
+					http.Error(w, "Email or password is incorrect", http.StatusUnauthorized)
+				}
+			}
+		}
+	} else {
+		http.NotFound(w, r)
+	}
 }
 
 func BookHandler(w http.ResponseWriter, r *http.Request) {
