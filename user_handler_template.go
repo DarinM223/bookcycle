@@ -14,7 +14,7 @@ type Routes interface {
 }
 
 type UserHandler interface {
-	Handler(w http.ResponseWriter, r *http.Request)
+	Handler(w http.ResponseWriter, r *http.Request, db gorm.DB)
 	Error() error
 }
 
@@ -37,6 +37,7 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 	t, err := template.ParseFiles("templates/user_detail.html")
 	if err != nil {
 		u.err = err
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	t.Execute(w, user)
@@ -44,19 +45,13 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 
 func (u UserHandlerTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {}
 
-func (u UserHandlerTemplate) handler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
 		u.i.getRoute(w, r, db)
 	} else if r.Method == "POST" {
 		u.i.postRoute(w, r, db)
 	} else {
 		http.NotFound(w, r)
-	}
-}
-
-func (u UserHandlerTemplate) Handler(db gorm.DB) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		u.handler(w, r, db)
 	}
 }
 
@@ -76,15 +71,17 @@ func (u UserNewTemplate) user(r *http.Request) User {
 	return u.userFactory.NewEmptyUser()
 }
 
-func (u UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	new_user, err := u.userFactory.NewFormUser(r)
 	fmt.Println(new_user)
 	if err != nil {
+		u.err = err
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	result := db.Create(&new_user)
 	if result.Error != nil {
+		u.err = result.Error
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}

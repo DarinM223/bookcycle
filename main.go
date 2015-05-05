@@ -9,6 +9,12 @@ import (
 	"net/http"
 )
 
+func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fn(w, r, db)
+	}
+}
+
 func main() {
 	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
 	if err != nil {
@@ -24,8 +30,8 @@ func main() {
 	// ./static/css/main.css maps to
 	// localhost:blah/css/main.css
 	r.HandleFunc("/", RootHandler)
-	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(NewUserNewTemplate().Handler(db))
-	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(NewUserEditTemplate().Handler(db))
+	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
+	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(NewBookHandler)
 	r.Methods("GET", "DELETE").Path("/books/{id}").HandlerFunc(BookHandler)
 	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)

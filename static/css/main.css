@@ -69,7 +69,7 @@ button#search {
 
 .login-logo {
 	text-align: center;
-	color: #0078a0;
+	color: white;
 	font-weight: bold;
 	margin: 1rem auto;
 }
@@ -113,4 +113,14 @@ a#sell {
 
 .book-info {
 	text-align: center;
+}
+
+#bg {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+	
+  /* Preserve aspet ratio */
+  min-width: 100%;
+  min-height: 100%;
 }
