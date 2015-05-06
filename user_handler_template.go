@@ -13,20 +13,23 @@ type UserHandler interface {
 }
 
 // Hidden interface inside UserHandlerTemplate for doing dynamic method dispatch
-type routes interface {
+type userHandlerTemplateVirtualMethods interface {
 	user(r *http.Request, db gorm.DB) (User, error)
 	getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
 	postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
+	isDisabled() bool
 }
 
 // Implementation of UserHandler
 type UserHandlerTemplate struct {
 	userFactory UserFactory
-	i           routes
+	i           userHandlerTemplateVirtualMethods
 }
 
-func (u UserHandlerTemplate) user(r *http.Request) User {
-	return u.userFactory.NewEmptyUser()
+type UserDetailTemplateType struct {
+	DisabledText string
+	Disabled     bool
+	User         User
 }
 
 func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
@@ -40,10 +43,16 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	t.Execute(w, user)
+	disabledText := ""
+	if u.i.isDisabled() {
+		disabledText = "disabled"
+	}
+	t.Execute(w, UserDetailTemplateType{
+		DisabledText: disabledText,
+		Disabled:     u.i.isDisabled(),
+		User:         user,
+	})
 }
-
-func (u UserHandlerTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {}
 
 func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
@@ -66,6 +75,8 @@ func NewUserNewTemplate() UserNewTemplate {
 	b.i = &b
 	return b
 }
+
+func (u UserNewTemplate) isDisabled() bool { return false }
 
 func (u UserNewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 	return u.userFactory.NewEmptyUser(), nil
@@ -98,6 +109,8 @@ func NewUserEditTemplate() UserEditTemplate {
 	return b
 }
 
+func (u UserEditTemplate) isDisabled() bool { return false }
+
 func (u UserEditTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 	user, err := CurrentUser(r)
 	if err != nil {
@@ -122,6 +135,8 @@ func NewUserViewTemplate() UserViewTemplate {
 	return b
 }
 
+func (u UserViewTemplate) isDisabled() bool { return true }
+
 func (u UserViewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 	user, err := u.userFactory.NewExistingUser(r, "id", db)
 	if err != nil {
@@ -129,3 +144,5 @@ func (u UserViewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 	}
 	return user, nil
 }
+
+func (u UserViewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {} // do nothing
