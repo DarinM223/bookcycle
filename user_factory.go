@@ -3,14 +3,15 @@ package main
 import (
 	"errors"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 )
 
 type UserFactory interface {
-	NewEmptyUser() User                                      // get an empty user
-	NewUser(r *http.Request, paramName string) (User, error) // get an existing user from an id route parameter
-	NewFormUser(r *http.Request) (User, error)               // get a new user from a POST form request
+	NewEmptyUser() User                                                          // get an empty user
+	NewExistingUser(r *http.Request, paramName string, db gorm.DB) (User, error) // get an existing user from an id route parameter
+	NewFormUser(r *http.Request) (User, error)                                   // get a new user from a POST form request
 }
 
 type MuxUserFactory struct{}
@@ -29,19 +30,18 @@ func (u MuxUserFactory) NewEmptyUser() User {
 	}
 }
 
-func (u MuxUserFactory) NewUser(r *http.Request, paramName string) (User, error) {
+func (u MuxUserFactory) NewExistingUser(r *http.Request, paramName string, db gorm.DB) (User, error) {
 	user_id, has_user := mux.Vars(r)[paramName]
 	if !has_user {
 		return User{}, errors.New("User is not defined!")
 	}
-	_ = user_id
-	return User{
-		Firstname: "Test",
-		Lastname:  "User",
-		Rating:    4.5,
-		Email:     "testuser@test.com",
-		Phone:     123456789,
-	}, nil
+	var user User
+	result := db.First(&user, user_id)
+	if result.Error != nil {
+		return User{}, result.Error
+	}
+
+	return user, nil
 }
 
 func (u MuxUserFactory) NewFormUser(r *http.Request) (User, error) {

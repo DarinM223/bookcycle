@@ -22,7 +22,7 @@ func InitSessions(_sessionName string) {
 }
 
 // Retrieves the current user from the session
-func CurrentUser(r *http.Request, w http.ResponseWriter) (User, error) {
+func CurrentUser(r *http.Request) (User, error) {
 	sess, err := store.Get(r, sessionName)
 	if err != nil {
 		return User{}, errors.New("You are not logged in")
