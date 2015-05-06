@@ -83,7 +83,7 @@ func (u UserNewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 }
 
 func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	new_user, err := u.userFactory.NewFormUser(r)
+	new_user, err := u.userFactory.NewFormUser(r, false)
 	fmt.Println(new_user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -120,7 +120,34 @@ func (u UserEditTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 }
 
 func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	// TODO: implement edit existing user
+	current_user, err := CurrentUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	edited_user, err := u.userFactory.NewFormUser(r, true)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+	result := db.Model(&current_user).Updates(edited_user)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+	// get edited user from database
+	var new_user User
+	result = db.First(&new_user, current_user.Id)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+	err = SetUserInSession(r, w, new_user)
+	if err != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // User handler for route /users/{id}

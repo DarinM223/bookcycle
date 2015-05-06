@@ -11,7 +11,7 @@ import (
 type UserFactory interface {
 	NewEmptyUser() User                                                          // get an empty user
 	NewExistingUser(r *http.Request, paramName string, db gorm.DB) (User, error) // get an existing user from an id route parameter
-	NewFormUser(r *http.Request) (User, error)                                   // get a new user from a POST form request
+	NewFormUser(r *http.Request, editing bool) (User, error)                     // get a new user from a POST form request
 }
 
 type MuxUserFactory struct{}
@@ -44,7 +44,7 @@ func (u MuxUserFactory) NewExistingUser(r *http.Request, paramName string, db go
 	return user, nil
 }
 
-func (u MuxUserFactory) NewFormUser(r *http.Request) (User, error) {
+func (u MuxUserFactory) NewFormUser(r *http.Request, editing bool) (User, error) {
 	err := r.ParseForm()
 	if err != nil {
 		return User{}, err
@@ -58,5 +58,5 @@ func (u MuxUserFactory) NewFormUser(r *http.Request) (User, error) {
 	}
 	password := r.PostFormValue("password1")
 	password_confirm := r.PostFormValue("password2")
-	return NewUser(first_name, last_name, email, phone, password, password_confirm)
+	return NewUser(first_name, last_name, email, phone, password, password_confirm, editing)
 }

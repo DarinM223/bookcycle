@@ -38,6 +38,23 @@ func CurrentUser(r *http.Request) (User, error) {
 	}
 }
 
+// Sets a user in the session possibly overwriting existing user
+func SetUserInSession(r *http.Request, w http.ResponseWriter, user User) error {
+	sess, err := store.Get(r, sessionName)
+	if err != nil {
+		sess, err = store.New(r, sessionName)
+		if err != nil {
+			return err
+		}
+	}
+	sess.Values["user"] = user
+	err = sess.Save(r, w)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Logs a user into a session using a validation function to check passwords, etc
 func LoginUser(r *http.Request, w http.ResponseWriter, validateFn func() (User, error)) error {
 	sess, err := store.Get(r, sessionName)
