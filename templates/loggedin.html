@@ -1,2 +1,4 @@
-<p>Logged in as {{.Firstname}} {{.Lastname}}!</p>
-<a href="/logout">Logout</a>
+{{ define "main" }}
+  <p>Logged in as {{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}!</p>
+  <a href="/logout">Logout</a>
+{{ end }}

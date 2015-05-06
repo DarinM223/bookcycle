@@ -1,42 +1,60 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
-        <link href="favicon.ico" rel="icon" type="image/x-icon" />
-        <title>BookCycle</title>
-        
-        <!-- Open Graph -->
-        <meta property="og:title" content="Buying and selling books at UCLA" />
-        <meta property="og:site_name" content="BookCycle" />
-        
-        <!-- CSS -->
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-        <link href="/css/main.css" rel="stylesheet" type="text/css" />
-        
-        <!-- JavaScript -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
+{{ define "main" }}
+  <img src="/images/ackerman.jpg" id="bg" alt=""/>
+  <header></header>
+  <main>
+      <div id="wrap">
+      <div class="row">
+          <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
+          <h1 class="login-logo">BookCycle</h1>
+          <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
+          <input id="password" name="password" type="password" placeholder="password" />
+          <input type="submit" value="Login" class="button expand"/> 
+          <a href="/users/new" class="button expand" >Create an account</a>
+          </div>
+      </div>
+  </main>
+  <footer></footer>
+{{end}}
 
-        <script src="js/main.js"></script>
-    </head>
-    <body>
-        <img src="/images/ackerman.jpg" id="bg" alt=""/>
-        <header></header>
-        <main>
-            <div id="wrap">
-            <div class="row">
-                <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
-                <h1 class="login-logo">BookCycle</h1>
-                <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
-                <input id="password" name="password" type="password" placeholder="password" />
-                <input type="submit" value="Login" class="button expand"/> 
-                <a href="/users/new" class="button expand" >Create an account</a>
-                </div>
-            </div>
-        </main>
-        <footer></footer>
-    </body>
-</html>
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--    <head>-->
+<!--        <meta charset="utf-8" />-->
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
+        
+<!--        <link href="favicon.ico" rel="icon" type="image/x-icon" />-->
+<!--        <title>BookCycle</title>-->
+        
+<!--        [> Open Graph <]-->
+<!--        <meta property="og:title" content="Buying and selling books at UCLA" />-->
+<!--        <meta property="og:site_name" content="BookCycle" />-->
+        
+<!--        [> CSS <]-->
+<!--        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">-->
+<!--        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">-->
+<!--        <link href="/css/main.css" rel="stylesheet" type="text/css" />-->
+        
+<!--        [> JavaScript <]-->
+<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>-->
+
+<!--        <script src="js/main.js"></script>-->
+<!--    </head>-->
+<!--    <body>-->
+<!--        <img src="/images/ackerman.jpg" id="bg" alt=""/>-->
+<!--        <header></header>-->
+<!--        <main>-->
+<!--            <div id="wrap">-->
+<!--            <div class="row">-->
+<!--                <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">-->
+<!--                <h1 class="login-logo">BookCycle</h1>-->
+<!--                <input id="email" maxlength="254" name="email" type="text" placeholder="email" />-->
+<!--                <input id="password" name="password" type="password" placeholder="password" />-->
+<!--                <input type="submit" value="Login" class="button expand"/> -->
+<!--                <a href="/users/new" class="button expand" >Create an account</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </main>-->
+<!--        <footer></footer>-->
+<!--    </body>-->
+<!--</html>-->

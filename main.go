@@ -55,7 +55,7 @@ func main() {
 }
 
 func showLoginPage(w http.ResponseWriter) {
-	t, err := template.ParseFiles("templates/index.html")
+	t, err := template.ParseFiles("templates/boilerplate/normal_boilerplate.html", "templates/index.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -64,12 +64,17 @@ func showLoginPage(w http.ResponseWriter) {
 }
 
 func showUserPage(w http.ResponseWriter, u User) {
-	t, err := template.ParseFiles("templates/loggedin.html")
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/loggedin.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	t.Execute(w, u)
+	t.Execute(w, struct {
+		CurrentUser User
+	}{
+		CurrentUser: u,
+	})
 }
 
 // Route: /
