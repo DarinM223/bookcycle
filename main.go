@@ -43,7 +43,8 @@ func main() {
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
-	r.Methods("GET", "POST").Path("/search").HandlerFunc(SearchHandler)
+	r.Methods("GET").Path("/search").HandlerFunc(SearchHandler)
+	r.Methods("GET").Path("/search_results").HandlerFunc(SearchResultsHandler)
 
 	// Set up static images
 	// ./static/css/main.css maps to
@@ -221,22 +222,39 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 // Route: /search
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" { // display search page
-		t, err := template.ParseFiles("templates/search.html")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		t.Execute(w, nil)
-	} else if r.Method == "POST" { // display search results page
-		t, err := template.ParseFiles("templates/search_results.html")
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
-		// TODO: set the template variable so you can show some actual search results
-		t.Execute(w, nil)
-	} else {
-		http.NotFound(w, r)
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/search.html")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
 	}
+	t.Execute(w, struct {
+		CurrentUser    User
+		HasCurrentUser bool
+	}{
+		current_user,
+		has_current_user,
+	})
+}
+
+// Route /search_results
+func SearchResultsHandler(w http.ResponseWriter, r *http.Request) {
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/search_results.html")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	// TODO: set the template variable so you can show some actual search results
+	t.Execute(w, struct {
+		CurrentUser    User
+		HasCurrentUser bool
+	}{
+		current_user,
+		has_current_user,
+	})
 }

@@ -1,54 +1,16 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
-        <link href="favicon.ico" rel="icon" type="image/x-icon" />
-        <title>BookCycle</title>
-        
-        <!-- Open Graph -->
-        <meta property="og:title" content="Buying and selling books at UCLA" />
-        <meta property="og:site_name" content="BookCycle" />
-        
-        <!-- CSS -->
-        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-        <link href="/css/main.css" rel="stylesheet" type="text/css" />
-        
-        <!-- JavaScript -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>
-        
-
-        <script src="js/main.js"></script>
-    </head>
-    <body>
-        <div id="wrap">
-            <header>
-                    <a class="logo" href="/">BookCycle</a>
-                    <div class="user-info">
-                        <a class="user-settings" href="/user-details.html">UserName</a>
-                        <a class="log-out" href="/">Log Out</a>
-                    </div>
-                    <a class="button small" id="sell" href="/post-details.html"><i class="fa fa-plus"></i> Sell Book</a>
-            </header>
-            <main class="home">
-                <input id="search" type="text" placeholder="Search by title, class, professor or UID." />
-                <button id="search" class="expand"><i class="fa fa-search"></i></button>
-            </main>
-            <footer>
-            </footer>
-        </div>
-    </body>
-    <script>
-        window.onload = function() {
-          var input = document.getElementById("search").focus();
-        }
-        $("#search").keyup(function (e) {
-            if (e.keyCode == 13) {
-                window.location.assign('/search-results.html');
-            }
-        });
-    </script>
-</html>
+{{ define "main" }}
+<main class="home">
+  <input id="search" type="text" placeholder="Search by title, class, professor or UID." />
+  <button id="search" class="expand"><i class="fa fa-search"></i></button>
+</main>
+<script>
+window.onload = function() {
+  var input = document.getElementById("search").focus();
+}
+$("#search").keyup(function (e) {
+  if (e.keyCode == 13) {
+    window.location.assign('/search-results.html');
+  }
+});
+</script>
+{{ end }}
