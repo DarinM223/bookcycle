@@ -38,7 +38,8 @@ func main() {
 	r.Methods("POST").Path("/login").HandlerFunc(DBInject(LoginHandler, db))
 	r.Methods("GET").Path("/logout").HandlerFunc(LogoutHandler)
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
-	r.Methods("GET", "POST").Path("/users/{id}").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
+	r.Methods("GET", "POST").Path("/users/edit").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
+	r.Methods("GET").Path("/users/{id}").HandlerFunc(DBInject(NewUserViewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
@@ -79,7 +80,7 @@ func showUserPage(w http.ResponseWriter, u User) {
 
 // Route: /
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	user, err := CurrentUser(r, w)
+	user, err := CurrentUser(r)
 	if err != nil {
 		showLoginPage(w)
 	} else {
@@ -143,7 +144,7 @@ func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 // Route: /books/{id}/delete
 func DeleteBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	book_id := mux.Vars(r)["id"]
-	current_user, err := CurrentUser(r, w)
+	current_user, err := CurrentUser(r)
 	if err != nil {
 		http.Error(w, "You have to logged in to delete books", http.StatusUnauthorized)
 		return
@@ -172,7 +173,7 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		}
 		t.Execute(w, nil)
 	} else if r.Method == "POST" {
-		current_user, err := CurrentUser(r, w)
+		current_user, err := CurrentUser(r)
 		if err != nil {
 			http.Error(w, "You have to be logged in to add a book", http.StatusUnauthorized)
 			return

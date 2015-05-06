@@ -40,8 +40,8 @@
                         <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
                     
                         <div class="large-4 columns user-permissions">
-                          <h2 class="username">{{.Firstname}} {{.Lastname}}</h2>
-                          <h4 class="rating">Rating: {{.Rating}}/5</h4>
+                          <h2 class="username">{{.User.Firstname}} {{.User.Lastname}}</h2>
+                          <h4 class="rating">Rating: {{.User.Rating}}/5</h4>
                             <h4 class="sales">Number of sales: 5</h4>
                             <h4 class="purchases">Number of purchases: 3</h4>
                         </div>
@@ -50,23 +50,26 @@
                             <div class="row">
                                 <div class="large-6 columns">
                                     <label for="first_name">First name</label>
-                                    <input type="text" id="first_name" name="first_name" placeholder="Joe" value="{{.Firstname}}" />
+                                    <input type="text" id="first_name" name="first_name" placeholder="Joe" value="{{.User.Firstname}}" {{.DisabledText}}/>
                                 </div>
                                 <div class="large-6 columns">
                                     <label for="last_name">Last name</label>
-                                    <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="{{.Lastname}}" />
+                                    <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="{{.User.Lastname}}" {{.DisabledText}}/>
                                 </div>
                             </div>
                             <label for="email">Email address</label>
-                            <input type="email" name="email" value="{{.Email}}" />
+                            <input type="email" name="email" value="{{.User.Email}}" {{.DisabledText}}/>
 
                             <label for="phone">Phone number</label>
-                            <input type="text" name="phone" value="{{.Phone}}" />
+                            <input type="text" name="phone" value="{{.User.Phone}}" {{.DisabledText}}/>
                     
+                            {{if .Disabled}}
+                            {{else}}
                             <label for="password">Change password</label>
                             <input type="password" id="password1" name="password1" placeholder="password" />
                             <input type="password" id="password2" name="password2" placeholder="again" />
                             <input type="submit" value="Save" name="submit" class="button expand" />
+                            {{end}}
                         </div>
                     </form>
                 </div><!-- end div.row -->
