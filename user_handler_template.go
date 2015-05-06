@@ -7,21 +7,23 @@ import (
 	"net/http"
 )
 
-type Routes interface {
+type UserHandler interface {
+	Handler(w http.ResponseWriter, r *http.Request, db gorm.DB) // http handler for the specific user route
+	Error() error                                               // any error message that happens to the UserHandler
+}
+
+// Hidden interface inside UserHandlerTemplate for doing dynamic method dispatch
+type routes interface {
 	user(r *http.Request) User
 	getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
 	postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB)
 }
 
-type UserHandler interface {
-	Handler(w http.ResponseWriter, r *http.Request, db gorm.DB)
-	Error() error
-}
-
+// Implementation of UserHandler
 type UserHandlerTemplate struct {
 	userFactory UserFactory
 	err         error
-	i           Routes
+	i           routes
 }
 
 func (u UserHandlerTemplate) Error() error {
@@ -55,6 +57,7 @@ func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request, db 
 	}
 }
 
+// User handler for /users/new
 type UserNewTemplate struct {
 	UserHandlerTemplate
 }
@@ -88,6 +91,7 @@ func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db g
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+// User handler for route /users/{id}
 type UserEditTemplate struct {
 	UserHandlerTemplate
 }

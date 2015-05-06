@@ -10,7 +10,7 @@ import (
 type UserFactory interface {
 	NewEmptyUser() User                                      // get an empty user
 	NewUser(r *http.Request, paramName string) (User, error) // get an existing user from an id route parameter
-	NewFormUser(r *http.Request) (User, error)               // get a new user from a post form
+	NewFormUser(r *http.Request) (User, error)               // get a new user from a POST form request
 }
 
 type MuxUserFactory struct{}

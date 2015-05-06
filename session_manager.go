@@ -10,10 +10,10 @@ import (
 var store = sessions.NewCookieStore([]byte("helloworld"))
 var sessionName string
 
+// Initializes session store options
 func InitSessions(_sessionName string) {
 	sessionName = _sessionName
 	store.Options = &sessions.Options{
-		//Domain:   "localhost",
 		Path:     "/",
 		MaxAge:   3600 * 8,
 		HttpOnly: true,
@@ -21,6 +21,7 @@ func InitSessions(_sessionName string) {
 	gob.Register(&User{})
 }
 
+// Retrieves the current user from the session
 func CurrentUser(r *http.Request, w http.ResponseWriter) (User, error) {
 	sess, err := store.Get(r, sessionName)
 	if err != nil {
@@ -37,6 +38,7 @@ func CurrentUser(r *http.Request, w http.ResponseWriter) (User, error) {
 	}
 }
 
+// Logs a user into a session using a validation function to check passwords, etc
 func LoginUser(r *http.Request, w http.ResponseWriter, validateFn func() (User, error)) error {
 	sess, err := store.Get(r, sessionName)
 	if err != nil {
@@ -63,6 +65,7 @@ func LoginUser(r *http.Request, w http.ResponseWriter, validateFn func() (User, 
 	return nil
 }
 
+// Logs a user out of a session
 func LogoutUser(r *http.Request, w http.ResponseWriter) error {
 	sess, err := store.Get(r, sessionName)
 	if err != nil {

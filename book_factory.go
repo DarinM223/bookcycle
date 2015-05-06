@@ -5,7 +5,7 @@ import (
 )
 
 type BookFactory interface {
-	NewFormBook(r *http.Request, userId int) (Book, error)
+	NewFormBook(r *http.Request, userId int) (Book, error) // Generates new Books from a POST form request
 }
 
 type MuxBookFactory struct{}
