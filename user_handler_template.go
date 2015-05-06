@@ -27,18 +27,26 @@ type UserHandlerTemplate struct {
 }
 
 type UserDetailTemplateType struct {
-	DisabledText string
-	Disabled     bool
-	User         User
+	DisabledText   string
+	Disabled       bool
+	User           User
+	CurrentUser    User
+	HasCurrentUser bool
 }
 
 func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
 	user, err := u.i.user(r, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	t, err := template.ParseFiles("templates/user_detail.html")
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/user_detail.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -48,9 +56,11 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 		disabledText = "disabled"
 	}
 	t.Execute(w, UserDetailTemplateType{
-		DisabledText: disabledText,
-		Disabled:     u.i.isDisabled(),
-		User:         user,
+		DisabledText:   disabledText,
+		Disabled:       u.i.isDisabled(),
+		User:           user,
+		CurrentUser:    current_user,
+		HasCurrentUser: has_current_user,
 	})
 }
 

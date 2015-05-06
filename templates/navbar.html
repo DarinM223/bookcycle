@@ -1,12 +1,12 @@
 {{ define "navbar" }}
-  {{ if .CurrentUser }}
   <header>
     <a class="logo" href="/">BookCycle</a>
-    <div class="user-info">
-      <a class="user-settings" href="/users/edit">{{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}</a>
-      <a class="log-out" href="/logout">Log Out</a>
-    </div>
+    {{ if .HasCurrentUser }}
+      <div class="user-info">
+        <a class="user-settings" href="/users/edit">{{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}</a>
+        <a class="log-out" href="/logout">Log Out</a>
+      </div>
+    {{ end }}
     <a class="button small" id="sell" href="/books/new"><i class="fa fa-plus"></i> Sell Book</a>
   </header>
-  {{ end }}
 {{ end }}

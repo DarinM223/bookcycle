@@ -72,9 +72,11 @@ func showUserPage(w http.ResponseWriter, u User) {
 		return
 	}
 	t.Execute(w, struct {
-		CurrentUser User
+		CurrentUser    User
+		HasCurrentUser bool
 	}{
-		CurrentUser: u,
+		CurrentUser:    u,
+		HasCurrentUser: true,
 	})
 }
 
@@ -125,6 +127,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 // Route: /books/{id}
 func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
 	book_id := mux.Vars(r)["id"]
 	var book Book
 	result := db.First(&book, book_id)
@@ -133,12 +140,21 @@ func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	t, err := template.ParseFiles("templates/book_detail.html")
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/book_detail.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	t.Execute(w, book)
+	t.Execute(w, struct {
+		Book           Book
+		CurrentUser    User
+		HasCurrentUser bool
+	}{
+		Book:           book,
+		CurrentUser:    current_user,
+		HasCurrentUser: has_current_user,
+	})
 }
 
 // Route: /books/{id}/delete
@@ -166,12 +182,21 @@ func DeleteBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 // Route: /books/new
 func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
-		t, err := template.ParseFiles("templates/new_book.html")
+		current_user, err := CurrentUser(r)
+		has_current_user := true
+		t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+			"templates/navbar.html", "templates/new_book.html")
 		if err != nil {
 			fmt.Println(err.Error())
 			return
 		}
-		t.Execute(w, nil)
+		t.Execute(w, struct {
+			CurrentUser    User
+			HasCurrentUser bool
+		}{
+			current_user,
+			has_current_user,
+		})
 	} else if r.Method == "POST" {
 		current_user, err := CurrentUser(r)
 		if err != nil {
