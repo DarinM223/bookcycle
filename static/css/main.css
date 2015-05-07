@@ -34,7 +34,7 @@ main.home {
 	padding-top: 5%;
 }
 
-input#search {
+input.search {
 	font-size: 1.8rem;
 	height: auto;
 	margin-bottom: 3rem;
@@ -44,10 +44,10 @@ input#search {
 	box-shadow: none;
 	background: #fafafa;
 }
-input#search:focus {
+input.search:focus {
 	background: white;
 }
-button#search {
+button.search {
 	width: 18%;
 	top: -5px;
 }

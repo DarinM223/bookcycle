@@ -1,8 +1,8 @@
 {{ define "main" }}
 <main class="results">
 <form method="get" action="/search_results">
-  <input id="search" type="text" name="query" placeholder="Search by title" />
-  <button id="search" class="expand"><i class="fa fa-search"></i></button>
+  <input class="search" id="search_text" type="text" name="query" placeholder="Search by title" />
+  <button class="search" id="search_button" class="expand" disabled><i class="fa fa-search"></i></button>
 </form>
 <h1>{{ .Title }}</h1>
 <div class="row book-detail-header">
@@ -46,10 +46,22 @@
 
 </main>
 <script>
-$("#search").keyup(function (e) {
-    if (e.keyCode == 13) {
-    window.location.assign('/user-details.html');
+$("#search_text").on("change keyup paste", function() {
+  if ($("#search_text").val().trim() !== "") {
+    $("#search_button").attr("disabled", null);
+  } else {
+    $("#search_button").attr("disabled", "");
+  }
+});
+
+$('#formid').on("keyup keypress", function(e) {
+  var code = e.keyCode || e.which; 
+  if (code == 13) {               
+    if ($("#search_text").val().trim() === "") {
+      e.preventDefault();
+      return false;
     }
-    });
+  }
+});
 </script>
 {{ end }}

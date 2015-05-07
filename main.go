@@ -43,7 +43,7 @@ func main() {
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
-	r.Methods("GET").Path("/search").HandlerFunc(SearchHandler)
+	//r.Methods("GET").Path("/search").HandlerFunc(SearchHandler)
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 
 	// Set up static images
