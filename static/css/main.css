@@ -124,3 +124,7 @@ a#sell {
   min-width: 100%;
   min-height: 100%;
 }
+
+.sellerRating {
+	text-align: center;
+}

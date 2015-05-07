@@ -67,7 +67,7 @@ func showLoginPage(w http.ResponseWriter) {
 
 func showUserPage(w http.ResponseWriter, u User, db gorm.DB) {
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
-		"templates/navbar.html", "templates/loggedin.html")
+		"templates/navbar.html", "templates/search_results.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
