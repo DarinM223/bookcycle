@@ -34,7 +34,7 @@ func main() {
 
 	// Define routes
 	r := mux.NewRouter()
-	r.HandleFunc("/", RootHandler)
+	r.HandleFunc("/", DBInject(RootHandler, db))
 	r.Methods("POST").Path("/login").HandlerFunc(DBInject(LoginHandler, db))
 	r.Methods("GET").Path("/logout").HandlerFunc(LogoutHandler)
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
@@ -65,29 +65,37 @@ func showLoginPage(w http.ResponseWriter) {
 	t.Execute(w, nil)
 }
 
-func showUserPage(w http.ResponseWriter, u User) {
+func showUserPage(w http.ResponseWriter, u User, db gorm.DB) {
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
 		"templates/navbar.html", "templates/loggedin.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
+	var recent_books []Book
+	result := db.Order("created_at desc").Limit(10).Find(&recent_books)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
 	t.Execute(w, struct {
 		CurrentUser    User
 		HasCurrentUser bool
+		RecentBooks    []Book
 	}{
 		CurrentUser:    u,
 		HasCurrentUser: true,
+		RecentBooks:    recent_books,
 	})
 }
 
 // Route: /
-func RootHandler(w http.ResponseWriter, r *http.Request) {
+func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	user, err := CurrentUser(r)
 	if err != nil {
 		showLoginPage(w)
 	} else {
-		showUserPage(w, user)
+		showUserPage(w, user, db)
 	}
 }
 
