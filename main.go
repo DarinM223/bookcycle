@@ -41,9 +41,9 @@ func main() {
 	r.Methods("GET", "POST").Path("/users/edit").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
 	r.Methods("GET").Path("/users/{id}").HandlerFunc(DBInject(NewUserViewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
+	r.Methods("GET").Path("/books").HandlerFunc(DBInject(ShowBooksHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
-	//r.Methods("GET").Path("/search").HandlerFunc(SearchHandler)
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 
 	// Set up static images
@@ -134,6 +134,40 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+// Route: /books
+func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
+
+	var my_books []Book
+	result := db.Model(&current_user).Related(&my_books)
+	if result.Error != nil {
+		http.Error(w, "Error retrieving books", http.StatusInternalServerError)
+	}
+
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/search_results.html")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	t.Execute(w, struct {
+		CurrentUser    User
+		HasCurrentUser bool
+		RecentBooks    []Book
+		Title          string
+	}{
+		current_user,
+		has_current_user,
+		my_books,
+		"My books",
+	})
 }
 
 // Route: /books/{id}
@@ -236,28 +270,6 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	} else {
 		http.NotFound(w, r)
 	}
-}
-
-// Route: /search
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	current_user, err := CurrentUser(r)
-	has_current_user := true
-	if err != nil {
-		has_current_user = false
-	}
-	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
-		"templates/navbar.html", "templates/search.html")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	t.Execute(w, struct {
-		CurrentUser    User
-		HasCurrentUser bool
-	}{
-		current_user,
-		has_current_user,
-	})
 }
 
 // Route /search_results?query=

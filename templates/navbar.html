@@ -4,6 +4,7 @@
     {{ if .HasCurrentUser }}
       <div class="user-info">
         <a class="user-settings" href="/users/edit">{{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}</a>
+        <a class="log-out" href="/books">My books</a>
         <a class="log-out" href="/logout">Log Out</a>
       </div>
     {{ end }}
