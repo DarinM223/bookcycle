@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 )
 
 type BookFactory interface {
@@ -38,5 +39,6 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userId int) (Book, error) {
 		Condition: condition,
 		Details:   details,
 		UserId:    userId,
+		CreatedAt: time.Now(),
 	}, nil
 }

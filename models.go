@@ -4,6 +4,7 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
+	"time"
 )
 
 type User struct {
@@ -15,6 +16,8 @@ type User struct {
 	Phone     int
 	Password  string `sql:"not null"`
 	Books     []Book
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func NewUser(firstname string, lastname string, email string,
@@ -30,6 +33,7 @@ func NewUser(firstname string, lastname string, email string,
 				Lastname:  lastname,
 				Email:     email,
 				Phone:     phone,
+				UpdatedAt: time.Now(),
 			}, nil
 		} else {
 			return User{}, errors.New("Password cannot be empty")
@@ -45,6 +49,7 @@ func NewUser(firstname string, lastname string, email string,
 		Email:     email,
 		Phone:     phone,
 		Password:  string(encrypted_password),
+		CreatedAt: time.Now(),
 	}, nil
 }
 
@@ -63,4 +68,5 @@ type Book struct {
 	Condition string `sql:"not null"`
 	Details   string
 	UserId    int `sql:"index"`
+	CreatedAt time.Time
 }
