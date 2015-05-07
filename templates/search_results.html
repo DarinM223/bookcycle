@@ -22,101 +22,27 @@
     Post Time
   </div>
 </div>
+{{ range $element := .RecentBooks }}
 <div class="row book-detail">
-  <a href="/buy-details.html">
+  <a href="/books/{{ $element.Id }}">
     <div class="small-4 columns">
-      Book Title
+      {{ $element.Title }}
     </div>
     <div class="small-3 columns">
-      Book Author
+      {{ $element.Author }}
     </div>
     <div class="small-1 columns">
-      100.00
+      {{ $element.Price }}
     </div>
     <div class="small-2 columns sellerRating">
       5/5
     </div>    
     <div class="small-2 columns">
-      1 hour ago
+      {{ $element.CreatedAt }}
     </div>
   </a>
 </div>
-<div class="row book-detail">
-  <a href="/buy-details.html">
-    <div class="small-4 columns">
-      Book Title
-    </div>
-    <div class="small-3 columns">
-      Book Author
-    </div>
-    <div class="small-1 columns">
-      100.00
-    </div>
-    <div class="small-2 columns sellerRating">
-      5/5
-    </div>    
-    <div class="small-2 columns">
-      1 hour ago
-    </div>
-  </a>
-</div>
-<div class="row book-detail">
-  <a href="/buy-details.html">
-    <div class="small-4 columns">
-      Book Title
-    </div>
-    <div class="small-3 columns">
-      Book Author
-    </div>
-    <div class="small-1 columns">
-      100.00
-    </div>
-    <div class="small-2 columns sellerRating">
-      5/5
-    </div>    
-    <div class="small-2 columns">
-      1 hour ago
-    </div>
-  </a>
-</div>
-<div class="row book-detail">
-  <a href="/buy-details.html">
-    <div class="small-4 columns">
-      Book Title
-    </div>
-    <div class="small-3 columns">
-      Book Author
-    </div>
-    <div class="small-1 columns">
-      100.00
-    </div>
-    <div class="small-2 columns sellerRating">
-      5/5
-    </div>    
-    <div class="small-2 columns">
-      1 hour ago
-    </div>
-  </a>
-</div>
-<div class="row book-detail">
-  <a href="/buy-details.html">
-    <div class="small-4 columns">
-      Book Title
-    </div>
-    <div class="small-3 columns">
-      Book Author
-    </div>
-    <div class="small-1 columns">
-      100.00
-    </div>
-    <div class="small-2 columns sellerRating">
-      5/5
-    </div>    
-    <div class="small-2 columns">
-      1 hour ago
-    </div>
-  </a>
-</div>
+{{ end }}
 
 </main>
 <script>
