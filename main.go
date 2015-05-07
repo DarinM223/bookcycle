@@ -44,7 +44,7 @@ func main() {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search").HandlerFunc(SearchHandler)
-	r.Methods("GET").Path("/search_results").HandlerFunc(SearchResultsHandler)
+	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 
 	// Set up static images
 	// ./static/css/main.css maps to
@@ -82,10 +82,12 @@ func showUserPage(w http.ResponseWriter, u User, db gorm.DB) {
 		CurrentUser    User
 		HasCurrentUser bool
 		RecentBooks    []Book
+		Title          string
 	}{
 		CurrentUser:    u,
 		HasCurrentUser: true,
 		RecentBooks:    recent_books,
+		Title:          "Recent Books",
 	})
 }
 
@@ -193,6 +195,9 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
 		current_user, err := CurrentUser(r)
 		has_current_user := true
+		if err != nil {
+			has_current_user = false
+		}
 		t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
 			"templates/navbar.html", "templates/new_book.html")
 		if err != nil {
@@ -232,6 +237,9 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	current_user, err := CurrentUser(r)
 	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
 		"templates/navbar.html", "templates/search.html")
 	if err != nil {
@@ -247,22 +255,39 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Route /search_results
-func SearchResultsHandler(w http.ResponseWriter, r *http.Request) {
+// Route /search_results?query=
+func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	query := r.URL.Query().Get("query")
+	if len(query) == 0 {
+		http.NotFound(w, r)
+		return
+	}
 	current_user, err := CurrentUser(r)
 	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
 		"templates/navbar.html", "templates/search_results.html")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	// TODO: set the template variable so you can show some actual search results
+	var search_books []Book
+	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&search_books)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
 	t.Execute(w, struct {
 		CurrentUser    User
 		HasCurrentUser bool
+		RecentBooks    []Book
+		Title          string
 	}{
 		current_user,
 		has_current_user,
+		search_books,
+		"Search Results",
 	})
 }
