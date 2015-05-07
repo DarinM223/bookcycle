@@ -52,16 +52,20 @@
       <div class="large-5 columns">
         <a class="button expand"><i class="fa fa-envelope-o"></i> Message Seller</a>
         <a class="button expand">Buy it now!</a>
-        <a class="button expand">View Seller Info</a>
+        <a class="button expand" href="/users/{{ .UserId }}">View Seller Info</a>
+        {{ if .CanDelete }}
+        <a class="button expand" href="/books/{{ .Book.Id}}/delete">Delete book</a>
+        {{ else }}
+        <a class="button expand" disabled>Delete book</a>
+        {{ end }}
   
-        <label for="details">Picture</label>
-        <textarea type="text" id="sources" name="sources" placeholder="picture here" rows="12"></textarea>
+        <!--<textarea type="text" id="sources" name="sources" placeholder="picture here" rows="12"></textarea>-->
   
       </div>
       <div class="row">
   
       </div>
     </form>
-  </div><!-- end div.row -->
+  </div>
   </main>
 {{ end }}

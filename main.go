@@ -157,14 +157,19 @@ func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		fmt.Println(err.Error())
 		return
 	}
+	can_delete := current_user.Id == book.UserId
 	t.Execute(w, struct {
 		Book           Book
+		UserId         int
 		CurrentUser    User
 		HasCurrentUser bool
+		CanDelete      bool
 	}{
 		Book:           book,
+		UserId:         book.UserId,
 		CurrentUser:    current_user,
 		HasCurrentUser: has_current_user,
+		CanDelete:      can_delete,
 	})
 }
 
