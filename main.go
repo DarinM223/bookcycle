@@ -224,7 +224,7 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		}
 		book, err := NewMuxBookFactory().NewFormBook(r, current_user.Id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			http.Error(w, "There was an error with validating some of your fields. Please check your input again", http.StatusUnauthorized)
 			return
 		}
 		result := db.Create(&book)

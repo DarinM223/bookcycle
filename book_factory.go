@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -22,11 +23,20 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userId int) (Book, error) {
 	}
 	title := r.PostFormValue("title")
 	author := r.PostFormValue("author")
-	version := r.PostFormValue("version")
+	version, err := strconv.ParseFloat(r.PostFormValue("version"), 64)
+	if err != nil {
+		return Book{}, err
+	}
 	class := r.PostFormValue("class")
 	professor := r.PostFormValue("professor")
-	price := r.PostFormValue("price")
-	condition := r.PostFormValue("condition")
+	price, err := strconv.ParseFloat(r.PostFormValue("price"), 64)
+	if err != nil {
+		return Book{}, err
+	}
+	condition, err := strconv.Atoi(r.PostFormValue("condition"))
+	if err != nil {
+		return Book{}, err
+	}
 	details := r.PostFormValue("details")
 
 	return Book{
