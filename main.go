@@ -32,8 +32,12 @@ func main() {
 	db.LogMode(true)
 	db.AutoMigrate(&User{}, &Book{})
 
+	// run websocket hub and set websocket handler to /ws route
+	go h.run()
+
 	// Define routes
 	r := mux.NewRouter()
+	r.HandleFunc("/ws", serveWs)
 	r.HandleFunc("/", DBInject(RootHandler, db))
 	r.Methods("POST").Path("/login").HandlerFunc(DBInject(LoginHandler, db))
 	r.Methods("GET").Path("/logout").HandlerFunc(LogoutHandler)
@@ -45,6 +49,7 @@ func main() {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
+	r.Methods("GET").Path("/messaging").HandlerFunc(DBInject(ChatHandler, db))
 
 	// Set up static images
 	// ./static/css/main.css maps to
@@ -306,5 +311,26 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		has_current_user,
 		search_books,
 		"Search Results",
+	})
+}
+
+func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	has_current_user := true
+	if err != nil {
+		has_current_user = false
+	}
+	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
+		"templates/navbar.html", "templates/chat.html")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	t.Execute(w, struct {
+		CurrentUser    User
+		HasCurrentUser bool
+	}{
+		current_user,
+		has_current_user,
 	})
 }
