@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"html/template"
 	"net/http"
+	"strconv"
 )
 
 /*
@@ -16,6 +17,12 @@ import (
 type UserTemplateType struct {
 	CurrentUser    User
 	HasCurrentUser bool
+}
+
+type MessageTemplateType struct {
+	UserTemplateType
+
+	UserId int
 }
 
 // For displaying a book
@@ -265,13 +272,21 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	})
 }
 
-// Route: /messaging
+// Route: /message/{id}
 func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		http.NotFound(w, r)
+	}
+
 	t, params, err := GenerateFullTemplate(r, "templates/chat.html")
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	t.Execute(w, params)
+	t.Execute(w, MessageTemplateType{
+		UserTemplateType: params,
+		UserId:           receiver_id,
+	})
 }

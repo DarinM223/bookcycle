@@ -47,7 +47,7 @@ func main() {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
-	r.Methods("GET").Path("/messaging").HandlerFunc(DBInject(ChatHandler, db))
+	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))
 
 	// Set up static images
 	// ./static/css/main.css maps to

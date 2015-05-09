@@ -1,41 +1,14 @@
 {{ define "main" }}
+
+{{ if .HasCurrentUser }}
+<script src="/js/chat.js"></script>
 <script type="text/javascript">
-    $(function() {
-    var conn;
-    var msg = $("#msg");
-    var log = $("#log");
-    function appendLog(msg) {
-        var d = log[0]
-        var doScroll = d.scrollTop == d.scrollHeight - d.clientHeight;
-        msg.appendTo(log)
-        if (doScroll) {
-            d.scrollTop = d.scrollHeight - d.clientHeight;
-        }
-    }
-    $("#form").submit(function() {
-        if (!conn) {
-            return false;
-        }
-        if (!msg.val()) {
-            return false;
-        }
-        conn.send(msg.val());
-        msg.val("");
-        return false
-    });
-    if (window["WebSocket"]) {
-        conn = new WebSocket("ws://localhost:8080/ws");
-        conn.onclose = function(evt) {
-            appendLog($("<div><b>Connection closed.</b></div>"))
-        }
-        conn.onmessage = function(evt) {
-            appendLog($("<div/>").text(evt.data))
-        }
-    } else {
-        appendLog($("<div><b>Your browser does not support WebSockets.</b></div>"))
-    }
-    });
+    var current_user_id = {{.CurrentUser.Id}};
+    var receiver_id = {{.UserId}};
+    // Set up chatroom for both users
+    Message(current_user_id, receiver_id);
 </script>
+
 <style type="text/css">
 html {
     overflow: hidden;
@@ -68,10 +41,18 @@ body {
     width: 100%;
     overflow: hidden;
 }
+
 </style>
 <div id="log"></div>
 <form id="form">
     <input type="submit" value="Send" />
     <input type="text" id="msg" size="64"/>
 </form>
+
+{{ else }}
+
+<p>You have to be logged in to message other users</p>
+
+{{ end }}
+
 {{ end }}
