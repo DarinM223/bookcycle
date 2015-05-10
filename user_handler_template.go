@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"html/template"
 	"net/http"
@@ -94,7 +93,6 @@ func (u UserNewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 
 func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	new_user, err := u.userFactory.NewFormUser(r, false)
-	fmt.Println(new_user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return

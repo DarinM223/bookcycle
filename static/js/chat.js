@@ -1,7 +1,9 @@
+/**
+ * Sets up a chatroom with two people
+ * @param {integer} sender_id the userid of the currently logged in user
+ * @param {integer} receiver_id the userid of the user to message
+ */
 function Message(sender_id, receiver_id) {
-  console.log(sender_id);
-  console.log(receiver_id);
-
   $(function() {
     var conn;
     var msg = $("#msg");
@@ -23,11 +25,13 @@ function Message(sender_id, receiver_id) {
       if (!msg.val()) {
         return false;
       }
-      conn.send(JSON.stringify({
+      var parsedMessage = {
         senderId: sender_id,
         receiverId: receiver_id,
         message: msg.val()
-      }));
+      };
+      conn.send(JSON.stringify(parsedMessage))
+      appendLog($("<div/>").text("Id: " + parsedMessage.receiverId + " Message: " + parsedMessage.message));
       msg.val("")
       return false
     });
@@ -38,7 +42,6 @@ function Message(sender_id, receiver_id) {
         appendLog($("<div><b>Connection closed.</b></div>"))
       };
       conn.onmessage = function(evt) {
-        console.log(evt.data);
         var parsedMessage = JSON.parse(evt.data);
         appendLog($("<div/>").text("Id: " + parsedMessage.receiverId + " Message: " + parsedMessage.message));
       };
