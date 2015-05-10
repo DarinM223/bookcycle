@@ -49,6 +49,7 @@ func main() {
 	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJsonHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
+	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))
 	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))
 
 	// Set up static images

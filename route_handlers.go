@@ -89,6 +89,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 		t, params, err := GenerateFullTemplate(r, "templates/search_results.html")
 		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -150,6 +151,7 @@ func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	result := db.Model(&params.CurrentUser).Related(&my_books)
 	if result.Error != nil {
 		http.Error(w, "Error retrieving books", http.StatusInternalServerError)
+		return
 	}
 
 	t.Execute(w, ManyBookTemplateType{
@@ -329,11 +331,43 @@ func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	w.Write(messages_json)
 }
 
+// Route: /past_messages/{id}
+func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	current_user, err := CurrentUser(r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	var results []Message
+	res := db.Where("(receiver_id = ? and sender_id = ?) or (receiver_id = ? and sender_id = ?)",
+		current_user.Id, receiver_id, receiver_id, current_user.Id).Limit(20).Order("created_at desc").Find(&results)
+	if res.Error != nil {
+		http.Error(w, res.Error.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	results_json, err := json.Marshal(results)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(results_json)
+}
+
 // Route: /message/{id}
 func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.NotFound(w, r)
+		return
 	}
 
 	t, params, err := GenerateFullTemplate(r, "templates/chat.html")
