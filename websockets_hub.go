@@ -1,5 +1,9 @@
 package main
 
+import (
+	"encoding/json"
+)
+
 // hub maintains the set of active connections and broadcasts messages to the
 // connections.
 type hub struct {
@@ -23,6 +27,12 @@ var h = hub{
 	connections: make(map[*connection]bool),
 }
 
+type MessageType struct {
+	SenderId   int    `json:"senderId"`
+	ReceiverId int    `json:"receiverId"`
+	Message    string `json:"message"`
+}
+
 func (h *hub) run() {
 	for {
 		select {
@@ -34,12 +44,21 @@ func (h *hub) run() {
 				close(c.send)
 			}
 		case m := <-h.broadcast:
-			for c := range h.connections {
-				select {
-				case c.send <- m:
-				default:
-					close(c.send)
-					delete(h.connections, c)
+			var parsedMessage MessageType
+			err := json.Unmarshal(m, &parsedMessage)
+			// TODO: create Message database object
+			// if the message parsed successfully
+			if err == nil {
+				for c := range h.connections {
+					// only send it if the receiver matches
+					if c.user.Id == parsedMessage.ReceiverId {
+						select {
+						case c.send <- m:
+						default:
+							close(c.send)
+							delete(h.connections, c)
+						}
+					}
 				}
 			}
 		}

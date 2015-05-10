@@ -70,3 +70,9 @@ type Book struct {
 	UserId    int `sql:"index"`
 	CreatedAt time.Time
 }
+
+type Message struct {
+	Description string
+	SenderId    int `sql:"index"`
+	ReceiverId  int `sql:"index"`
+}

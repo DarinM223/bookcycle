@@ -23,8 +23,12 @@ function Message(sender_id, receiver_id) {
       if (!msg.val()) {
         return false;
       }
-      conn.send(msg.val());
-      msg.val("");
+      conn.send(JSON.stringify({
+        senderId: sender_id,
+        receiverId: receiver_id,
+        message: msg.val()
+      }));
+      msg.val("")
       return false
     });
   
@@ -32,10 +36,12 @@ function Message(sender_id, receiver_id) {
       conn = new WebSocket("ws://localhost:8080/ws");
       conn.onclose = function(evt) {
         appendLog($("<div><b>Connection closed.</b></div>"))
-      }
+      };
       conn.onmessage = function(evt) {
-        appendLog($("<div/>").text(evt.data))
-      }
+        console.log(evt.data);
+        var parsedMessage = JSON.parse(evt.data);
+        appendLog($("<div/>").text("Id: " + parsedMessage.receiverId + " Message: " + parsedMessage.message));
+      };
     } else {
       appendLog($("<div><b>Your browser does not support WebSockets.</b></div>"))
     }
