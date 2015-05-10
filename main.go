@@ -46,6 +46,7 @@ func main() {
 	r.Methods("GET").Path("/books").HandlerFunc(DBInject(ShowBooksHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
+	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJsonHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
 	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))

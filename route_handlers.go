@@ -245,6 +245,38 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 }
 
+func SearchBook(query string, db gorm.DB) ([]Book, error) {
+	var search_books []Book
+	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&search_books)
+	if result.Error != nil {
+		return []Book{}, result.Error
+	}
+	return search_books, nil
+}
+
+// Route /search_results.json?query=
+func SearchResultsJsonHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	query := r.URL.Query().Get("query")
+	if len(query) == 0 {
+		http.NotFound(w, r)
+		return
+	}
+
+	search_books, err := SearchBook(query, db)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	search_books_json, err := json.Marshal(search_books)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	w.Write(search_books_json)
+}
+
 // Route /search_results?query=
 func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
@@ -253,10 +285,9 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	var search_books []Book
-	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&search_books)
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+	search_books, err := SearchBook(query, db)
+	if err != nil {
+		http.NotFound(w, r)
 		return
 	}
 

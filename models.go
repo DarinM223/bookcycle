@@ -59,17 +59,17 @@ func (u User) Validate(password string) bool {
 }
 
 type Book struct {
-	Id        int     `sql:"AUTO_INCREMENT"`
-	Title     string  `sql:"not null"`
-	Author    string  `sql:"not null"`
-	Class     string  `sql:"not null"`
-	Professor string  `sql:"not null"`
-	Version   float64 `sql:"not null"`
-	Price     float64 `sql:"not null"`
-	Condition int     `sql:"not null"`
-	Details   string
-	UserId    int `sql:"index"`
-	CreatedAt time.Time
+	Id        int       `sql:"AUTO_INCREMENT" json:"id"`
+	Title     string    `sql:"not null" json:"title"`
+	Author    string    `sql:"not null" json:"author"`
+	Class     string    `sql:"not null" json:"class"`
+	Professor string    `sql:"not null" json:"professor"`
+	Version   float64   `sql:"not null" json:"version"`
+	Price     float64   `sql:"not null" json:"price"`
+	Condition int       `sql:"not null" json:"condition"`
+	Details   string    `json:"details"`
+	UserId    int       `sql:"index" json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Message struct {
