@@ -1,4 +1,7 @@
 {{ define "navbar" }}
+  {{ if .HasCurrentUser }}
+    <script src="js/navbar.js"></script>
+  {{ end }}
   <header>
     <a class="logo" href="/">BookCycle</a>
     {{ if .HasCurrentUser }}

@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 // hub maintains the set of active connections and broadcasts messages to the
@@ -27,13 +29,7 @@ var h = hub{
 	connections: make(map[*connection]bool),
 }
 
-type MessageType struct {
-	SenderId   int    `json:"senderId"`
-	ReceiverId int    `json:"receiverId"`
-	Message    string `json:"message"`
-}
-
-func (h *hub) run() {
+func (h *hub) run(db gorm.DB) {
 	for {
 		select {
 		case c := <-h.register:
@@ -44,11 +40,11 @@ func (h *hub) run() {
 				close(c.send)
 			}
 		case m := <-h.broadcast:
-			var parsedMessage MessageType
+			var parsedMessage Message
 			err := json.Unmarshal(m, &parsedMessage)
-			// TODO: create Message database object
-			// if the message parsed successfully
 			if err == nil {
+				parsedMessage.CreatedAt = time.Now()
+				db.Create(&parsedMessage)
 				for c := range h.connections {
 					// only send it if the receiver matches
 					if c.user.Id == parsedMessage.ReceiverId {

@@ -15,6 +15,7 @@ type User struct {
 	Email     string  `sql:"not null; unique"`
 	Phone     int
 	Password  string `sql:"not null"`
+	Messages  []Message
 	Books     []Book
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -72,7 +73,9 @@ type Book struct {
 }
 
 type Message struct {
-	Description string
-	SenderId    int `sql:"index"`
-	ReceiverId  int `sql:"index"`
+	SenderId   int    `json:"senderId"`
+	ReceiverId int    `sql:"index" json:"receiverId"`
+	Message    string `json:"message"`
+	Read       bool   `json:"-"`
+	CreatedAt  time.Time
 }

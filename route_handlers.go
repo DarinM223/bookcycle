@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -270,6 +271,31 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		Books:            search_books,
 		Title:            "Search Results",
 	})
+}
+
+// Route: /unread_messages
+func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	var recentMessages []Message
+	db.Where("receiver_id = ? and read = ?", current_user.Id, false).
+		Order("created_at desc").Limit(10).Find(&recentMessages)
+	if len(recentMessages) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`[]`))
+		return
+	}
+	messages_json, err := json.Marshal(recentMessages)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(messages_json)
 }
 
 // Route: /message/{id}

@@ -28,10 +28,10 @@ func main() {
 	}
 	defer db.Close()
 	db.LogMode(true)
-	db.AutoMigrate(&User{}, &Book{})
+	db.AutoMigrate(&User{}, &Book{}, &Message{})
 
 	// run websocket hub and set websocket handler to /ws route
-	go h.run()
+	go h.run(db)
 
 	// Define routes (route handlers are in route_handlers.go)
 	r := mux.NewRouter()
@@ -47,6 +47,7 @@ func main() {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
+	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
 	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))
 
 	// Set up static images
