@@ -16,19 +16,9 @@ func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) 
 	}
 }
 
-func main() {
+func Routes(db gorm.DB) *mux.Router {
 	// Set up login sessions
 	InitSessions("bookcycle")
-
-	// Set up database
-	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	defer db.Close()
-	db.LogMode(true)
-	db.AutoMigrate(&User{}, &Book{}, &Message{})
 
 	// run websocket hub and set websocket handler to /ws route
 	go h.run(db)
@@ -58,6 +48,20 @@ func main() {
 	fs := http.FileServer(http.Dir("./static/"))
 	r.PathPrefix("/").Handler(fs)
 
+	return r
+}
+
+func main() {
+	// Set up database
+	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	defer db.Close()
+	db.LogMode(true)
+	db.AutoMigrate(&User{}, &Book{}, &Message{})
+
 	fmt.Println("Listening...")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", Routes(db))
 }
