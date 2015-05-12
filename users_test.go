@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -12,17 +11,14 @@ import (
 )
 
 var (
+	db       gorm.DB
 	server   *httptest.Server
 	usersUrl string
 )
 
 func init() {
 	// Set up database
-	db, err := gorm.Open("sqlite3", "./sqlite_file_test.db")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	db, _ = gorm.Open("sqlite3", "./sqlite_file_test.db")
 	db.LogMode(false)
 	db.DropTable(&User{})
 	db.DropTable(&Book{})
@@ -57,6 +53,7 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 
+	// Test that GET request returns success
 	if res.StatusCode != 200 {
 		t.Errorf("GET Success expected: %d", res.StatusCode)
 		return
@@ -75,10 +72,38 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 
+	// Test that POST request returns success
 	if res.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println(string(body))
 		t.Errorf("POST Success expected: %d", res.StatusCode)
+		return
+	}
+
+	// Test if user is created and proper fields are created
+	var users []User
+	db.Preload("users").Find(&users)
+	if len(users) != 1 {
+		t.Errorf("Users length should be 1, instead: %d", len(users))
+		return
+	}
+
+	if users[0].Firstname != "Test" {
+		t.Errorf("\"Test\" expected: %d", users[0].Firstname)
+		return
+	}
+	if users[0].Lastname != "User" {
+		t.Errorf("\"User\" expected: %d", users[0].Lastname)
+		return
+	}
+	if users[0].Email != "testuser@gmail.com" {
+		t.Errorf("\"testuser@gmail.com\" expected: %d", users[0].Email)
+		return
+	}
+	if users[0].Phone != 123456789 {
+		t.Errorf("\"123456789\" expected: %d", users[0].Phone)
+		return
+	}
+	if users[0].Password == "password" {
+		t.Errorf("Password not hashed properly: %s", users[0].Password)
 		return
 	}
 }
