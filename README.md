@@ -1,5 +1,7 @@
 # Bookcycle
 
+[![Build Status](https://travis-ci.org/DarinM223/cs130-test.svg?branch=after_midpoint)](https://travis-ci.org/DarinM223/cs130-test)
+
 ### Project for CS130
 
 Neil Bedi – 404018872
