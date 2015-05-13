@@ -2,18 +2,24 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	_ "io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 )
 
 var (
-	db       gorm.DB
-	server   *httptest.Server
-	usersUrl string
+	db           gorm.DB
+	server       *httptest.Server
+	newUserUrl   string
+	editUserUrl  string
+	loginUserUrl string
 )
 
 func init() {
@@ -28,20 +34,69 @@ func init() {
 	// set up test db
 	server = httptest.NewServer(Routes(db))
 
-	usersUrl = fmt.Sprintf("%s/users/new", server.URL)
-	fmt.Println(usersUrl)
+	newUserUrl = fmt.Sprintf("%s/users/new", server.URL)
+	editUserUrl = fmt.Sprintf("%s/users/edit", server.URL)
+	loginUserUrl = fmt.Sprintf("%s/login", server.URL)
+}
+
+func makeTestUser(u User, password string, password_confirm string) error {
+	userJson := url.Values{}
+	userJson.Set("first_name", u.Firstname)
+	userJson.Set("last_name", u.Lastname)
+	userJson.Set("email", u.Email)
+	userJson.Set("phone", strconv.Itoa(u.Phone))
+	userJson.Set("password1", password)
+	userJson.Set("password2", password_confirm)
+
+	request, err := http.NewRequest("POST", newUserUrl, bytes.NewBufferString(userJson.Encode()))
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return err
+	}
+
+	// Test that POST request returns success
+	if res.StatusCode != 200 {
+		//body, _ := ioutil.ReadAll(res.Body)
+		//fmt.Println(string(body))
+		return errors.New("POST Success should be 200")
+	}
+
+	return nil
+}
+
+func loginUser(email string, password string) (*http.Cookie, error) {
+	loginJson := url.Values{}
+	loginJson.Set("email", email)
+	loginJson.Set("password", password)
+
+	request, err := http.NewRequest("POST", loginUserUrl, bytes.NewBufferString(loginJson.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	transport := http.Transport{}
+	res, err := transport.RoundTrip(request)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cookie := range res.Cookies() {
+		if cookie.Name == "bookcycle" {
+			return cookie, nil
+		}
+	}
+
+	return nil, errors.New("Cookie not set")
 }
 
 func TestCreateUser(t *testing.T) {
-	userJson := url.Values{}
-	userJson.Set("first_name", "Test")
-	userJson.Set("last_name", "User")
-	userJson.Set("email", "testuser@gmail.com")
-	userJson.Set("phone", "123456789")
-	userJson.Set("password1", "password")
-	userJson.Set("password2", "password")
-
-	request, err := http.NewRequest("GET", usersUrl, nil)
+	request, err := http.NewRequest("GET", newUserUrl, nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -59,22 +114,31 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 
-	request, err = http.NewRequest("POST", usersUrl, bytes.NewBufferString(userJson.Encode()))
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	res, err = http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
+	test_user := User{
+		Firstname: "Test",
+		Lastname:  "User",
+		Email:     "testuser@gmail.com",
+		Phone:     123456789,
 	}
 
-	// Test that POST request returns success
-	if res.StatusCode != 200 {
-		t.Errorf("POST Success expected: %d", res.StatusCode)
+	// Test that creating User with no password has error
+	err = makeTestUser(test_user, "", "")
+	if err == nil {
+		t.Error("Creating User with no password should return error")
+		return
+	}
+
+	// Test that creating User with different passwords has error
+	err = makeTestUser(test_user, "password1", "password2")
+	if err == nil {
+		t.Error("Creating User with wrong passwords should return error")
+		return
+	}
+
+	// Test that creating User properly returns success
+	err = makeTestUser(test_user, "password", "password")
+	if err != nil {
+		t.Error(err)
 		return
 	}
 
@@ -106,4 +170,72 @@ func TestCreateUser(t *testing.T) {
 		t.Errorf("Password not hashed properly: %s", users[0].Password)
 		return
 	}
+
+	db.Delete(&users[0])
+}
+
+func encode(src []byte) string {
+	return base64.URLEncoding.EncodeToString(src)
+}
+
+func TestEditUser(t *testing.T) {
+	test_user := User{
+		Firstname: "Test",
+		Lastname:  "User",
+		Email:     "testuser@gmail.com",
+		Phone:     123456789,
+	}
+	err := makeTestUser(test_user, "password", "password")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	request, err := http.NewRequest("GET", editUserUrl, nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// Test that GET request returns 404 if not logged in
+	if res.StatusCode != 404 {
+		t.Errorf("GET 404 expected: %d", res.StatusCode)
+		return
+	}
+
+	loginCookie, err := loginUser(test_user.Email, "password")
+	if err != nil {
+		t.Error(err)
+		t.Error("Error logging in user")
+		return
+	}
+
+	request, err = http.NewRequest("GET", editUserUrl, nil)
+	request.AddCookie(loginCookie) // add login session cookie
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	res, err = http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// Test that GET request returns success if logged in
+	if res.StatusCode != 200 {
+		t.Errorf("GET success expected: %d", res.StatusCode)
+		return
+	}
+
+	// TODO: send edit request without password and should not change password
+
+	// TODO: send edit request with password and should change password
 }

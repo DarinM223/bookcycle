@@ -41,7 +41,7 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 	}
 	user, err := u.i.user(r, db)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.NotFound(w, r)
 		return
 	}
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
@@ -130,7 +130,7 @@ func (u UserEditTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	current_user, err := CurrentUser(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.NotFound(w, r)
 		return
 	}
 	edited_user, err := u.userFactory.NewFormUser(r, true)
