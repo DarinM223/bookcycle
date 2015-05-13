@@ -69,6 +69,37 @@ func makeTestUser(u User, password string, password_confirm string) error {
 	return nil
 }
 
+func editTestUser(u User, c *http.Cookie, password string, password_confirm string) error {
+	userJson := url.Values{}
+	userJson.Set("first_name", u.Firstname)
+	userJson.Set("last_name", u.Lastname)
+	userJson.Set("email", u.Email)
+	userJson.Set("phone", strconv.Itoa(u.Phone))
+	userJson.Set("password1", password)
+	userJson.Set("password2", password_confirm)
+
+	request, err := http.NewRequest("POST", editUserUrl, bytes.NewBufferString(userJson.Encode()))
+	request.AddCookie(c)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return err
+	}
+
+	// Test that POST request returns success
+	if res.StatusCode != 200 {
+		//body, _ := ioutil.ReadAll(res.Body)
+		//fmt.Println(string(body))
+		return errors.New("POST Success should be 200")
+	}
+
+	return nil
+}
+
 func loginUser(email string, password string) (*http.Cookie, error) {
 	loginJson := url.Values{}
 	loginJson.Set("email", email)
@@ -235,7 +266,42 @@ func TestEditUser(t *testing.T) {
 		return
 	}
 
-	// TODO: send edit request without password and should not change password
+	edited_user := User{
+		Id:        test_user.Id,
+		Firstname: "T",
+		Lastname:  "U",
+		Email:     "tu@gmail.com",
+		Phone:     987654321,
+	}
 
-	// TODO: send edit request with password and should change password
+	// sending edit request with different password and password confirmation should have error
+	err = editTestUser(edited_user, loginCookie, "password1", "password2")
+	if err == nil {
+		t.Error("Editing user with wrong passwords should have error")
+		return
+	}
+
+	// sending edit request without password should not change password
+	err = editTestUser(edited_user, loginCookie, "", "")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	var user User
+	db.Where("email LIKE ?", "tu@gmail.com").First(&user)
+	if !user.Validate("password") {
+		t.Error("Password should not have changed")
+		return
+	}
+
+	// sending edit request with a different password should change password
+	err = editTestUser(edited_user, loginCookie, "another_password", "another_password")
+	db.Where("email LIKE ?", "tu@gmail.com").First(&user)
+	if !user.Validate("another_password") {
+		t.Error("Password should have changed")
+		return
+	}
+
+	db.Delete(&user)
 }
