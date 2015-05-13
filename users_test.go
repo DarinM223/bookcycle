@@ -305,3 +305,54 @@ func TestEditUser(t *testing.T) {
 
 	db.Delete(&user)
 }
+
+func TestViewUser(t *testing.T) {
+	test_user := User{
+		Firstname: "Test",
+		Lastname:  "User",
+		Email:     "testuser@gmail.com",
+		Phone:     123456789,
+	}
+	user_route := fmt.Sprintf("%s/users/1", server.URL)
+
+	// Test that accessing GET for nonexisting user returns 404
+	request, err := http.NewRequest("GET", user_route, nil)
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if res.StatusCode != 404 {
+		t.Errorf("GET 404 expected: %d", res.StatusCode)
+		return
+	}
+
+	// Test that accessing GET for existing user returns success
+	err = makeTestUser(test_user, "password", "password")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	res, err = http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if res.StatusCode != 200 {
+		t.Errorf("GET success expected: %d", res.StatusCode)
+		return
+	}
+
+	// Test that accessing POST for existing user returns 404
+	request, err = http.NewRequest("POST", user_route, nil)
+	res, err = http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	// Test that POST request returns 404
+	if res.StatusCode != 404 {
+		t.Errorf("GET 404 expected: %d", res.StatusCode)
+		return
+	}
+}
