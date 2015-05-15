@@ -26,6 +26,7 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	return server, db
 }
 
+// Struct for User testing utilities
 type UserTesting struct {
 	DB     gorm.DB
 	Server *httptest.Server
@@ -77,8 +78,6 @@ func (n UserTesting) MakeTestUser(u User, password string, password_confirm stri
 
 	// Test that POST request returns success
 	if res.StatusCode != 200 {
-		//body, _ := ioutil.ReadAll(res.Body)
-		//fmt.Println(string(body))
 		return errors.New("POST Success should be 200")
 	}
 
@@ -108,8 +107,6 @@ func (n UserTesting) EditTestUser(u User, c *http.Cookie, password string, passw
 
 	// Test that POST request returns success
 	if res.StatusCode != 200 {
-		//body, _ := ioutil.ReadAll(res.Body)
-		//fmt.Println(string(body))
 		return errors.New("POST Success should be 200")
 	}
 
@@ -140,4 +137,61 @@ func (n UserTesting) LoginUser(email string, password string) (*http.Cookie, err
 	}
 
 	return nil, errors.New("Cookie not set")
+}
+
+// Struct for book testing utilties
+type BookTesting struct {
+	UserTesting
+}
+
+func NewBookTesting() BookTesting {
+	server, db := SetUpTesting()
+	return BookTesting{UserTesting{DB: db, Server: server}}
+}
+
+func (b BookTesting) ShowBooksUrl() string {
+	return fmt.Sprintf("%s/books", b.Server.URL)
+}
+
+func (b BookTesting) NewBookUrl() string {
+	return fmt.Sprintf("%s/books/new", b.Server.URL)
+}
+
+func (b BookTesting) DeleteBookUrl(id int) string {
+	return fmt.Sprintf("%s/books/%d/delete", b.Server.URL, id)
+}
+
+func (b BookTesting) ShowBookUrl(id int) string {
+	return fmt.Sprintf("%s/books/%d", b.Server.URL, id)
+}
+
+func (b BookTesting) MakeTestBook(book Book, loginCookie *http.Cookie) error {
+	bookJson := url.Values{}
+	bookJson.Set("title", book.Title)
+	bookJson.Set("author", book.Author)
+	bookJson.Set("version", fmt.Sprintf("%f", book.Version))
+	bookJson.Set("class", book.Class)
+	bookJson.Set("professor", book.Professor)
+	bookJson.Set("price", fmt.Sprintf("%f", book.Price))
+	bookJson.Set("condition", strconv.Itoa(book.Condition))
+	bookJson.Set("details", book.Details)
+
+	request, err := http.NewRequest("POST", b.NewBookUrl(), bytes.NewBufferString(bookJson.Encode()))
+	request.AddCookie(loginCookie)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return err
+	}
+
+	// Test that POST request returns success
+	if res.StatusCode != 200 {
+		return errors.New("POST Success should be 200")
+	}
+
+	return nil
 }
