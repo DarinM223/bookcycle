@@ -121,3 +121,111 @@ func TestCreateBook(t *testing.T) {
 	bookTesting.DB.Where("email LIKE ?", test_user.Email).First(&user)
 	bookTesting.DB.Delete(&user)
 }
+
+func TestDeleteBook(t *testing.T) {
+	// test that deleting book without being logged in should fail
+	request, err := http.NewRequest("GET", bookTesting.DeleteBookUrl(1), nil)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	res, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.StatusCode != 401 {
+		t.Errorf("GET 401 expected: %d", res.StatusCode)
+		return
+	}
+
+	test_user := User{
+		Firstname: "Test",
+		Lastname:  "User",
+		Email:     "testuser@gmail.com",
+		Phone:     123456789,
+	}
+	err = bookTesting.MakeTestUser(test_user, "password", "password")
+	var loginCookie *http.Cookie
+	loginCookie, err = bookTesting.LoginUser(test_user.Email, "password")
+
+	// test that deleting book while being logged in fails if book does not exist
+	request.AddCookie(loginCookie)
+	res, err = http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.StatusCode != 401 {
+		t.Errorf("GET 401 expected: %d", res.StatusCode)
+		return
+	}
+
+	test_book := Book{
+		Title:     "New book",
+		Author:    "Test author",
+		Version:   1.0,
+		Class:     "Horror",
+		Professor: "Smallberg",
+		Price:     12.50,
+		Condition: 5,
+		Details:   "Sample text",
+		UserId:    1,
+	}
+	bookTesting.MakeTestBook(test_book, loginCookie)
+
+	var my_book Book
+	bookTesting.DB.Where("title LIKE ?", test_book.Title).First(&my_book)
+
+	// test that deleting book that you do not own when logged in fails
+	new_test_user := User{
+		Firstname: "New",
+		Lastname:  "User",
+		Email:     "newuser@gmail.com",
+		Phone:     123456789,
+	}
+	err = bookTesting.MakeTestUser(new_test_user, "password", "password")
+	var newLoginCookie *http.Cookie
+	newLoginCookie, err = bookTesting.LoginUser(new_test_user.Email, "password")
+	request, err = http.NewRequest("GET", bookTesting.DeleteBookUrl(my_book.Id), nil)
+	request.AddCookie(newLoginCookie)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.StatusCode != 401 {
+		t.Errorf("GET 401 expected: %d", res.StatusCode)
+		return
+	}
+
+	// test that deleting book that exists when logged in succeeds
+	request, err = http.NewRequest("GET", bookTesting.DeleteBookUrl(my_book.Id), nil)
+	request.AddCookie(loginCookie)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	res, err = http.DefaultClient.Do(request)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.StatusCode != 200 {
+		t.Errorf("GET success expected: %d", res.StatusCode)
+		return
+	}
+
+	// Delete mock created user and book
+	var user, newUser User
+	bookTesting.DB.Where("email LIKE ?", test_user.Email).First(&user)
+	bookTesting.DB.Where("email LIKE ?", new_test_user.Email).First(&newUser)
+	bookTesting.DB.Delete(&user)
+	bookTesting.DB.Delete(&newUser)
+	bookTesting.DB.Delete(&my_book)
+}
