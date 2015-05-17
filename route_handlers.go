@@ -381,14 +381,18 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	t, params, err := GenerateFullTemplate(r, "templates/chat.html")
+	t, err := template.ParseFiles("templates/boilerplate/nothing_boilerplate.html",
+		"templates/chat.html")
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
 	t.Execute(w, MessageTemplateType{
-		UserTemplateType: params,
-		UserId:           receiver_id,
+		UserTemplateType: UserTemplateType{
+			CurrentUser:    current_user,
+			HasCurrentUser: true,
+		},
+		UserId: receiver_id,
 	})
 }

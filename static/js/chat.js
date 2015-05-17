@@ -21,16 +21,16 @@ function Message(sender_id, receiver_id) {
 
     function addMessage(msg) {
       var wrapper = document.createElement('div');
-      var clearDiv = document.createElement('div');
-      clearDiv.className = 'clear';
+      var wrapDiv = document.createElement('div');
+      wrapDiv.className = 'chat-messages-wrapper';
 
       var messageDiv = document.createElement('div');
       var messageTextNode = document.createTextNode(msg.message);
-      messageDiv.className = (msg.senderId === sender_id ? 'from-me' : 'from-them');
+      messageDiv.className = 'chat-message ' + (msg.senderId === sender_id ? 'to' : 'from');
       messageDiv.appendChild(messageTextNode);
 
-      clearDiv.appendChild(messageDiv);
-      wrapper.appendChild(clearDiv);
+      wrapDiv.appendChild(messageDiv);
+      wrapper.appendChild(wrapDiv);
       appendLog($(wrapper.innerHTML));
     }
 
@@ -54,7 +54,8 @@ function Message(sender_id, receiver_id) {
       });
     });
   
-    $("#form").submit(function() {
+    $("#send").click(function(e) {
+      e.preventDefault();
       if (!conn) {
         return false;
       }
