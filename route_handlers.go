@@ -139,6 +139,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+// Route: /users/{id}/json
+func UserJsonHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	user_id := mux.Vars(r)["id"]
+	var user User
+	result := db.First(&user, user_id)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	user_json, err := json.Marshal(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(user_json)
+}
+
 // Route: /books
 func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	t, params, err := GenerateFullTemplate(r, "templates/search_results.html")
@@ -276,6 +296,7 @@ func SearchResultsJsonHandler(w http.ResponseWriter, r *http.Request, db gorm.DB
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(search_books_json)
 }
 
@@ -359,6 +380,7 @@ func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(results_json)
 }
 

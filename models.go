@@ -8,17 +8,17 @@ import (
 )
 
 type User struct {
-	Id        int     `sql:"AUTO_INCREMENT"`
-	Firstname string  `sql:"not null"`
-	Lastname  string  `sql:"not null"`
-	Rating    float64 `sql:"not null; default:0"`
-	Email     string  `sql:"not null; unique"`
-	Phone     int
-	Password  string `sql:"not null"`
-	Messages  []Message
-	Books     []Book
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id        int       `sql:"AUTO_INCREMENT" json:"id"`
+	Firstname string    `sql:"not null" json:"first_name"`
+	Lastname  string    `sql:"not null" json:"last_name"`
+	Rating    float64   `sql:"not null; default:0" json:"rating"`
+	Email     string    `sql:"not null; unique" json:"email"`
+	Phone     int       `json:"phone"`
+	Password  string    `sql:"not null" json:"-"`
+	Messages  []Message `json:"-"`
+	Books     []Book    `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func NewUser(firstname string, lastname string, email string,
@@ -73,9 +73,9 @@ type Book struct {
 }
 
 type Message struct {
-	SenderId   int    `json:"senderId"`
-	ReceiverId int    `sql:"index" json:"receiverId"`
-	Message    string `json:"message"`
-	Read       bool   `json:"-"`
-	CreatedAt  time.Time
+	SenderId   int       `json:"senderId"`
+	ReceiverId int       `sql:"index" json:"receiverId"`
+	Message    string    `json:"message"`
+	Read       bool      `json:"-"`
+	CreatedAt  time.Time `json:"created_at"`
 }
