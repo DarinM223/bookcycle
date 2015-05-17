@@ -3,7 +3,7 @@
  * @param {integer} sender_id the userid of the currently logged in user
  * @param {integer} receiver_id the userid of the user to message
  */
-function Message(sender_id, receiver_id) {
+function Message(sender_id, receiver_id, sender_firstname, sender_lastname) {
   $(function() {
     var conn;
     var msg = $("#msg");
@@ -19,8 +19,9 @@ function Message(sender_id, receiver_id) {
     }
 
     function addMessage(msg) {
-      appendLog($("<div/>").text("Sender Id: " + msg.senderId + 
-                                 " Receiver Id: " + msg.receiverId + " Message: " + msg.message));
+      appendLog($("<div/>").text(sender_firstname + " " + sender_lastname + ": " + msg.message));
+      // appendLog($("<div/>").text("Sender Id: " + msg.senderId + 
+      //                            " Receiver Id: " + msg.receiverId + " Message: " + msg.message));
     }
 
     $(document).ready(function() {
@@ -55,6 +56,7 @@ function Message(sender_id, receiver_id) {
 
       conn.send(JSON.stringify(parsedMessage));
       addMessage(parsedMessage);
+      $("#log").scrollTop($("#log")[0].scrollHeight);
       msg.val("");
       return false;
     });
