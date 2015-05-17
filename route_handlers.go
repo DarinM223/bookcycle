@@ -364,9 +364,20 @@ func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 // Route: /message/{id}
 func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	current_user, err := CurrentUser(r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
 	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.NotFound(w, r)
+		return
+	}
+
+	if current_user.Id == receiver_id {
+		http.Error(w, "You cannot message yourself", http.StatusUnauthorized)
 		return
 	}
 

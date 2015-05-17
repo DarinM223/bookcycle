@@ -1,6 +1,7 @@
 {{ define "main" }}
 
 {{ if .HasCurrentUser }}
+<link rel="stylesheet" href="/css/chat.css"/>
 <script src="/js/chat.js"></script>
 <script type="text/javascript">
     var current_user_id = {{.CurrentUser.Id}};
@@ -39,7 +40,8 @@ body {
     bottom: 3em;
     height: 60%;
     width: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 #form {
     padding: 0 1em 0 0.5em;
