@@ -4,11 +4,9 @@
 <script src="/js/chat.js"></script>
 <script type="text/javascript">
     var current_user_id = {{.CurrentUser.Id}};
-    var current_user_firstname = {{.CurrentUser.Firstname}};
-    var current_user_lastname = {{.CurrentUser.Lastname}};
     var receiver_id = {{.UserId}};
     // Set up chatroom for both users
-    Message(current_user_id, receiver_id, current_user_firstname, current_user_lastname);
+    Message(current_user_id, receiver_id);
     window.onload = function() {
     var input = document.getElementById("msg").focus();
 }
