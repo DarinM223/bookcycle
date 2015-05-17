@@ -54,9 +54,9 @@
         <a class="button expand">Buy it now!</a>
         <a class="button expand" href="/users/{{ .UserId }}">View Seller Info</a>
         {{ if .CanDelete }}
-        <a class="button expand" href="/books/{{ .Book.Id}}/delete">Delete book</a>
+        <a class="button expand" id="book_delete" href="/books/{{ .Book.Id}}/delete">Delete book</a>
         {{ else }}
-        <a class="button expand" disabled>Delete book</a>
+        <a class="button expand" id="book_delete" disabled>Delete book</a>
         {{ end }}
   
         <!--<textarea type="text" id="sources" name="sources" placeholder="picture here" rows="12"></textarea>-->

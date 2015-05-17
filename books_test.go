@@ -221,11 +221,18 @@ func TestDeleteBook(t *testing.T) {
 		return
 	}
 
+	// test that there is no more books after deleting
+	var books []Book
+	bookTesting.DB.Preload("books").Find(&books)
+	if len(books) != 0 {
+		t.Errorf("Books length 0 expected: %d", len(books))
+		return
+	}
+
 	// Delete mock created user and book
 	var user, newUser User
 	bookTesting.DB.Where("email LIKE ?", test_user.Email).First(&user)
 	bookTesting.DB.Where("email LIKE ?", new_test_user.Email).First(&newUser)
 	bookTesting.DB.Delete(&user)
 	bookTesting.DB.Delete(&newUser)
-	bookTesting.DB.Delete(&my_book)
 }
