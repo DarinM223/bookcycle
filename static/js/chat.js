@@ -11,12 +11,8 @@ function Message(sender_id, receiver_id) {
 
 
     function appendLog(msg) {
-      var d = log[0];
-      var doScroll = d.scrollTop == d.scrollHeight - d.clientHeight;
       msg.appendTo(log);
-      if (doScroll) {
-        $(d).animate({scrollTop: d.scrollHeight - d.clientHeight}, "slow");
-      }
+      //window.scrollTo(0, document.body.scrollHeight);
     }
 
     function addMessage(msg) {
@@ -45,10 +41,8 @@ function Message(sender_id, receiver_id) {
             addMessage(parsedResults[i]);
           }
         }
-        if (log.length > 0) {
-          var d = log[0];
-          d.scrollTop = d.scrollHeight;
-        }
+        //window.scrollTo(0, document.body.scrollHeight);
+        $("#log").scrollTop($("#log")[0].scrollHeight);
       }).error(function(jqXHR, textStatus, err) {
         console.log(err);
       });
@@ -86,6 +80,7 @@ function Message(sender_id, receiver_id) {
       conn.onmessage = function(evt) {
         var parsedMessage = JSON.parse(evt.data);
         addMessage(parsedMessage);
+        $("#log").scrollTop($("#log")[0].scrollHeight);
       };
     } else {
       appendLog($("<div><b>Your browser does not support WebSockets.</b></div>"));

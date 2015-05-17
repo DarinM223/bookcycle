@@ -382,7 +382,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	t, err := template.ParseFiles("templates/boilerplate/nothing_boilerplate.html",
-		"templates/chat.html")
+		"templates/navbar.html", "templates/chat.html")
 	if err != nil {
 		http.NotFound(w, r)
 		return
