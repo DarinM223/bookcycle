@@ -56,6 +56,11 @@
         <a class="button expand" id="message_seller" href="/message/{{ .UserId }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
         {{ end }}
         <a class="button expand" href="/users/{{ .UserId }}">View Seller Info</a>
+        {{ if .CanDelete }}
+        <a class="button expand" id="book_delete" href="/books/{{ .Book.Id}}/delete">Delete book</a>
+        {{ else }}
+        <a class="button expand" id="book_delete" disabled>Delete book</a>
+        {{ end }}
   
         <!--<textarea type="text" id="sources" name="sources" placeholder="picture here" rows="12"></textarea>-->
   
