@@ -5,8 +5,8 @@
 <link rel="stylesheet" href="/css/main.css"/>
 <script src="/js/chat.js"></script>
 <script type="text/javascript">
-    var current_user_id = {{.CurrentUser.Id}};
-    var receiver_id = {{.UserId}};
+    var current_user_id = {{.CurrentUser.ID}};
+    var receiver_id = {{.UserID}};
     // Set up chatroom for both users
     Message(current_user_id, receiver_id);
     window.onload = function() {
@@ -48,7 +48,7 @@
       <span class="foundation">
         <div class="panel" style="z-index: 6">
           <span>
-            <h2 style="text-align: center">Messaging with {{ .UserId }}</h2>
+            <h2 style="text-align: center">Messaging with {{ .UserID }}</h2>
           </span>
         </div>
       </span>

@@ -3,10 +3,7 @@
   <div class="row">
     <form id="post-edit" method="post">
       <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
-  
-  
       <div class="large-7 large columns">
-  
         <div class="row buy-detail-head">
           <div class="small-7 columns">
             Book Title: {{.Book.Title}}
@@ -48,20 +45,17 @@
           </div>
         </div>
       </div>
-  
+
       <div class="large-5 columns">
         {{ if .CanDelete }}
         <a class="button expand" id="message_seller" disabled><i class="fa fa-envelope-o"></i> Message Seller</a>
         {{ else }}
-        <a class="button expand" id="message_seller" href="/message/{{ .UserId }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
+        <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
         {{ end }}
-        <a class="button expand" href="/users/{{ .UserId }}">View Seller Info</a>
-  
-        <!--<textarea type="text" id="sources" name="sources" placeholder="picture here" rows="12"></textarea>-->
-  
+        <a class="button expand" href="/users/{{ .UserID }}">View Seller Info</a>
       </div>
       <div class="row">
-  
+
       </div>
     </form>
   </div>

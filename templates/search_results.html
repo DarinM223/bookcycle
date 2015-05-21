@@ -24,7 +24,7 @@
 </div>
 {{ range $element := .Books }}
 <div class="row book-detail">
-  <a href="/books/{{ $element.Id }}">
+  <a href="/books/{{ $element.ID }}">
     <div class="small-4 columns">
       {{ $element.Title }}
     </div>
@@ -36,10 +36,7 @@
     </div>
     <div class="small-2 columns sellerRating">
       5/5
-    </div>    
-    <!--<div class="small-2 columns">-->
-    <!--  {{ $element.CreatedAt }}-->
-    <!--</div>-->
+    </div>
   </a>
 </div>
 {{ end }}
@@ -55,8 +52,8 @@ $("#search_text").on("change keyup paste", function() {
 });
 
 $('#formid').on("keyup keypress", function(e) {
-  var code = e.keyCode || e.which; 
-  if (code == 13) {               
+  var code = e.keyCode || e.which;
+  if (code == 13) {
     if ($("#search_text").val().trim() === "") {
       e.preventDefault();
       return false;

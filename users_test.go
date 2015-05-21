@@ -13,7 +13,7 @@ func init() {
 }
 
 func TestCreateUser(t *testing.T) {
-	request, err := http.NewRequest("GET", userTesting.NewUserUrl(), nil)
+	request, err := http.NewRequest("GET", userTesting.NewUserURL(), nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -31,7 +31,7 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 
-	test_user := User{
+	testUser := User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
@@ -39,21 +39,21 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Test that creating User with no password has error
-	err = userTesting.MakeTestUser(test_user, "", "")
+	err = userTesting.MakeTestUser(testUser, "", "")
 	if err == nil {
 		t.Error("Creating User with no password should return error")
 		return
 	}
 
 	// Test that creating User with different passwords has error
-	err = userTesting.MakeTestUser(test_user, "password1", "password2")
+	err = userTesting.MakeTestUser(testUser, "password1", "password2")
 	if err == nil {
 		t.Error("Creating User with wrong passwords should return error")
 		return
 	}
 
 	// Test that creating User properly returns success
-	err = userTesting.MakeTestUser(test_user, "password", "password")
+	err = userTesting.MakeTestUser(testUser, "password", "password")
 	if err != nil {
 		t.Error(err)
 		return
@@ -92,19 +92,19 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestEditUser(t *testing.T) {
-	test_user := User{
+	testUser := User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	err := userTesting.MakeTestUser(test_user, "password", "password")
+	err := userTesting.MakeTestUser(testUser, "password", "password")
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	request, err := http.NewRequest("GET", userTesting.EditUserUrl(), nil)
+	request, err := http.NewRequest("GET", userTesting.EditUserURL(), nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -122,14 +122,14 @@ func TestEditUser(t *testing.T) {
 		return
 	}
 
-	loginCookie, err := userTesting.LoginUser(test_user.Email, "password")
+	loginCookie, err := userTesting.LoginUser(testUser.Email, "password")
 	if err != nil {
 		t.Error(err)
 		t.Error("Error logging in user")
 		return
 	}
 
-	request, err = http.NewRequest("GET", userTesting.EditUserUrl(), nil)
+	request, err = http.NewRequest("GET", userTesting.EditUserURL(), nil)
 	request.AddCookie(loginCookie) // add login session cookie
 	if err != nil {
 		t.Error(err)
@@ -148,8 +148,8 @@ func TestEditUser(t *testing.T) {
 		return
 	}
 
-	edited_user := User{
-		Id:        test_user.Id,
+	editedUser := User{
+		ID:        testUser.ID,
 		Firstname: "T",
 		Lastname:  "U",
 		Email:     "tu@gmail.com",
@@ -157,14 +157,14 @@ func TestEditUser(t *testing.T) {
 	}
 
 	// sending edit request with different password and password confirmation should have error
-	err = userTesting.EditTestUser(edited_user, loginCookie, "password1", "password2")
+	err = userTesting.EditTestUser(editedUser, loginCookie, "password1", "password2")
 	if err == nil {
 		t.Error("Editing user with wrong passwords should have error")
 		return
 	}
 
 	// sending edit request without password should not change password
-	err = userTesting.EditTestUser(edited_user, loginCookie, "", "")
+	err = userTesting.EditTestUser(editedUser, loginCookie, "", "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -178,7 +178,7 @@ func TestEditUser(t *testing.T) {
 	}
 
 	// sending edit request with a different password should change password
-	err = userTesting.EditTestUser(edited_user, loginCookie, "another_password", "another_password")
+	err = userTesting.EditTestUser(editedUser, loginCookie, "another_password", "another_password")
 	userTesting.DB.Where("email LIKE ?", "tu@gmail.com").First(&user)
 	if !user.Validate("another_password") {
 		t.Error("Password should have changed")
@@ -189,16 +189,16 @@ func TestEditUser(t *testing.T) {
 }
 
 func TestViewUser(t *testing.T) {
-	test_user := User{
+	testUser := User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	user_route := userTesting.ViewUserUrl(1)
+	userRoute := userTesting.ViewUserURL(1)
 
 	// Test that accessing GET for nonexisting user returns 404
-	request, err := http.NewRequest("GET", user_route, nil)
+	request, err := http.NewRequest("GET", userRoute, nil)
 	res, err := http.DefaultClient.Do(request)
 	if err != nil {
 		t.Error(err)
@@ -210,7 +210,7 @@ func TestViewUser(t *testing.T) {
 	}
 
 	// Test that accessing GET for existing user returns success
-	err = userTesting.MakeTestUser(test_user, "password", "password")
+	err = userTesting.MakeTestUser(testUser, "password", "password")
 	if err != nil {
 		t.Error(err)
 		return
@@ -226,7 +226,7 @@ func TestViewUser(t *testing.T) {
 	}
 
 	// Test that accessing POST for existing user returns 404
-	request, err = http.NewRequest("POST", user_route, nil)
+	request, err = http.NewRequest("POST", userRoute, nil)
 	res, err = http.DefaultClient.Do(request)
 	if err != nil {
 		t.Error(err)

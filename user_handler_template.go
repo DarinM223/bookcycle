@@ -2,11 +2,13 @@ package main
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
 	"html/template"
 	"net/http"
+
+	"github.com/jinzhu/gorm"
 )
 
+// UserHandler abstracts an http handler with an included database parameter
 type UserHandler interface {
 	Handler(w http.ResponseWriter, r *http.Request, db gorm.DB) // http handler for the specific user route
 }
@@ -19,12 +21,13 @@ type userHandlerTemplateVirtualMethods interface {
 	isDisabled() bool
 }
 
-// Implementation of UserHandler
+// UserHandlerTemplate is an implementation of UserHandler
 type UserHandlerTemplate struct {
 	userFactory UserFactory
 	i           userHandlerTemplateVirtualMethods
 }
 
+// UserDetailTemplateType abstracts the user detail template
 type UserDetailTemplateType struct {
 	DisabledText   string
 	Disabled       bool
@@ -34,10 +37,10 @@ type UserDetailTemplateType struct {
 }
 
 func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	current_user, err := CurrentUser(r)
-	has_current_user := true
+	currentUser, err := CurrentUser(r)
+	hasCurrentUser := true
 	if err != nil {
-		has_current_user = false
+		hasCurrentUser = false
 	}
 	user, err := u.i.user(r, db)
 	if err != nil {
@@ -58,11 +61,13 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 		DisabledText:   disabledText,
 		Disabled:       u.i.isDisabled(),
 		User:           user,
-		CurrentUser:    current_user,
-		HasCurrentUser: has_current_user,
+		CurrentUser:    currentUser,
+		HasCurrentUser: hasCurrentUser,
 	})
 }
 
+// Handler abstracts the Http handler and calls either the virtual getRoute or postRoute
+// depending on method
 func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
 		u.i.getRoute(w, r, db)
@@ -73,11 +78,12 @@ func (u UserHandlerTemplate) Handler(w http.ResponseWriter, r *http.Request, db 
 	}
 }
 
-// User handler for /users/new
+// UserNewTemplate User handler for /users/new
 type UserNewTemplate struct {
 	UserHandlerTemplate
 }
 
+// NewUserNewTemplate constructs a new UserNewTemplate
 func NewUserNewTemplate() UserNewTemplate {
 	b := UserNewTemplate{UserHandlerTemplate{}}
 	b.userFactory = NewMuxUserFactory()
@@ -92,12 +98,12 @@ func (u UserNewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 }
 
 func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	new_user, err := u.userFactory.NewFormUser(r, false)
+	newUser, err := u.userFactory.NewFormUser(r, false)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	result := db.Create(&new_user)
+	result := db.Create(&newUser)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
@@ -105,11 +111,12 @@ func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db g
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// User handler for route /users/edit
+// UserEditTemplate is a user handler for route /users/edit
 type UserEditTemplate struct {
 	UserHandlerTemplate
 }
 
+// NewUserEditTemplate constructs a new UserEditTemplate
 func NewUserEditTemplate() UserEditTemplate {
 	b := UserEditTemplate{UserHandlerTemplate{}}
 	b.userFactory = NewMuxUserFactory()
@@ -128,29 +135,29 @@ func (u UserEditTemplate) user(r *http.Request, db gorm.DB) (User, error) {
 }
 
 func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	current_user, err := CurrentUser(r)
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	edited_user, err := u.userFactory.NewFormUser(r, true)
+	editedUser, err := u.userFactory.NewFormUser(r, true)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	result := db.Model(&current_user).Updates(edited_user)
+	result := db.Model(&currentUser).Updates(editedUser)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
 	// get edited user from database
-	var new_user User
-	result = db.First(&new_user, current_user.Id)
+	var newUser User
+	result = db.First(&newUser, currentUser.ID)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
-	err = SetUserInSession(r, w, new_user)
+	err = SetUserInSession(r, w, newUser)
 	if err != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
@@ -158,11 +165,12 @@ func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db g
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// User handler for route /users/{id}
+// UserViewTemplate is a user handler for route /users/{id}
 type UserViewTemplate struct {
 	UserHandlerTemplate
 }
 
+// NewUserViewTemplate constructs a new UserViewTemplate
 func NewUserViewTemplate() UserViewTemplate {
 	b := UserViewTemplate{UserHandlerTemplate{}}
 	b.userFactory = NewMuxUserFactory()

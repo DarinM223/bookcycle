@@ -2,13 +2,15 @@ package main
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
+// User has the fields of a user
 type User struct {
-	Id        int       `sql:"AUTO_INCREMENT" json:"id"`
+	ID        int       `sql:"AUTO_INCREMENT" json:"id"`
 	Firstname string    `sql:"not null" json:"first_name"`
 	Lastname  string    `sql:"not null" json:"last_name"`
 	Rating    float64   `sql:"not null; default:0" json:"rating"`
@@ -21,10 +23,11 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// NewUser constructs a new User
 func NewUser(firstname string, lastname string, email string,
-	phone int, password string, password_confirm string, editing bool) (User, error) {
+	phone int, password string, passwordConfirm string, editing bool) (User, error) {
 
-	if password != password_confirm {
+	if password != passwordConfirm {
 		return User{}, errors.New("Passwords do not match")
 	}
 	if len(strings.Trim(password, " ")) == 0 {
@@ -36,11 +39,10 @@ func NewUser(firstname string, lastname string, email string,
 				Phone:     phone,
 				UpdatedAt: time.Now(),
 			}, nil
-		} else {
-			return User{}, errors.New("Password cannot be empty")
 		}
+		return User{}, errors.New("Password cannot be empty")
 	}
-	encrypted_password, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return User{}, err
 	}
@@ -49,17 +51,19 @@ func NewUser(firstname string, lastname string, email string,
 		Lastname:  lastname,
 		Email:     email,
 		Phone:     phone,
-		Password:  string(encrypted_password),
+		Password:  string(encryptedPassword),
 		CreatedAt: time.Now(),
 	}, nil
 }
 
+// Validate validates if the password matches the user's hashed password
 func (u User) Validate(password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)) == nil
 }
 
+// Book represents a book
 type Book struct {
-	Id        int       `sql:"AUTO_INCREMENT" json:"id"`
+	ID        int       `sql:"AUTO_INCREMENT" json:"id"`
 	Title     string    `sql:"not null" json:"title"`
 	Author    string    `sql:"not null" json:"author"`
 	Class     string    `sql:"not null" json:"class"`
@@ -68,13 +72,14 @@ type Book struct {
 	Price     float64   `sql:"not null" json:"price"`
 	Condition int       `sql:"not null" json:"condition"`
 	Details   string    `json:"details"`
-	UserId    int       `sql:"index" json:"user_id"`
+	UserID    int       `sql:"index" json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// Message represents a message
 type Message struct {
-	SenderId   int       `json:"senderId"`
-	ReceiverId int       `sql:"index" json:"receiverId"`
+	SenderID   int       `json:"senderId"`
+	ReceiverID int       `sql:"index" json:"receiverId"`
 	Message    string    `json:"message"`
 	Read       bool      `json:"-"`
 	CreatedAt  time.Time `json:"created_at"`

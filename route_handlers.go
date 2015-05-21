@@ -3,39 +3,41 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
 /*
  * Template parameter types
  */
 
-// For displaying navigation bar and anything that depends on the logged in User
+// UserTemplateType For displaying navigation bar and anything that depends on the logged in User
 type UserTemplateType struct {
 	CurrentUser    User
 	HasCurrentUser bool
 }
 
+// MessageTemplateType is a struct for the message template
 type MessageTemplateType struct {
 	UserTemplateType
 
-	UserId int
+	UserID int
 }
 
-// For displaying a book
+// BookTemplateType is for displaying a book
 type BookTemplateType struct {
 	UserTemplateType
 
 	Book      Book
-	UserId    int
+	UserID    int
 	CanDelete bool
 }
 
-// For displaying many books (reused for many different things like
+// ManyBookTemplateType is for displaying many books (reused for many different things like
 // search book results, recent books, and your books)
 type ManyBookTemplateType struct {
 	UserTemplateType
@@ -44,12 +46,12 @@ type ManyBookTemplateType struct {
 	Title string
 }
 
-// Returns complete template with navigation bar added and your user login template
+// GenerateFullTemplate Returns complete template with navigation bar added and your user login template
 func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.Template, UserTemplateType, error) {
-	current_user, err := CurrentUser(r)
-	has_current_user := true
+	currentUser, err := CurrentUser(r)
+	hasCurrentUser := true
 	if err != nil {
-		has_current_user = false
+		hasCurrentUser = false
 	}
 
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
@@ -59,8 +61,8 @@ func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.T
 	}
 
 	return t, UserTemplateType{
-		current_user,
-		has_current_user,
+		currentUser,
+		hasCurrentUser,
 	}, nil
 }
 
@@ -68,7 +70,7 @@ func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.T
  * Route Handlers
  */
 
-// Route: /
+// RootHandler Route: /
 func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	_, err := CurrentUser(r)
 	if err != nil { // show login page if not logged in
@@ -80,8 +82,8 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 		t.Execute(w, nil)
 	} else { // show recent book listings if logged in
-		var recent_books []Book
-		result := db.Order("created_at desc").Limit(10).Find(&recent_books)
+		var recentBooks []Book
+		result := db.Order("created_at desc").Limit(10).Find(&recentBooks)
 		if result.Error != nil {
 			http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 			return
@@ -95,13 +97,13 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 		t.Execute(w, ManyBookTemplateType{
 			UserTemplateType: params,
-			Books:            recent_books,
+			Books:            recentBooks,
 			Title:            "Recent books",
 		})
 	}
 }
 
-// Route: /logout
+// LogoutHandler Route: /logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	err := LogoutUser(r, w)
 	if err != nil {
@@ -111,20 +113,20 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// Route: /login
+// LoginHandler Route: /login
 func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	r.ParseForm()
-	email_field := r.PostFormValue("email")
-	password_field := r.PostFormValue("password")
+	emailField := r.PostFormValue("email")
+	passwordField := r.PostFormValue("password")
 
 	validateFn := func() (User, error) {
 		var user User
-		result := db.First(&user, "email = ?", email_field)
+		result := db.First(&user, "email = ?", emailField)
 		if result.Error != nil {
 			return User{}, errors.New("Email or password is incorrect")
 		}
 
-		if user.Validate(password_field) {
+		if user.Validate(passwordField) {
 			return user, nil
 		}
 		return User{}, errors.New("Email or password is incorrect")
@@ -139,27 +141,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// Route: /users/{id}/json
-func UserJsonHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	user_id := mux.Vars(r)["id"]
+// UserJSONHandler Route: /users/{id}/json
+func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	userID := mux.Vars(r)["id"]
 	var user User
-	result := db.First(&user, user_id)
+	result := db.First(&user, userID)
 	if result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	user_json, err := json.Marshal(user)
+	userJSON, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(user_json)
+	w.Write(userJSON)
 }
 
-// Route: /books
+// ShowBooksHandler Route: /books
 func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	t, params, err := GenerateFullTemplate(r, "templates/search_results.html")
 	if err != nil {
@@ -167,8 +169,8 @@ func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	var my_books []Book
-	result := db.Model(&params.CurrentUser).Related(&my_books)
+	var myBooks []Book
+	result := db.Model(&params.CurrentUser).Related(&myBooks)
 	if result.Error != nil {
 		http.Error(w, "Error retrieving books", http.StatusInternalServerError)
 		return
@@ -176,16 +178,16 @@ func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	t.Execute(w, ManyBookTemplateType{
 		UserTemplateType: params,
-		Books:            my_books,
+		Books:            myBooks,
 		Title:            "My books",
 	})
 }
 
-// Route: /books/{id}
+// BookHandler Route: /books/{id}
 func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	book_id := mux.Vars(r)["id"]
+	bookID := mux.Vars(r)["id"]
 	var book Book
-	result := db.First(&book, book_id)
+	result := db.First(&book, bookID)
 	if result.Error != nil {
 		http.Error(w, "Book does not exist", http.StatusUnauthorized)
 		return
@@ -196,33 +198,33 @@ func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		http.NotFound(w, r)
 		return
 	}
-	can_delete := params.CurrentUser.Id == book.UserId
+	canDelete := params.CurrentUser.ID == book.UserID
 
 	t.Execute(w, BookTemplateType{
 		UserTemplateType: params,
 		Book:             book,
-		UserId:           book.UserId,
-		CanDelete:        can_delete,
+		UserID:           book.UserID,
+		CanDelete:        canDelete,
 	})
 }
 
-// Route: /books/{id}/delete
+// DeleteBookHandler Route: /books/{id}/delete
 func DeleteBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	book_id := mux.Vars(r)["id"]
-	current_user, err := CurrentUser(r)
+	bookID := mux.Vars(r)["id"]
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.Error(w, "You have to logged in to delete books", http.StatusUnauthorized)
 		return
 	}
 
 	var book Book
-	result := db.First(&book, book_id)
+	result := db.First(&book, bookID)
 	if result.Error != nil {
 		http.Error(w, "Book does not exist", http.StatusUnauthorized)
 		return
 	}
 
-	if book.UserId != current_user.Id {
+	if book.UserID != currentUser.ID {
 		http.Error(w, "You cannot delete books that you do not own", http.StatusUnauthorized)
 		return
 	}
@@ -231,7 +233,7 @@ func DeleteBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// Route: /books/new
+// NewBookHandler Route: /books/new
 func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	if r.Method == "GET" {
 		t, params, err := GenerateFullTemplate(r, "templates/new_book.html")
@@ -242,13 +244,13 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 		t.Execute(w, params)
 	} else if r.Method == "POST" {
-		current_user, err := CurrentUser(r)
+		currentUser, err := CurrentUser(r)
 		if err != nil {
 			http.Error(w, "You have to be logged in to add a book", http.StatusUnauthorized)
 			return
 		}
 
-		book, err := NewMuxBookFactory().NewFormBook(r, current_user.Id)
+		book, err := NewMuxBookFactory().NewFormBook(r, currentUser.ID)
 		if err != nil {
 			http.Error(w, "There was an error with validating some of your fields. Please check your input again",
 				http.StatusUnauthorized)
@@ -267,40 +269,41 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 }
 
+// SearchBook helper function for searching books
 func SearchBook(query string, db gorm.DB) ([]Book, error) {
-	var search_books []Book
-	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&search_books)
+	var searchBooks []Book
+	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
 	if result.Error != nil {
 		return []Book{}, result.Error
 	}
-	return search_books, nil
+	return searchBooks, nil
 }
 
-// Route /search_results.json?query=
-func SearchResultsJsonHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+// SearchResultsJSONHandler Route /search_results.json?query=
+func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
 	if len(query) == 0 {
 		http.NotFound(w, r)
 		return
 	}
 
-	search_books, err := SearchBook(query, db)
+	searchBooks, err := SearchBook(query, db)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	search_books_json, err := json.Marshal(search_books)
+	searchBooksJSON, err := json.Marshal(searchBooks)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(search_books_json)
+	w.Write(searchBooksJSON)
 }
 
-// Route /search_results?query=
+// SearchResultsHandler Route /search_results?query=
 func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
 	if len(query) == 0 {
@@ -308,7 +311,7 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	search_books, err := SearchBook(query, db)
+	searchBooks, err := SearchBook(query, db)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -322,45 +325,45 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	t.Execute(w, ManyBookTemplateType{
 		UserTemplateType: params,
-		Books:            search_books,
+		Books:            searchBooks,
 		Title:            "Search Results",
 	})
 }
 
-// Route: /unread_messages
+// UnreadMessagesHandler Route: /unread_messages
 func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	current_user, err := CurrentUser(r)
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
 	var recentMessages []Message
-	db.Where("receiver_id = ? and read = ?", current_user.Id, false).
+	db.Where("receiver_id = ? and read = ?", currentUser.ID, false).
 		Order("created_at desc").Limit(10).Find(&recentMessages)
 	if len(recentMessages) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`[]`))
 		return
 	}
-	messages_json, err := json.Marshal(recentMessages)
+	messagesJSON, err := json.Marshal(recentMessages)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(messages_json)
+	w.Write(messagesJSON)
 }
 
-// Route: /past_messages/{id}
+// PastMessagesHandler Route: /past_messages/{id}
 func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
+	receiverID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	current_user, err := CurrentUser(r)
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -368,37 +371,37 @@ func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	var results []Message
 	res := db.Where("(receiver_id = ? and sender_id = ?) or (receiver_id = ? and sender_id = ?)",
-		current_user.Id, receiver_id, receiver_id, current_user.Id).Limit(20).Order("created_at desc").Find(&results)
+		currentUser.ID, receiverID, receiverID, currentUser.ID).Limit(20).Order("created_at desc").Find(&results)
 	if res.Error != nil {
 		http.Error(w, res.Error.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	results_json, err := json.Marshal(results)
+	resultsJSON, err := json.Marshal(results)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(results_json)
+	w.Write(resultsJSON)
 }
 
-// Route: /message/{id}
+// ChatHandler Route: /message/{id}
 func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	current_user, err := CurrentUser(r)
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	receiver_id, err := strconv.Atoi(mux.Vars(r)["id"])
+	receiverID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	if current_user.Id == receiver_id {
+	if currentUser.ID == receiverID {
 		http.Error(w, "You cannot message yourself", http.StatusUnauthorized)
 		return
 	}
@@ -412,9 +415,9 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	t.Execute(w, MessageTemplateType{
 		UserTemplateType: UserTemplateType{
-			CurrentUser:    current_user,
+			CurrentUser:    currentUser,
 			HasCurrentUser: true,
 		},
-		UserId: receiver_id,
+		UserID: receiverID,
 	})
 }

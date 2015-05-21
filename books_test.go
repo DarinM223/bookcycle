@@ -13,7 +13,7 @@ func init() {
 
 func TestCreateBook(t *testing.T) {
 	// Test that GET new book route has success when not logged in
-	request, err := http.NewRequest("GET", bookTesting.NewBookUrl(), nil)
+	request, err := http.NewRequest("GET", bookTesting.NewBookURL(), nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -32,7 +32,7 @@ func TestCreateBook(t *testing.T) {
 	}
 
 	// Test that POST new book fails when not logged in
-	request, err = http.NewRequest("POST", bookTesting.NewBookUrl(), nil)
+	request, err = http.NewRequest("POST", bookTesting.NewBookURL(), nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -49,17 +49,17 @@ func TestCreateBook(t *testing.T) {
 		return
 	}
 	// Test that POST new book succeeds when logged in
-	test_user := User{
+	testUser := User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(test_user, "password", "password")
+	err = bookTesting.MakeTestUser(testUser, "password", "password")
 	var loginCookie *http.Cookie
-	loginCookie, err = bookTesting.LoginUser(test_user.Email, "password")
+	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
-	test_book := Book{
+	testBook := Book{
 		Title:     "New book",
 		Author:    "Test author",
 		Version:   1.0,
@@ -68,9 +68,9 @@ func TestCreateBook(t *testing.T) {
 		Price:     12.50,
 		Condition: 5,
 		Details:   "Sample text",
-		UserId:    1,
+		UserID:    1,
 	}
-	bookTesting.MakeTestBook(test_book, loginCookie)
+	bookTesting.MakeTestBook(testBook, loginCookie)
 
 	// Test that new book is created
 	var books []Book
@@ -118,13 +118,13 @@ func TestCreateBook(t *testing.T) {
 
 	// Delete book
 	var user User
-	bookTesting.DB.Where("email LIKE ?", test_user.Email).First(&user)
+	bookTesting.DB.Where("email LIKE ?", testUser.Email).First(&user)
 	bookTesting.DB.Delete(&user)
 }
 
 func TestDeleteBook(t *testing.T) {
 	// test that deleting book without being logged in should fail
-	request, err := http.NewRequest("GET", bookTesting.DeleteBookUrl(1), nil)
+	request, err := http.NewRequest("GET", bookTesting.DeleteBookURL(1), nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -141,15 +141,15 @@ func TestDeleteBook(t *testing.T) {
 		return
 	}
 
-	test_user := User{
+	testUser := User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(test_user, "password", "password")
+	err = bookTesting.MakeTestUser(testUser, "password", "password")
 	var loginCookie *http.Cookie
-	loginCookie, err = bookTesting.LoginUser(test_user.Email, "password")
+	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
 	// test that deleting book while being logged in fails if book does not exist
 	request.AddCookie(loginCookie)
@@ -164,7 +164,7 @@ func TestDeleteBook(t *testing.T) {
 		return
 	}
 
-	test_book := Book{
+	testBook := Book{
 		Title:     "New book",
 		Author:    "Test author",
 		Version:   1.0,
@@ -173,24 +173,24 @@ func TestDeleteBook(t *testing.T) {
 		Price:     12.50,
 		Condition: 5,
 		Details:   "Sample text",
-		UserId:    1,
+		UserID:    1,
 	}
-	bookTesting.MakeTestBook(test_book, loginCookie)
+	bookTesting.MakeTestBook(testBook, loginCookie)
 
-	var my_book Book
-	bookTesting.DB.Where("title LIKE ?", test_book.Title).First(&my_book)
+	var myBook Book
+	bookTesting.DB.Where("title LIKE ?", testBook.Title).First(&myBook)
 
 	// test that deleting book that you do not own when logged in fails
-	new_test_user := User{
+	newTestUser := User{
 		Firstname: "New",
 		Lastname:  "User",
 		Email:     "newuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(new_test_user, "password", "password")
+	err = bookTesting.MakeTestUser(newTestUser, "password", "password")
 	var newLoginCookie *http.Cookie
-	newLoginCookie, err = bookTesting.LoginUser(new_test_user.Email, "password")
-	request, err = http.NewRequest("GET", bookTesting.DeleteBookUrl(my_book.Id), nil)
+	newLoginCookie, err = bookTesting.LoginUser(newTestUser.Email, "password")
+	request, err = http.NewRequest("GET", bookTesting.DeleteBookURL(myBook.ID), nil)
 	request.AddCookie(newLoginCookie)
 	if err != nil {
 		t.Error(err)
@@ -203,7 +203,7 @@ func TestDeleteBook(t *testing.T) {
 	}
 
 	// test that deleting book that exists when logged in succeeds
-	request, err = http.NewRequest("GET", bookTesting.DeleteBookUrl(my_book.Id), nil)
+	request, err = http.NewRequest("GET", bookTesting.DeleteBookURL(myBook.ID), nil)
 	request.AddCookie(loginCookie)
 	if err != nil {
 		t.Error(err)
@@ -231,8 +231,8 @@ func TestDeleteBook(t *testing.T) {
 
 	// Delete mock created user and book
 	var user, newUser User
-	bookTesting.DB.Where("email LIKE ?", test_user.Email).First(&user)
-	bookTesting.DB.Where("email LIKE ?", new_test_user.Email).First(&newUser)
+	bookTesting.DB.Where("email LIKE ?", testUser.Email).First(&user)
+	bookTesting.DB.Where("email LIKE ?", newTestUser.Email).First(&newUser)
 	bookTesting.DB.Delete(&user)
 	bookTesting.DB.Delete(&newUser)
 }

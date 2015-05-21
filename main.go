@@ -9,7 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Injects a database object into a http handler with the database object parameter and
+// DBInject injects a database object into a http handler with the database object parameter and
 // turns it into a standard http handler
 func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -17,6 +17,7 @@ func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) 
 	}
 }
 
+// Routes returns a router that includes all of the routes needed for the application
 func Routes(db gorm.DB) *mux.Router {
 	// Set up login sessions
 	InitSessions("bookcycle")
@@ -33,12 +34,12 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET", "POST").Path("/users/new").HandlerFunc(DBInject(NewUserNewTemplate().Handler, db))
 	r.Methods("GET", "POST").Path("/users/edit").HandlerFunc(DBInject(NewUserEditTemplate().Handler, db))
 	r.Methods("GET").Path("/users/{id}").HandlerFunc(DBInject(NewUserViewTemplate().Handler, db))
-	r.Methods("GET").Path("/users/{id}/json").HandlerFunc(DBInject(UserJsonHandler, db))
+	r.Methods("GET").Path("/users/{id}/json").HandlerFunc(DBInject(UserJSONHandler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
 	r.Methods("GET").Path("/books").HandlerFunc(DBInject(ShowBooksHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
-	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJsonHandler, db))
+	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJSONHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
 	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))

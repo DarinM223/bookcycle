@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strconv"
+
+	"github.com/jinzhu/gorm"
 )
 
+// SetUpTesting starts a test http server and sets up a test database
 func SetUpTesting() (*httptest.Server, gorm.DB) {
 	// Set up database
 	db, _ := gorm.Open("sqlite3", "./sqlite_file_test.db")
@@ -26,12 +28,13 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	return server, db
 }
 
-// Struct for User testing utilities
+// UserTesting is a struct for User testing utilities
 type UserTesting struct {
 	DB     gorm.DB
 	Server *httptest.Server
 }
 
+// NewUserTesting constructs a new UserTesting
 func NewUserTesting() UserTesting {
 	server, db := SetUpTesting()
 	return UserTesting{
@@ -40,32 +43,37 @@ func NewUserTesting() UserTesting {
 	}
 }
 
-func (n UserTesting) NewUserUrl() string {
+// NewUserURL returns the new user url
+func (n UserTesting) NewUserURL() string {
 	return fmt.Sprintf("%s/users/new", n.Server.URL)
 }
 
-func (n UserTesting) EditUserUrl() string {
+// EditUserURL returns the edit user url
+func (n UserTesting) EditUserURL() string {
 	return fmt.Sprintf("%s/users/edit", n.Server.URL)
 }
 
-func (n UserTesting) LoginUserUrl() string {
+// LoginUserURL returns the login user url
+func (n UserTesting) LoginUserURL() string {
 	return fmt.Sprintf("%s/login", n.Server.URL)
 }
 
-func (n UserTesting) ViewUserUrl(id int) string {
+// ViewUserURL returns the view user url
+func (n UserTesting) ViewUserURL(id int) string {
 	return fmt.Sprintf("%s/users/%d", n.Server.URL, id)
 }
 
-func (n UserTesting) MakeTestUser(u User, password string, password_confirm string) error {
-	userJson := url.Values{}
-	userJson.Set("first_name", u.Firstname)
-	userJson.Set("last_name", u.Lastname)
-	userJson.Set("email", u.Email)
-	userJson.Set("phone", strconv.Itoa(u.Phone))
-	userJson.Set("password1", password)
-	userJson.Set("password2", password_confirm)
+// MakeTestUser makes a new test user
+func (n UserTesting) MakeTestUser(u User, password string, passwordConfirm string) error {
+	userJSON := url.Values{}
+	userJSON.Set("first_name", u.Firstname)
+	userJSON.Set("last_name", u.Lastname)
+	userJSON.Set("email", u.Email)
+	userJSON.Set("phone", strconv.Itoa(u.Phone))
+	userJSON.Set("password1", password)
+	userJSON.Set("password2", passwordConfirm)
 
-	request, err := http.NewRequest("POST", n.NewUserUrl(), bytes.NewBufferString(userJson.Encode()))
+	request, err := http.NewRequest("POST", n.NewUserURL(), bytes.NewBufferString(userJSON.Encode()))
 	if err != nil {
 		return err
 	}
@@ -84,16 +92,17 @@ func (n UserTesting) MakeTestUser(u User, password string, password_confirm stri
 	return nil
 }
 
-func (n UserTesting) EditTestUser(u User, c *http.Cookie, password string, password_confirm string) error {
-	userJson := url.Values{}
-	userJson.Set("first_name", u.Firstname)
-	userJson.Set("last_name", u.Lastname)
-	userJson.Set("email", u.Email)
-	userJson.Set("phone", strconv.Itoa(u.Phone))
-	userJson.Set("password1", password)
-	userJson.Set("password2", password_confirm)
+// EditTestUser edits an existing user
+func (n UserTesting) EditTestUser(u User, c *http.Cookie, password string, passwordConfirm string) error {
+	userJSON := url.Values{}
+	userJSON.Set("first_name", u.Firstname)
+	userJSON.Set("last_name", u.Lastname)
+	userJSON.Set("email", u.Email)
+	userJSON.Set("phone", strconv.Itoa(u.Phone))
+	userJSON.Set("password1", password)
+	userJSON.Set("password2", passwordConfirm)
 
-	request, err := http.NewRequest("POST", n.EditUserUrl(), bytes.NewBufferString(userJson.Encode()))
+	request, err := http.NewRequest("POST", n.EditUserURL(), bytes.NewBufferString(userJSON.Encode()))
 	request.AddCookie(c)
 	if err != nil {
 		return err
@@ -113,12 +122,13 @@ func (n UserTesting) EditTestUser(u User, c *http.Cookie, password string, passw
 	return nil
 }
 
+// LoginUser logs in a user
 func (n UserTesting) LoginUser(email string, password string) (*http.Cookie, error) {
-	loginJson := url.Values{}
-	loginJson.Set("email", email)
-	loginJson.Set("password", password)
+	loginJSON := url.Values{}
+	loginJSON.Set("email", email)
+	loginJSON.Set("password", password)
 
-	request, err := http.NewRequest("POST", n.LoginUserUrl(), bytes.NewBufferString(loginJson.Encode()))
+	request, err := http.NewRequest("POST", n.LoginUserURL(), bytes.NewBufferString(loginJSON.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -139,44 +149,50 @@ func (n UserTesting) LoginUser(email string, password string) (*http.Cookie, err
 	return nil, errors.New("Cookie not set")
 }
 
-// Struct for book testing utilties
+// BookTesting is a struct for book testing utilties
 type BookTesting struct {
 	UserTesting
 }
 
+// NewBookTesting constructs a new BookTesting
 func NewBookTesting() BookTesting {
 	server, db := SetUpTesting()
 	return BookTesting{UserTesting{DB: db, Server: server}}
 }
 
-func (b BookTesting) ShowBooksUrl() string {
+// ShowBooksURL returns the show books url
+func (b BookTesting) ShowBooksURL() string {
 	return fmt.Sprintf("%s/books", b.Server.URL)
 }
 
-func (b BookTesting) NewBookUrl() string {
+// NewBookURL returns the new book url
+func (b BookTesting) NewBookURL() string {
 	return fmt.Sprintf("%s/books/new", b.Server.URL)
 }
 
-func (b BookTesting) DeleteBookUrl(id int) string {
+// DeleteBookURL returns the delete book url
+func (b BookTesting) DeleteBookURL(id int) string {
 	return fmt.Sprintf("%s/books/%d/delete", b.Server.URL, id)
 }
 
-func (b BookTesting) ShowBookUrl(id int) string {
+// ShowBookURL returns the show book url
+func (b BookTesting) ShowBookURL(id int) string {
 	return fmt.Sprintf("%s/books/%d", b.Server.URL, id)
 }
 
+// MakeTestBook makes a new test book
 func (b BookTesting) MakeTestBook(book Book, loginCookie *http.Cookie) error {
-	bookJson := url.Values{}
-	bookJson.Set("title", book.Title)
-	bookJson.Set("author", book.Author)
-	bookJson.Set("version", fmt.Sprintf("%f", book.Version))
-	bookJson.Set("class", book.Class)
-	bookJson.Set("professor", book.Professor)
-	bookJson.Set("price", fmt.Sprintf("%f", book.Price))
-	bookJson.Set("condition", strconv.Itoa(book.Condition))
-	bookJson.Set("details", book.Details)
+	bookJSON := url.Values{}
+	bookJSON.Set("title", book.Title)
+	bookJSON.Set("author", book.Author)
+	bookJSON.Set("version", fmt.Sprintf("%f", book.Version))
+	bookJSON.Set("class", book.Class)
+	bookJSON.Set("professor", book.Professor)
+	bookJSON.Set("price", fmt.Sprintf("%f", book.Price))
+	bookJSON.Set("condition", strconv.Itoa(book.Condition))
+	bookJSON.Set("details", book.Details)
 
-	request, err := http.NewRequest("POST", b.NewBookUrl(), bytes.NewBufferString(bookJson.Encode()))
+	request, err := http.NewRequest("POST", b.NewBookURL(), bytes.NewBufferString(bookJSON.Encode()))
 	request.AddCookie(loginCookie)
 	if err != nil {
 		return err

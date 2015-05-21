@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/jinzhu/gorm"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // hub maintains the set of active connections and broadcasts messages to the
@@ -47,7 +48,7 @@ func (h *hub) run(db gorm.DB) {
 				db.Create(&parsedMessage)
 				for c := range h.connections {
 					// only send it if the receiver matches
-					if c.user.Id == parsedMessage.ReceiverId {
+					if c.user.ID == parsedMessage.ReceiverID {
 						select {
 						case c.send <- m:
 						default:

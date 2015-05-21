@@ -6,17 +6,21 @@ import (
 	"time"
 )
 
+// BookFactory is an interface for createing books from various parameters
 type BookFactory interface {
-	NewFormBook(r *http.Request, userId int) (Book, error) // Generates new Books from a POST form request
+	NewFormBook(r *http.Request, userID int) (Book, error) // Generates new Books from a POST form request
 }
 
+// MuxBookFactory is an implementation of BookFactory
 type MuxBookFactory struct{}
 
+// NewMuxBookFactory constructs a new MuxBookFactory
 func NewMuxBookFactory() MuxBookFactory {
 	return MuxBookFactory{}
 }
 
-func (u MuxBookFactory) NewFormBook(r *http.Request, userId int) (Book, error) {
+// NewFormBook creates a new book object from a http post form request
+func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
 	err := r.ParseForm()
 	if err != nil {
 		return Book{}, err
@@ -48,7 +52,7 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userId int) (Book, error) {
 		Price:     price,
 		Condition: condition,
 		Details:   details,
-		UserId:    userId,
+		UserID:    userID,
 		CreatedAt: time.Now(),
 	}, nil
 }
