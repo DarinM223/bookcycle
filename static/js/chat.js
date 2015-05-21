@@ -35,7 +35,7 @@ function Message(sender_id, receiver_id) {
         type: 'GET',
         url: '/past_messages/' + receiver_id
       }).success(function(data, textStatus, jqXHR) {
-        var parsedResults = JSON.parse(data);
+        var parsedResults = data;
         if (parsedResults !== null) {
           for (var i = parsedResults.length-1; i >= 0; i--) {
             addMessage(parsedResults[i]);
@@ -47,7 +47,7 @@ function Message(sender_id, receiver_id) {
         console.log(err);
       });
     });
-  
+
     $("#send").click(function(e) {
       e.preventDefault();
       if (!conn) {
@@ -69,7 +69,7 @@ function Message(sender_id, receiver_id) {
       msg.val("");
       return false;
     });
-  
+
     if (window.WebSocket) {
       conn = new WebSocket("ws://localhost:8080/ws");
 
