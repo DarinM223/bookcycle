@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -36,6 +37,7 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/users/{id}").HandlerFunc(DBInject(NewUserViewTemplate().Handler, db))
 	r.Methods("GET").Path("/users/{id}/json").HandlerFunc(DBInject(UserJSONHandler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
+	r.Methods("POST").Path("/books/new.json").HandlerFunc(DBInject(NewBookISBNHandler, db))
 	r.Methods("GET").Path("/books").HandlerFunc(DBInject(ShowBooksHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
@@ -54,6 +56,15 @@ func Routes(db gorm.DB) *mux.Router {
 	return r
 }
 
+func SeedCourses(mainDB gorm.DB, seedDB gorm.DB) {
+	var courses []Course
+	seedDB.Preload("courses").Find(&courses)
+
+	for course := range courses {
+		mainDB.Create(&course)
+	}
+}
+
 func main() {
 	// Set up database
 	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
@@ -63,8 +74,24 @@ func main() {
 	}
 	defer db.Close()
 	db.LogMode(true)
-	db.AutoMigrate(&User{}, &Book{}, &Message{})
+	db.AutoMigrate(&User{}, &Book{}, &Message{}, &Course{})
 
-	fmt.Println("Listening...")
-	http.ListenAndServe(":8080", Routes(db))
+	if len(os.Args) > 1 {
+		seed := os.Args[1]
+		if seed == "seed" {
+			fmt.Println("Seeding courses from course sqlite file:")
+			courseDB, err := gorm.Open("sqlite3", "./CS188")
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+
+			SeedCourses(db, courseDB)
+			fmt.Println("Finished seeding courses")
+			os.Exit(0)
+			return
+		}
+	} else {
+		fmt.Println("Listening...")
+		http.ListenAndServe(":8080", Routes(db))
+	}
 }

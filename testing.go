@@ -183,11 +183,8 @@ func (b BookTesting) ShowBookURL(id int) string {
 // MakeTestBook makes a new test book
 func (b BookTesting) MakeTestBook(book Book, loginCookie *http.Cookie) error {
 	bookJSON := url.Values{}
-	bookJSON.Set("title", book.Title)
-	bookJSON.Set("author", book.Author)
-	bookJSON.Set("version", fmt.Sprintf("%f", book.Version))
-	bookJSON.Set("class", book.Class)
-	bookJSON.Set("professor", book.Professor)
+	bookJSON.Set("isbn", book.ISBN)
+	bookJSON.Set("course_id", strconv.Itoa(book.CourseID))
 	bookJSON.Set("price", fmt.Sprintf("%f", book.Price))
 	bookJSON.Set("condition", strconv.Itoa(book.Condition))
 	bookJSON.Set("details", book.Details)

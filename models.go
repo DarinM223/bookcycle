@@ -64,16 +64,24 @@ func (u User) Validate(password string) bool {
 // Book represents a book
 type Book struct {
 	ID        int       `sql:"AUTO_INCREMENT" json:"id"`
-	Title     string    `sql:"not null" json:"title"`
-	Author    string    `sql:"not null" json:"author"`
-	Class     string    `sql:"not null" json:"class"`
-	Professor string    `sql:"not null" json:"professor"`
-	Version   float64   `sql:"not null" json:"version"`
+	ISBN      string    `sql:"not null" json: "isbn"`
 	Price     float64   `sql:"not null" json:"price"`
 	Condition int       `sql:"not null" json:"condition"`
 	Details   string    `json:"details"`
 	UserID    int       `sql:"index" json:"user_id"`
+	CourseID  int       `sql:"not null"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// Course represents a UCLA class
+type Course struct {
+	ID                 int       `sql:"AUTO_INCREMENT" json:"id"`
+	Department         string    `json:"department"`
+	CourseID           string    `json:"course_id"`
+	ProfessorLastName  string    `json:"professor_last_name"`
+	ProfessorFirstName string    `json:"professor_first_name"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 // Message represents a message

@@ -25,14 +25,11 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
 	if err != nil {
 		return Book{}, err
 	}
-	title := r.PostFormValue("title")
-	author := r.PostFormValue("author")
-	version, err := strconv.ParseFloat(r.PostFormValue("version"), 64)
+	isbn := r.PostFormValue("isbn")
+	courseID, err := strconv.Atoi(r.PostFormValue("course_id"))
 	if err != nil {
 		return Book{}, err
 	}
-	class := r.PostFormValue("class")
-	professor := r.PostFormValue("professor")
 	price, err := strconv.ParseFloat(r.PostFormValue("price"), 64)
 	if err != nil {
 		return Book{}, err
@@ -44,11 +41,8 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
 	details := r.PostFormValue("details")
 
 	return Book{
-		Title:     title,
-		Author:    author,
-		Version:   version,
-		Class:     class,
-		Professor: professor,
+		ISBN:      isbn,
+		CourseID:  courseID,
 		Price:     price,
 		Condition: condition,
 		Details:   details,

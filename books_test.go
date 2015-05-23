@@ -60,11 +60,8 @@ func TestCreateBook(t *testing.T) {
 	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
 	testBook := Book{
-		Title:     "New book",
-		Author:    "Test author",
-		Version:   1.0,
-		Class:     "Horror",
-		Professor: "Smallberg",
+		ISBN:      "0735619670",
+		CourseID:  1,
 		Price:     12.50,
 		Condition: 5,
 		Details:   "Sample text",
@@ -81,25 +78,12 @@ func TestCreateBook(t *testing.T) {
 		return
 	}
 
-	if books[0].Title != "New book" {
-		t.Errorf("\"New book\" expected: %s", books[0].Title)
+	if books[0].ISBN != "0735619670" {
+		t.Errorf("\"0735619670\" expected: %s", books[0].ISBN)
 		return
 	}
-	if books[0].Author != "Test author" {
-		t.Errorf("\"Test author\" expected: %s", books[0].Author)
-		return
-	}
-	if books[0].Version != 1.0 {
-		t.Errorf("\"1.0\" expected: %f", books[0].Version)
-		return
-	}
-	if books[0].Class != "Horror" {
-		t.Errorf("\"Horror\" expected: %s", books[0].Class)
-		return
-	}
-	if books[0].Professor != "Smallberg" {
-		t.Errorf("\"Smallberg\" expected: %s", books[0].Professor)
-		return
+	if books[0].CourseID != 1 {
+		t.Errorf("\"1\" expected: %d", books[0].CourseID)
 	}
 	if books[0].Price != 12.50 {
 		t.Errorf("\"12.50\" expected: %f", books[0].Price)
@@ -165,11 +149,8 @@ func TestDeleteBook(t *testing.T) {
 	}
 
 	testBook := Book{
-		Title:     "New book",
-		Author:    "Test author",
-		Version:   1.0,
-		Class:     "Horror",
-		Professor: "Smallberg",
+		ISBN:      "0735619670",
+		CourseID:  1,
 		Price:     12.50,
 		Condition: 5,
 		Details:   "Sample text",
@@ -178,7 +159,7 @@ func TestDeleteBook(t *testing.T) {
 	bookTesting.MakeTestBook(testBook, loginCookie)
 
 	var myBook Book
-	bookTesting.DB.Where("title LIKE ?", testBook.Title).First(&myBook)
+	bookTesting.DB.Where("i_s_b_n LIKE ?", testBook.ISBN).First(&myBook)
 
 	// test that deleting book that you do not own when logged in fails
 	newTestUser := User{
