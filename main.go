@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
+	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
@@ -56,13 +58,42 @@ func Routes(db gorm.DB) *mux.Router {
 	return r
 }
 
-func SeedCourses(mainDB gorm.DB, seedDB gorm.DB) {
-	var courses []Course
-	seedDB.Preload("courses").Find(&courses)
+func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
+	var (
+		id                 int
+		department         string
+		courseID           string
+		professorLastName  string
+		professorFirstName string
+		createdAt          time.Time
+		updatedAt          time.Time
+	)
 
-	for course := range courses {
+	rows, err := seedDB.Query("SELECT * FROM courses")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(&id, &department, &courseID,
+			&professorLastName, &professorFirstName, &createdAt, &updatedAt)
+		if err != nil {
+			return err
+		}
+
+		course := Course{
+			ID:                 id,
+			Department:         department,
+			CourseID:           courseID,
+			ProfessorLastName:  professorLastName,
+			ProfessorFirstName: professorFirstName,
+			CreatedAt:          createdAt,
+			UpdatedAt:          updatedAt,
+		}
 		mainDB.Create(&course)
 	}
+	return nil
 }
 
 func main() {
@@ -80,14 +111,17 @@ func main() {
 		seed := os.Args[1]
 		if seed == "seed" {
 			fmt.Println("Seeding courses from course sqlite file:")
-			courseDB, err := gorm.Open("sqlite3", "./CS188")
+			courseDB, err := sql.Open("sqlite3", "./CS188")
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 
-			SeedCourses(db, courseDB)
+			err = SeedCourses(db, courseDB)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			fmt.Println("Finished seeding courses")
-			os.Exit(0)
 			return
 		}
 	} else {
