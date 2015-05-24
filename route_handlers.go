@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -324,14 +325,47 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 }
 
-// SearchBook helper function for searching books
-func SearchBook(query string, db gorm.DB) ([]Book, error) {
-	var searchBooks []Book
-	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
-	if result.Error != nil {
-		return []Book{}, result.Error
+// SearchCourse helper function for searching courses
+func SearchCourse(department string, courseID string, professor string, db gorm.DB) ([]Course, error) {
+	var searchCourses []Course
+	if len(department) == 0 {
+		return []Course{}, nil
+	} else if len(courseID) == 0 {
+		result := db.Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
+		if result.Error != nil {
+			return []Course{}, result.Error
+		}
+		return searchCourses, nil
+	} else if len(professor) == 0 {
+		result := db.Where("department LIKE ? AND course_id LIKE ?", "%"+department+"%", "%"+courseID+"%").
+			Limit(10).Find(&searchCourses)
+		if result.Error != nil {
+			return []Course{}, result.Error
+		}
+		return searchCourses, nil
+	} else {
+		var result *gorm.DB
+		professorArray := strings.Split(professor, " ")
+		if len(professorArray) < 2 {
+			result = db.Where(`department LIKE ? 
+							AND course_id LIKE ? 
+							AND professor_first_name LIKE ?`,
+				"%"+department+"%", "%"+courseID+"%", "%"+professorArray[0]+"%").
+				Limit(10).Find(&searchCourses)
+		} else {
+			result = db.Where(`department LIKE ? 
+							AND course_id LIKE ? 
+							AND professor_first_name LIKE ? 
+							AND professor_last_name LIKE ?`,
+				"%"+department+"%", "%"+courseID+"%", "%"+professorArray[0]+"%", "%"+professorArray[1]+"%").
+				Limit(10).Find(&searchCourses)
+		}
+		if result.Error != nil {
+			return []Course{}, result.Error
+		}
+		return searchCourses, nil
 	}
-	return searchBooks, nil
+	return []Course{}, nil
 }
 
 // SearchResultsJSONHandler Route /search_results.json?query=
@@ -342,20 +376,22 @@ func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB
 		return
 	}
 
-	searchBooks, err := SearchBook(query, db)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
+	http.NotFound(w, r)
 
-	searchBooksJSON, err := json.Marshal(searchBooks)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
+	//searchBooks, err := SearchBook(query, db)
+	//if err != nil {
+	//    http.NotFound(w, r)
+	//    return
+	//}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(searchBooksJSON)
+	//searchBooksJSON, err := json.Marshal(searchBooks)
+	//if err != nil {
+	//    http.NotFound(w, r)
+	//    return
+	//}
+
+	//w.Header().Set("Content-Type", "application/json")
+	//w.Write(searchBooksJSON)
 }
 
 // SearchResultsHandler Route /search_results?query=
@@ -366,23 +402,30 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	searchBooks, err := SearchBook(query, db)
+	// TODO: search google books api, get results, for each isbn check if book has seller
+
+	http.NotFound(w, r)
+}
+
+func CourseSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	department := r.URL.Query().Get("department")
+	courseID := r.URL.Query().Get("course_id")
+	professor := r.URL.Query().Get("professor")
+
+	searchCourses, err := SearchCourse(department, courseID, professor, db)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	t, params, err := GenerateFullTemplate(r, "templates/search_results.html")
+	searchCoursesJSON, err := json.Marshal(searchCourses)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	t.Execute(w, ManyBookTemplateType{
-		UserTemplateType: params,
-		Books:            searchBooks,
-		Title:            "Search Results",
-	})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(searchCoursesJSON)
 }
 
 // UnreadMessagesHandler Route: /unread_messages

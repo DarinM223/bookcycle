@@ -39,11 +39,11 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/users/{id}").HandlerFunc(DBInject(NewUserViewTemplate().Handler, db))
 	r.Methods("GET").Path("/users/{id}/json").HandlerFunc(DBInject(UserJSONHandler, db))
 	r.Methods("GET", "POST").Path("/books/new").HandlerFunc(DBInject(NewBookHandler, db))
-	r.Methods("POST").Path("/books/new.json").HandlerFunc(DBInject(NewBookISBNHandler, db))
 	r.Methods("GET").Path("/books").HandlerFunc(DBInject(ShowBooksHandler, db))
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJSONHandler, db))
+	r.Methods("GET").Path("/course_search.json").HandlerFunc(DBInject(CourseSearchHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
 	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))
@@ -58,6 +58,7 @@ func Routes(db gorm.DB) *mux.Router {
 	return r
 }
 
+// SeedCourses seeds the main database with the courses inside the seed database
 func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
 	var (
 		id                 int

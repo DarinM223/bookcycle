@@ -1,31 +1,24 @@
 {{ define "main" }}
 <main class="story-detail">
   <div class="row">
+    <label for="version">Course name</label>
+    <input id="course_enter" type="text" name="query" placeholder="Enter the course you want to sell a book for:" />
+    <label for="version">Professor</label>
+    <input id="professor_enter" type="text" name="query" placeholder="Enter the professor for the course:" />
+
+    <input class="search" id="isbn_enter" type="text" name="query" style="display: none;" placeholder="Enter the book isbn that you want to sell"/>
+
+    <button class="search" id="search_course" class="expand" style="display: none;" disabled><i class="fa fa-search"></i></button>
+
     <form id="post-edit" method="post" action="/books/new">
       <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
 
 
-      <div class="large-7 large-centered columns">
-        <label for="title">Book Title</label>
-        <input type="text" id="title" name="title" placeholder="title here" value="" />
-
-        <label for="author">Book Author</label>
-        <input type="text" id="author" name="author" placeholder="author here" value="" />
-
-        <label for="version">Book Version</label>
-        <input type="text" id="version" name="version" placeholder="version here" value="" />
-
-        <label for="version">Book Class</label>
-        <input type="text" id="class" name="class" placeholder="class here" value="" />
-
-        <label for="version">Book Professor</label>
-        <input type="text" id="professor" name="professor" placeholder="professor here" value="" />
-
         <label for="version">Book Price</label>
-        <input type="text" id="price" name="price" placeholder="price here" value="" />
+        <input id="price" type="text" name="price" placeholder="Enter price for the book:" />
 
         <label for="version">Book Condition (1-10)</label>
-        <input type="text" id="condition" name="condition" placeholder="condition here" value="" />
+        <input type="text" id="condition" name="condition" placeholder="Enter the book's current condition" value="" />
 
         <label for="details">Other Information</label>
         <textarea type="text" id="details" name="details" placeholder="other information here" rows="5"></textarea>
@@ -33,13 +26,6 @@
         <div class="small-6 columns">
           <input type="submit" class="button expand success small" value="Save posting"/>
         </div>
-        <div class="small-6 columns">
-          <a class="button expand alert small" href="search-results.html">Delete posting</a>
-        </div>
-      </div>
-      <div class="row">
-
-      </div>
     </form>
   </div>
 </main>
