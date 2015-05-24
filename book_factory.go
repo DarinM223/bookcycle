@@ -26,6 +26,7 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
 		return Book{}, err
 	}
 	isbn := r.PostFormValue("isbn")
+	title := r.PostFormValue("title")
 	courseID, err := strconv.Atoi(r.PostFormValue("course_id"))
 	if err != nil {
 		return Book{}, err
@@ -41,6 +42,7 @@ func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
 	details := r.PostFormValue("details")
 
 	return Book{
+		Title:     title,
 		ISBN:      isbn,
 		CourseID:  courseID,
 		Price:     price,

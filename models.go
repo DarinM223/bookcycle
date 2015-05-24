@@ -64,6 +64,7 @@ func (u User) Validate(password string) bool {
 // Book represents a book
 type Book struct {
 	ID        int       `sql:"AUTO_INCREMENT" json:"id"`
+	Title     string    `sql:"not null" json:"title"`
 	ISBN      string    `sql:"not null" json: "isbn"`
 	Price     float64   `sql:"not null" json:"price"`
 	Condition int       `sql:"not null" json:"condition"`

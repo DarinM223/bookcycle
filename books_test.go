@@ -60,6 +60,7 @@ func TestCreateBook(t *testing.T) {
 	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
 	testBook := Book{
+		Title:     "Title",
 		ISBN:      "0735619670",
 		CourseID:  1,
 		Price:     12.50,
@@ -78,6 +79,10 @@ func TestCreateBook(t *testing.T) {
 		return
 	}
 
+	if books[0].Title != "Title" {
+		t.Errorf("\"Title\" expected: %s", books[0].Title)
+		return
+	}
 	if books[0].ISBN != "0735619670" {
 		t.Errorf("\"0735619670\" expected: %s", books[0].ISBN)
 		return
@@ -149,6 +154,7 @@ func TestDeleteBook(t *testing.T) {
 	}
 
 	testBook := Book{
+		Title:     "Title",
 		ISBN:      "0735619670",
 		CourseID:  1,
 		Price:     12.50,
