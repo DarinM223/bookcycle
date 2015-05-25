@@ -7,7 +7,7 @@
 <h1>{{ .Title }}</h1>
 <div class="row book-detail-header">
   <div class="small-4 columns">
-    ISBN
+    Title
   </div>
   <div class="small-1 columns">
     Price
@@ -23,7 +23,7 @@
 <div class="row book-detail">
   <a href="/books/{{ $element.ID }}">
     <div class="small-4 columns">
-      {{ $element.ISBN }}
+      {{ $element.Title }}
     </div>
     <div class="small-1 columns">
       {{ $element.Price }}
