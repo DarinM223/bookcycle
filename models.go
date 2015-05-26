@@ -76,13 +76,12 @@ type Book struct {
 
 // Course represents a UCLA class
 type Course struct {
-	ID                 int       `sql:"AUTO_INCREMENT" json:"id"`
-	Department         string    `json:"department"`
-	CourseID           string    `json:"course_id"`
-	ProfessorLastName  string    `json:"professor_last_name"`
-	ProfessorFirstName string    `json:"professor_first_name"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	ID         int       `sql:"AUTO_INCREMENT" json:"id"`
+	Department string    `json:"department"`
+	CourseID   string    `json:"course_id"`
+	Professor  string    `json:"professor"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 // Message represents a message

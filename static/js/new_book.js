@@ -30,6 +30,7 @@ $(document).ready(function() {
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('department'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
+      cache: false,
       url: '/course_search.json?type=department&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%DEPARTMENT',
       replace: SearchReplace.bind(null, '%DEPARTMENT')
@@ -39,6 +40,7 @@ $(document).ready(function() {
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('course_id'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
+      cache: false,
       url: '/course_search.json?type=course&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%COURSEID',
       replace: SearchReplace.bind(null, '%COURSEID')
@@ -46,9 +48,10 @@ $(document).ready(function() {
   });
 
   var professorSuggestion = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor_first_name', 'professor_last_name'),
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
+      cache: false,
       url: '/course_search.json?type=professor&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%PROFESSOR',
       replace: SearchReplace.bind(null, '%PROFESSOR')
@@ -77,8 +80,6 @@ $(document).ready(function() {
     highlight: true
   }, {
     source: professorSuggestion.ttAdapter(),
-    display: function(data) {
-      return data.professor_first_name + ' ' + data.professor_last_name;
-    }
+    display: 'professor'
   });
 });

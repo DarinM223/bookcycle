@@ -84,13 +84,12 @@ func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
 		}
 
 		course := Course{
-			ID:                 id,
-			Department:         department,
-			CourseID:           courseID,
-			ProfessorLastName:  professorLastName,
-			ProfessorFirstName: professorFirstName,
-			CreatedAt:          createdAt,
-			UpdatedAt:          updatedAt,
+			ID:         id,
+			Department: department,
+			CourseID:   courseID,
+			Professor:  professorFirstName + " " + professorLastName,
+			CreatedAt:  createdAt,
+			UpdatedAt:  updatedAt,
 		}
 		mainDB.Create(&course)
 	}
