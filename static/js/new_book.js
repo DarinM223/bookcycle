@@ -1,7 +1,11 @@
 $(document).ready(function() {
   var departmentSelector = '#department',
       courseIDSelector = '#courseID',
-      professorSelector = '#professor';
+      professorSelector = '#professor',
+      isbnSelector = "#isbn_enter",
+      titleSelector = "#title_enter",
+      isbnSearchSelector = '#search_button',
+      submitFormSelector = '#submit_form';
 
   function SearchReplace(wildcard, url, urlEncodedQuery) {
     var department = $(departmentSelector).val();
@@ -36,6 +40,7 @@ $(document).ready(function() {
       replace: SearchReplace.bind(null, '%DEPARTMENT')
     }
   });
+
   var courseIDSuggestion = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('course_id'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -81,5 +86,83 @@ $(document).ready(function() {
   }, {
     source: professorSuggestion.ttAdapter(),
     display: 'professor'
+  });
+
+  function getCourseID(department, courseID, professor, callback) {
+    var url = '/course_search.json?type=professor&department=' + 
+        encodeURIComponent(department) + '&course_id=' +
+        encodeURIComponent(courseID) + '&professor=' +
+        encodeURIComponent(professor);
+
+    $.ajax({
+      type: 'GET',
+      url: url
+    }).success(function(data) {
+      if (data === null || data.length === 0) {
+        callback(new Error('Course is invalid'), null);
+      } else if (data.length > 1) {
+        callback(new Error('Course is ambigous, did you fill out all of the course fields?'), null);
+      } else {
+        callback(null, data[0]);
+      }
+    });
+  }
+
+  function getISBN(isbn, callback) {
+    if (isbn.trim().length === 0) {
+      return callback(Error('ISBN field is empty'), null);
+    }
+    $.ajax({
+      method: 'GET',
+      url: 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + encodeURIComponent(isbn)
+    }).success(function(data) {
+      if (data.totalItems === 0) {
+        callback(new Error('ISBN is invalid'), null);
+      } else if (data.totalItems > 1) {
+        callback(new Error('ISBN is ambiguous'), null);
+      } else {
+        callback(null, data.items[0]);
+      }
+    });
+  }
+
+  $(isbnSearchSelector).click(function() {
+    var isbn = $(isbnSelector).val();
+    getISBN(isbn, function(err, data) {
+      if (err) {
+        alert(err.message);
+        return;
+      }
+
+      // TODO: Toggle dropdown
+      // TODO: Fill fields with data
+    });
+  });
+  var canSubmit = false;
+
+  $('#post-edit').submit(function(e) {
+    if (!canSubmit) {
+      e.preventDefault();
+      getCourseID($(departmentSelector).val(), $(courseIDSelector).val(), $(professorSelector).val(), function(err, course) {
+        if (err) {
+          alert(err.message);
+          return;
+        }
+
+        $('#course_id').val(course.id);
+        var isbn = $(isbnSelector).val();
+        getISBN(isbn, function(err, book) {
+          if (err) {
+            alert(err.message);
+            return;
+          }
+
+          $('#isbn').val(isbn);
+          $('#title').val(book.volumeInfo.title);
+          canSubmit = true;
+          $('#post-edit').submit();
+        });
+      });
+    }
   });
 });
