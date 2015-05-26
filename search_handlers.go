@@ -2,47 +2,43 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/jinzhu/gorm"
 	"net/http"
 	"strings"
 )
 
 // SearchCourse helper function for searching courses
-func SearchCourse(department string, courseID string, professor string, db gorm.DB) ([]Course, error) {
-	var searchCourses []Course
-	if len(department) == 0 {
-		return []Course{}, nil
-	} else if len(courseID) == 0 {
-		result := db.Select("DISTINCT department").Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
-		if result.Error != nil {
-			return []Course{}, result.Error
-		}
-		return searchCourses, nil
-	} else if len(professor) == 0 {
-		result := db.Select("DISTINCT course_id").Where("department LIKE ? AND course_id LIKE ?", "%"+department+"%", "%"+courseID+"%").
-			Limit(10).Find(&searchCourses)
-		if result.Error != nil {
-			return []Course{}, result.Error
-		}
-		return searchCourses, nil
-	}
-
+func SearchCourse(searchType string, department string, courseID string, professor string, db gorm.DB) ([]Course, error) {
 	var result *gorm.DB
-	professorArray := strings.Split(professor, " ")
-	if len(professorArray) < 2 {
-		result = db.Where(`department LIKE ? 
+	var searchCourses []Course
+
+	switch searchType {
+	case "department":
+		result = db.Select("DISTINCT department").Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
+	case "course":
+		result = db.Select("DISTINCT course_id").Where("department LIKE ? AND course_id LIKE ?", department, "%"+courseID+"%").
+			Limit(10).Find(&searchCourses)
+	case "professor":
+		professorArray := strings.Split(professor, " ")
+		if len(professorArray) < 2 {
+			result = db.Where(`department LIKE ? 
 							AND course_id LIKE ? 
 							AND professor_first_name LIKE ?`,
-			"%"+department+"%", "%"+courseID+"%", "%"+professorArray[0]+"%").
-			Limit(10).Find(&searchCourses)
-	} else {
-		result = db.Where(`department LIKE ? 
+				department, courseID, "%"+professorArray[0]+"%").
+				Limit(10).Find(&searchCourses)
+		} else {
+			result = db.Where(`department LIKE ? 
 							AND course_id LIKE ? 
 							AND professor_first_name LIKE ? 
 							AND professor_last_name LIKE ?`,
-			"%"+department+"%", "%"+courseID+"%", "%"+professorArray[0]+"%", "%"+professorArray[1]+"%").
-			Limit(10).Find(&searchCourses)
+				department, courseID, professorArray[0], "%"+professorArray[1]+"%").
+				Limit(10).Find(&searchCourses)
+		}
+	default:
+		return []Course{}, errors.New("No search type")
 	}
+
 	if result.Error != nil {
 		return []Course{}, result.Error
 	}
@@ -112,11 +108,12 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 // CourseSearchHandler Route /course_search.json?department=&course_id=&professor=
 func CourseSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	typeSearch := r.URL.Query().Get("type")
 	department := r.URL.Query().Get("department")
 	courseID := r.URL.Query().Get("course_id")
 	professor := r.URL.Query().Get("professor")
 
-	searchCourses, err := SearchCourse(department, courseID, professor, db)
+	searchCourses, err := SearchCourse(typeSearch, department, courseID, professor, db)
 	if err != nil {
 		http.NotFound(w, r)
 		return

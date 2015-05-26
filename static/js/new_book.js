@@ -30,7 +30,7 @@ $(document).ready(function() {
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('department'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
+      url: '/course_search.json?type=department&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%DEPARTMENT',
       replace: SearchReplace.bind(null, '%DEPARTMENT')
     }
@@ -39,23 +39,17 @@ $(document).ready(function() {
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('course_id'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
+      url: '/course_search.json?type=course&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%COURSEID',
       replace: SearchReplace.bind(null, '%COURSEID')
     }
   });
 
   var professorSuggestion = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor_last_name', 'professor_first_name'),
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor_first_name', 'professor_last_name'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
-      templates: {
-        suggestion: function(data) {
-          console.log(data);
-          return '<div>' + data.professor_first_name + ' ' + data.professor_last_name + '</div>';
-        }
-      },
+      url: '/course_search.json?type=professor&department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
       wildcard: '%PROFESSOR',
       replace: SearchReplace.bind(null, '%PROFESSOR')
     }
@@ -72,12 +66,19 @@ $(document).ready(function() {
     source: departmentSuggestion.ttAdapter()
   });
 
-  $(courseIDSelector).typeahead(null, {
+  $(courseIDSelector).typeahead({
+    highlight: true
+  }, {
     display: 'course_id',
-    source: courseIDSuggestion.ttAdapter(),
+    source: courseIDSuggestion.ttAdapter()
   });
-  $(professorSelector).typeahead(null, {
-    display: 'professor',
+
+  $(professorSelector).typeahead({
+    highlight: true
+  }, {
     source: professorSuggestion.ttAdapter(),
+    display: function(data) {
+      return data.professor_first_name + ' ' + data.professor_last_name;
+    }
   });
 });
