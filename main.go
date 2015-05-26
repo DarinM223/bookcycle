@@ -127,6 +127,11 @@ func main() {
 		}
 	} else {
 		fmt.Println("Listening...")
-		http.ListenAndServe(":8080", Routes(db))
+		PORT := os.Getenv("PORT")
+		if PORT == "" {
+			PORT = "8080"
+			os.Setenv("PORT", PORT)
+		}
+		http.ListenAndServe(":"+PORT, Routes(db))
 	}
 }

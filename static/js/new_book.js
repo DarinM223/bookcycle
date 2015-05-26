@@ -1,60 +1,63 @@
 $(document).ready(function() {
-  function SearchURL(departmentSelector,
-                     courseIDSelector,
-                     professorSelector) {
-
-    this.departmentSelector = departmentSelector;
-    this.courseIDSelector = courseIDSelector;
-    this.professorSelector = professorSelector;
-  }
-
-  SearchURL.prototype.getDepartmentURL = function() {
-    return '/course_search.json?' + 'department=%QUERY' +
-                                  '&course_id=' + $(this.courseIDSelector).val() +
-                                  '&professor=' + $(this.professorSelector).val();
-  };
-
-  SearchURL.prototype.getCourseIDURL = function() {
-    return '/course_search.json?' + 'department=' + $(this.departmentSelector).val() +
-                                  '&course_id=%QUERY' +
-                                  '&professor=' + $(this.professorSelector).val();
-  };
-
-  SearchURL.prototype.getProfessorURL = function() {
-    return '/course_search.json?' + 'department=' + $(this.departmentSelector).val() +
-                                  '&course_id=' + $(this.courseIDSelector).val() +
-                                  '&professor=%QUERY';
-  };
-
   var departmentSelector = '#department',
       courseIDSelector = '#courseID',
       professorSelector = '#professor';
 
-  var searchURL = new SearchURL(departmentSelector, courseIDSelector, professorSelector);
+  function SearchReplace(wildcard, url, urlEncodedQuery) {
+    var department = $(departmentSelector).val();
+    var courseID = $(courseIDSelector).val();
+    var professor = $(professorSelector).val();
+
+    var result;
+    url = url.replace(wildcard, encodeURIComponent(urlEncodedQuery));
+    if (wildcard == '%DEPARTMENT') {
+      result = url.replace('%COURSEID', encodeURIComponent(courseID))
+                  .replace('%PROFESSOR', encodeURIComponent(professor));
+    } else if (wildcard == '%COURSEID') {
+      result = url.replace('%DEPARTMENT', encodeURIComponent(department))
+                .replace('%PROFESSOR', encodeURIComponent(professor));
+    } else if (wildcard == '%PROFESSOR') {
+      result = url.replace('%COURSEID', encodeURIComponent(courseID))
+                .replace('%DEPARTMENT', encodeURIComponent(department));
+    } else {
+      throw new Error('Wildcard error');
+    }
+    console.log(result);
+    return result;
+  }
 
   var departmentSuggestion = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('department'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: searchURL.getDepartmentURL(),
-      wildcard: '%QUERY'
+      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
+      wildcard: '%DEPARTMENT',
+      replace: SearchReplace.bind(null, '%DEPARTMENT')
     }
   });
   var courseIDSuggestion = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('course_id'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: searchURL.getCourseIDURL(),
-      wildcard: '%QUERY',
+      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
+      wildcard: '%COURSEID',
+      replace: SearchReplace.bind(null, '%COURSEID')
     }
   });
 
   var professorSuggestion = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor'),
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('professor_last_name', 'professor_first_name'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: searchURL.getProfessorURL(),
-      wildcard: '%QUERY'
+      url: '/course_search.json?department=%DEPARTMENT&course_id=%COURSEID&professor=%PROFESSOR',
+      templates: {
+        suggestion: function(data) {
+          console.log(data);
+          return '<div>' + data.professor_first_name + ' ' + data.professor_last_name + '</div>';
+        }
+      },
+      wildcard: '%PROFESSOR',
+      replace: SearchReplace.bind(null, '%PROFESSOR')
     }
   });
 
@@ -62,7 +65,9 @@ $(document).ready(function() {
   courseIDSuggestion.initialize();
   professorSuggestion.initialize();
 
-  $(departmentSelector).typeahead(null, {
+  $(departmentSelector).typeahead({
+    highlight: true
+  }, {
     display: 'department',
     source: departmentSuggestion.ttAdapter()
   });

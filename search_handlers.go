@@ -13,13 +13,13 @@ func SearchCourse(department string, courseID string, professor string, db gorm.
 	if len(department) == 0 {
 		return []Course{}, nil
 	} else if len(courseID) == 0 {
-		result := db.Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
+		result := db.Select("DISTINCT department").Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
 		if result.Error != nil {
 			return []Course{}, result.Error
 		}
 		return searchCourses, nil
 	} else if len(professor) == 0 {
-		result := db.Where("department LIKE ? AND course_id LIKE ?", "%"+department+"%", "%"+courseID+"%").
+		result := db.Select("DISTINCT course_id").Where("department LIKE ? AND course_id LIKE ?", "%"+department+"%", "%"+courseID+"%").
 			Limit(10).Find(&searchCourses)
 		if result.Error != nil {
 			return []Course{}, result.Error
