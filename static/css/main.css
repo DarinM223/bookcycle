@@ -217,7 +217,8 @@ a.button.small.user-settings {
 	background: #cc0000;
 	color: #ffffff;
 	font-weight: bold;
-	margin-left: -1.2rem;
+	margin-top: -1rem;
+	margin-left: -0.5rem;
 	border-radius: 9px;
 	position: absolute;
 	font-size: 11px;

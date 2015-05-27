@@ -9,17 +9,30 @@ $(document).ready(function() {
 $(document).click(function() {
 	$("#notificationContainer").hide();
 });
-//Popup Click
-$("#notificationContainer").click(function() {
-	return false
-});
-
 
 $.ajax({
   type: 'GET',
   url: '/unread_messages'
 }).success(function(data, textStatus, jqXHR) {
-  console.log(data);
+	var senderName;
+	var message = [];
+	var senderIdList = [];
+	$('.messages').append('<span id="notification_count">' + data.length + '</span>');
+	for(var i = 0; i < data.length; i++) {
+		message.push(data[i]['message']);
+		senderIdList.push(data[i]['senderId']);
+		// console.log(senderIdList);
+		(function(i) {
+			$.ajax({
+				type: 'GET',
+				url: '/users/' + data[i]['senderId'] + '/json'
+			}).success(function(data, textStatus, jqXHR) {
+				senderName = data['first_name'] + " " + data['last_name'];
+				console.log(senderIdList[i]);
+				$('#notificationsBody').append('<a href="/message/' + senderIdList[i] +'"><div id="msg"><strong>' + senderName + '</strong><br><br>' + message[i] +'</div></a>');
+			});
+		})(i);
+	}
 }).error(function(jqXHR, textStatus, err) {
   console.log(err);
 });
