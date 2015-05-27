@@ -143,6 +143,23 @@ $(document).ready(function() {
   $('#post-edit').submit(function(e) {
     if (!canSubmit) {
       e.preventDefault();
+      if ($('#price').val().trim().length === 0) {
+        alert('Price cannot be empty');
+        return;
+      }
+      if ($('#condition').val().trim().length === 0) {
+        alert('Condition cannot be empty');
+        return;
+      }
+      if (isNaN(parseFloat($('#price').val()))) {
+        alert('Price has to be a decimal');
+        return;
+      }
+      if (isNaN(parseInt($('#condition').val(), 10))) {
+        alert('Condition has to be an integer');
+        return;
+      }
+
       getCourseID($(departmentSelector).val(), $(courseIDSelector).val(), $(professorSelector).val(), function(err, course) {
         if (err) {
           alert(err.message);

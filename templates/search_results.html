@@ -1,8 +1,15 @@
 {{ define "main" }}
+<link href="/css/suggestions.css" rel="stylesheet" type="text/css"/>
+<script src="/js/typeahead.bundle.js"></script>
+<style type="text/css">
+#search_text {
+  width: 100%;
+}
+</style>
 <main class="results">
 <form method="get" action="/search_results">
   <input class="search" id="search_text" type="text" name="query" placeholder="Search by title" />
-  <button class="search" id="search_button" class="expand" disabled><i class="fa fa-search"></i></button>
+  <button class="search" id="search_button" class="expand" style="float: right;" disabled><i class="fa fa-search"></i></button>
 </form>
 <h1>{{ .Title }}</h1>
 <div class="row book-detail-header">
@@ -15,9 +22,6 @@
   <div class="small-2 columns sellerRating">
     Seller Rating
   </div>
-  <!--<div class="small-2 columns">-->
-  <!--  Post Time-->
-  <!--</div>-->
 </div>
 {{ range $element := .Books }}
 <div class="row book-detail">
@@ -54,5 +58,24 @@ $('#formid').on("keyup keypress", function(e) {
     }
   }
 });
+
+var bookSuggestion = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace(''),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  remote: {
+    url: '/search_results.json?query=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+bookSuggestion.initialize();
+
+$('#search_text').typeahead({
+  highlight: true
+}, {
+  source: bookSuggestion.ttAdapter(),
+  display: 'title'
+});
+
 </script>
 {{ end }}

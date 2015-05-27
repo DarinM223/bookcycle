@@ -34,16 +34,6 @@ func SearchCourse(searchType string, department string, courseID string, profess
 	return searchCourses, nil
 }
 
-// SearchBook helper function for searching books
-func SearchBook(query string, db gorm.DB) ([]Book, error) {
-	var searchBooks []Book
-	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
-	if result.Error != nil {
-		return []Book{}, result.Error
-	}
-	return searchBooks, nil
-}
-
 // SearchResultsJSONHandler Route /search_results.json?query=
 func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
@@ -52,8 +42,9 @@ func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB
 		return
 	}
 
-	searchBooks, err := SearchBook(query, db)
-	if err != nil {
+	var searchBooks []Book
+	result := db.Select("DISTINCT title").Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
+	if result.Error != nil {
 		http.NotFound(w, r)
 		return
 	}
@@ -76,8 +67,9 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	searchBooks, err := SearchBook(query, db)
-	if err != nil {
+	var searchBooks []Book
+	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
+	if result.Error != nil {
 		http.NotFound(w, r)
 		return
 	}
