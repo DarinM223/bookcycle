@@ -10,6 +10,7 @@
 header {
 	overflow: auto;
 	margin-bottom: 5%;
+	background-color: #008CBA;
 }
 
 header .logo {
@@ -17,17 +18,26 @@ header .logo {
 	font-size: 1.5rem;
 	font-weight: bold;
 	margin-right: 0.5rem;
+	margin-left: 1rem;
+	margin-top: 0.7rem;
+	color: white;
+	vertical-align: middle;
 }
 
 header .user-info {
 	float: left;
 	font-size: 0.9rem;
 	margin-left: 1rem;
-	margin-top: 0.4rem;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
-.log-out {
+a.button.small.log-out {
+	padding-left: 1rem;
+	padding-right: 1rem;
 	margin-left: 1rem;
+	margin:0 0 0rem;
+	color: white;
 }
 
 main.home {
@@ -108,7 +118,8 @@ button.search {
 
 a#sell {
 	float: right;
-	padding: 0.7rem;
+	margin:0 0 0rem;
+	margin-top: 0.5rem;
 }
 
 .book-info {
@@ -128,3 +139,89 @@ a#sell {
 .sellerRating {
 	text-align: center;
 }
+
+a.button.small.user-settings {
+	margin:0 0 0rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	color:white;
+}
+
+.messages {
+	color: white;
+	margin-right: 0.7rem;
+	margin-left: 0.7rem;
+}
+
+.messages:hover {
+	color: #007095;
+	cursor: pointer;
+}
+
+#msg {
+	border-bottom: thin solid lightgrey;
+	height: 70px;
+	width: 100%;
+}
+
+#msg:hover {
+	background-color: rgba(0,140,186,0.5);
+}
+
+#notificationContainer {
+	background-color: #fff;
+	border: 1px solid rgba(100, 100, 100, .4);
+	-webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+	overflow: visible;
+	position: absolute;
+	margin-left: -0.4rem;
+	width: 400px;
+	z-index: 10;
+	display: none;
+}
+#notificationContainer:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: 0;
+	height: 0;
+	color: transparent;
+	border: 10px solid black;
+	border-color: transparent transparent white;
+	margin-top: -20px;
+	margin-left: 188px;
+}
+#notificationTitle {
+	z-index: 1000;
+	font-weight: bold;
+	padding: 8px;
+	font-size: 13px;
+	background-color: #ffffff;
+	border-bottom: 1px solid #dddddd;
+}
+#notificationsBody {
+	min-height:300px;
+	max-height: 300px;
+	overflow: auto;
+}
+#notificationFooter {
+	background-color: #e9eaed;
+	text-align: center;
+	font-weight: bold;
+	padding: 8px;
+	font-size: 12px;
+	border-top: 1px solid #dddddd;
+}
+#notification_count {
+	padding: 3px 7px 3px 7px;
+	background: #cc0000;
+	color: #ffffff;
+	font-weight: bold;
+	margin-left: -1.2rem;
+	border-radius: 9px;
+	position: absolute;
+	font-size: 11px;
+	z-index: 10;
+}
+
+
