@@ -1,5 +1,5 @@
 {{ define "main" }}
-<link href="/css/suggestions.css" rel="stylesheet" type="text/css"/>
+<link href="/css/suggestions2.css" rel="stylesheet" type="text/css"/>
 <script src="/js/typeahead.bundle.js"></script>
 <script src="/js/new_book.js"></script>
 
@@ -13,10 +13,12 @@
   <div class="row">
     <label for="version">Course name</label>
     <input id="department" type="text" name="query" placeholder="Department" />
+    <label for="version">Course ID</label>
     <input id="courseID" type="text" name="query" placeholder="Course Name" />
     <label for="version">Professor</label>
     <input id="professor" type="text" name="query" placeholder="Enter the professor for the course:" />
 
+    <label for="version">Book ISBN</label>
     <input id="isbn_enter" type="text" name="query" placeholder="Enter the book isbn that you want to sell"/>
     <button class="search" id="search_button" class="expand"><i class="fa fa-search"></i>Search ISBN</button>
 
