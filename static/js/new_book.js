@@ -134,8 +134,24 @@ $(document).ready(function() {
         return;
       }
 
-      // TODO: Toggle dropdown
-      // TODO: Fill fields with data
+      if ($('#dropdown_isbn').hasClass('hidden')) {
+        $('.book_title').text('Title: ' + data.volumeInfo.title);
+        $('.book_authors').text('Authors: ' + data.volumeInfo.authors.join(', '));
+        $('.book_date').text('Published Date: ' + data.volumeInfo.publishedDate);
+        if (typeof(data.volumeInfo.imageLinks) === 'undefined' || 
+            data.volumeInfo.imageLinks === null || 
+            typeof(data.volumeInfo.imageLinks.thumbnail) === 'undefined' ||
+            data.volumeInfo.imageLinks.thumbnail === null) {
+
+          $('.book_image').attr('src', '/images/no_image.png');
+        } else {
+          $('.book_image').attr('src', data.volumeInfo.imageLinks.thumbnail);
+        }
+
+        $('#dropdown_isbn').removeClass('hidden');
+      } else {
+        $('#dropdown_isbn').addClass('hidden');
+      }
     });
   });
   var canSubmit = false;

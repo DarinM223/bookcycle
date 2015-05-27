@@ -30,22 +30,29 @@ function Message(sender_id, receiver_id) {
       appendLog($(wrapper.innerHTML));
     }
 
-    $(document).ready(function() {
-      $.ajax({
-        type: 'GET',
-        url: '/past_messages/' + receiver_id
-      }).success(function(data, textStatus, jqXHR) {
-        var parsedResults = data;
-        if (parsedResults !== null) {
-          for (var i = parsedResults.length-1; i >= 0; i--) {
-            addMessage(parsedResults[i]);
-          }
+    $.ajax({
+      type: 'GET',
+      url: '/past_messages/' + receiver_id
+    }).success(function(data, textStatus, jqXHR) {
+      var parsedResults = data;
+      if (parsedResults !== null) {
+        for (var i = parsedResults.length-1; i >= 0; i--) {
+          addMessage(parsedResults[i]);
         }
-        //window.scrollTo(0, document.body.scrollHeight);
-        $("#log").scrollTop($("#log")[0].scrollHeight);
-      }).error(function(jqXHR, textStatus, err) {
-        console.log(err);
-      });
+      }
+      //window.scrollTo(0, document.body.scrollHeight);
+      $("#log").scrollTop($("#log")[0].scrollHeight);
+    }).error(function(jqXHR, textStatus, err) {
+      console.log(err);
+    });
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/' + receiver_id + '/json'
+    }).success(function(data) {
+      $('#title').text('Messaging with ' + data.first_name + ' ' + data.last_name);
+    }).error(function(j, t, err) {
+      console.log(err);
     });
 
     $("#send").click(function(e) {

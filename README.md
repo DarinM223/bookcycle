@@ -30,8 +30,17 @@ Before pushing code to master, make sure that the code is formatted with gofmt (
 Running
 =======
 
-To run the server, type
+To run the server, first type
 ```
-go run *.go
+go build
 ```
-into the terminal at the project path. Navigate to [http://localhost:8080](http://localhost:8080) and it should display the home page.
+to build the application into the cs130-test executable. Then you have to seed the courses into the main database. Type
+```
+./cs130-test seed
+```
+
+Then type 
+```
+./cs130-test
+```
+into the terminal at the project path to run the application. Navigate to [http://localhost:8080](http://localhost:8080) and it should display the home page.
