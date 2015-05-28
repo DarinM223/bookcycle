@@ -163,7 +163,7 @@ func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 // MapSearchHandler Route: /map_search/{id}
 func MapSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
-	_, err := CurrentUser(r)
+	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -181,9 +181,11 @@ func MapSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	t.Execute(w, struct {
-		ReceiverID int
-	}{
-		ReceiverID: receiverID,
+	t.Execute(w, MessageTemplateType{
+		UserTemplateType: UserTemplateType{
+			CurrentUser:    currentUser,
+			HasCurrentUser: true,
+		},
+		UserID: receiverID,
 	})
 }
