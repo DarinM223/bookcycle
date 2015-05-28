@@ -158,6 +158,17 @@ a.button.small.user-settings {
 	cursor: pointer;
 }
 
+span#sendername {
+	font-weight: bold;
+	color: black;
+	margin-left: 0.5rem;
+}
+
+span#msgpreview {
+	color: grey;
+	margin-left: 0.5rem;
+}
+
 #msg {
 	border-bottom: thin solid lightgrey;
 	height: 70px;

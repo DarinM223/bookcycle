@@ -21,8 +21,12 @@ $.ajax({
 	for(var i = 0; i < data.length; i++) {
 		// console.log(($.inArray(data[i]['senderId'], senderIdList)));
 		if (($.inArray(data[i]['senderId'], senderIdList)) == -1) {
-			// console.log(($.inArray(data[i]['senderId'], senderIdList)));
-			message.push(data[i]['message']);
+			if((data[i]['message']).length > 60) {
+				message.push((data[i]['message']).substring(0,60) + "...");
+			}
+			else {
+				message.push(data[i]['message']);
+			}
 			senderIdList.push(data[i]['senderId']);
 			(function(messageNum) {
 				$.ajax({
@@ -31,7 +35,7 @@ $.ajax({
 				}).success(function(data, textStatus, jqXHR) {
 					senderName = data['first_name'] + " " + data['last_name'];
 					// console.log(senderName);
-					$('#notificationsBody').append('<a href="/message/' + senderIdList[messageNum] +'"><div id="msg"><strong>' + senderName + '</strong><br><br>' + message[messageNum] +'</div></a>');
+					$('#notificationsBody').append('<a href="/message/' + senderIdList[messageNum] +'"><div id="msg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
 				});
 			})(messageNum);
 			messageNum++;
