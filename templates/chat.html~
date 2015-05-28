@@ -277,7 +277,7 @@
             <input type="text" id="msg" style="width: 100%" placeholder="Write a reply..."/>
           </td>
 	  <td>
-	    <a class="fancybox fancybox.iframe" href="/map_search.html">Map</a>
+	    <a id="send" class="fancybox fancybox.iframe" href="/map_search.html">Map</a>
 	  </td>
           <td>
             <button id="send" style="float: right">Send</button>

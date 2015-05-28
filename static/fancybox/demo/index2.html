@@ -1,41 +1,29 @@
-{{ define "main" }}
-
-{{ if .HasCurrentUser }}
-<link rel="stylesheet" href="/css/chat.css"/>
-<link rel="stylesheet" href="/css/main.css"/>
-<script src="/js/chat.js"></script>
-<script type="text/javascript">
-    var current_user_id = {{.CurrentUser.ID}};
-    var receiver_id = {{.UserID}};
-    // Set up chatroom for both users
-    Message(current_user_id, receiver_id);
-    window.onload = function() {
-    var input = document.getElementById("msg").focus();
-}
-</script>
-
-<!-- fancybox styling -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>fancyBox - Fancy jQuery Lightbox Alternative | Demonstration</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 	<!-- Add jQuery library -->
-	<script type="text/javascript" src="/fancybox/lib/jquery-1.10.1.min.js"></script>
+	<script type="text/javascript" src="../lib/jquery-1.10.1.min.js"></script>
 
 	<!-- Add mousewheel plugin (this is optional) -->
-	<script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+	<script type="text/javascript" src="../lib/jquery.mousewheel-3.0.6.pack.js"></script>
 
 	<!-- Add fancyBox main JS and CSS files -->
-	<script type="text/javascript" src="/fancybox/source/jquery.fancybox.js?v=2.1.5"></script>
-	<link rel="stylesheet" type="text/css" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" media="screen" />
+	<script type="text/javascript" src="../source/jquery.fancybox.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="../source/jquery.fancybox.css?v=2.1.5" media="screen" />
 
 	<!-- Add Button helper (this is optional) -->
-	<link rel="stylesheet" type="text/css" href="/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
-	<script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+	<link rel="stylesheet" type="text/css" href="../source/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
+	<script type="text/javascript" src="../source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
 
 	<!-- Add Thumbnail helper (this is optional) -->
-	<link rel="stylesheet" type="text/css" href="/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" />
-	<script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+	<link rel="stylesheet" type="text/css" href="../source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" />
+	<script type="text/javascript" src="../source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
 
 	<!-- Add Media helper (this is optional) -->
-	<script type="text/javascript" src="/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
+	<script type="text/javascript" src="../source/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -212,7 +200,6 @@
 
 
 		});
-
 	</script>
 	<style type="text/css">
 		.fancybox-custom .fancybox-skin {
@@ -224,73 +211,19 @@
 			margin: 0 auto;
 		}
 	</style>
+</head>
+<body>
+	
+	<p>
+		fancyBox will try to guess content type from href attribute but you can specify it directly by adding classname (fancybox.image, fancybox.iframe, etc).
+	</p>
+	<ul>
+		<li><a class="fancybox" href="#inline1" title="Lorem ipsum dolor sit amet">Inline</a></li>
+		<li><a class="fancybox fancybox.ajax" href="ajax.txt">Ajax</a></li>
+		<li><a class="fancybox fancybox.iframe" href="placessearch.html">Iframe</a></li>
+		<li><a class="fancybox" href="http://www.adobe.com/jp/events/cs3_web_edition_tour/swfs/perform.swf">Swf</a></li>
+	</ul>
 
-<!-- fancybox end styling -->
-
-<style type="text/css">
-#log {
-    background: white;
-    margin: 0 auto;
-    padding: 0.5em 0.5em 0.5em 0.5em;
-    top: 0.5em;
-    left: 0.5em;
-    right: 0.5em;
-    bottom: 3em;
-    height: 60%;
-    width: 60%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-#form {
-    padding: 0 1em 0 0.5em;
-    margin: 0;
-    left: 0px;
-    width: 100%;
-    overflow: hidden;
-}
-
-#chatbody {
-  text-align: center;
-  margin: 0 auto;
-  width: 70%;
-}
-</style>
-
-    <div class="header-cont">
-      <span class="foundation">
-        <div class="panel" style="z-index: 6">
-          <span>
-            <h2 style="text-align: center" id="title"></h2>
-          </span>
-        </div>
-      </span>
-    </div>
-
-    <div id="log"></div>
-
-  <span class="foundation">
-    <form id="chatbody">
-      <table style="width: 100%;">
-        <tr>
-          <td style="width: 100%;">
-            <input type="text" id="msg" style="width: 100%" placeholder="Write a reply..."/>
-          </td>
-	  <td>
-	    <a class="fancybox fancybox.iframe" href="/map_search.html">Map</a>
-	  </td>
-          <td>
-            <button id="send" style="float: right">Send</button>
-          </td>
-        </tr>
-      </table>
-    </form>
-  </span>
-
-{{ else }}
-
-<p>You have to be logged in to message other users</p>
-
-{{ end }}
-
-{{ end }}
+	
+</body>
+</html>
