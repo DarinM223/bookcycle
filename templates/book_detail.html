@@ -1,4 +1,12 @@
 {{ define "main" }}
+<script src="/js/book_details.js"></script>
+  <script>
+    var isbn = "{{.Book.ISBN}}";
+    DisplayBook(isbn);
+
+    var courseid = "{{.Book.CourseID}}";
+    
+  </script>
   <main class="story-detail">
   <div class="row">
     <form id="post-edit" method="post">
@@ -10,23 +18,7 @@
           </div>
         </div>
         <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Author: {{.Book.Author}}
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Version: {{.Book.Version}}
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Class: {{.Book.Class}}
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Professor: {{.Book.Professor}}
+          <div class="small-7 columns author">
           </div>
         </div>
         <div class="row buy-detail">
@@ -55,7 +47,9 @@
         <a class="button expand" href="/users/{{ .UserID }}">View Seller Info</a>
       </div>
       <div class="row">
-
+        <div class="large-5 columns">
+          <img class="bookpicture" alt="OneTrueTatsuya" src="/images/tatsuya.jpg"/>
+        </div>
       </div>
     </form>
   </div>
