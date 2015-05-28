@@ -13,7 +13,7 @@
     position: relative;
 }
 .chat-message.to {
-    background-color: #008CBA;
+    background-color: #4DAECF;
     color: #fff;
     margin-left: 80px;
     float: right;
@@ -29,7 +29,7 @@
   margin-top: -7px;
 }
 .chat-message:before {
-    border-color: #008CBA;
+    border-color: #4DAECF;
     border-radius: 50% 50% 50% 50%;
     border-style: solid;
     border-width: 0 20px;
