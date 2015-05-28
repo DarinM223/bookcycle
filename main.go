@@ -43,6 +43,7 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJSONHandler, db))
+	r.Methods("GET").Path("/courses/{id}/json").HandlerFunc(DBInject(CoursesJSONHandler, db))
 	r.Methods("GET").Path("/course_search.json").HandlerFunc(DBInject(CourseSearchHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/messages").HandlerFunc(DBInject(MessagesHandler, db))
@@ -104,13 +105,13 @@ func main() {
 		return
 	}
 	defer db.Close()
-	db.LogMode(true)
 	db.AutoMigrate(&User{}, &Book{}, &Message{}, &Course{})
 
 	if len(os.Args) > 1 {
 		seed := os.Args[1]
 		if seed == "seed" {
 			fmt.Println("Seeding courses from course sqlite file:")
+			db.LogMode(true)
 			courseDB, err := sql.Open("sqlite3", "./CS188")
 			if err != nil {
 				fmt.Println(err.Error())
