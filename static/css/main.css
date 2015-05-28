@@ -309,12 +309,13 @@ span#msgpreview {
 
 #msg {
 	border-bottom: thin solid lightgrey;
-	height: 70px;
+	height: 51px;
+	margin-bottom: 0;
 	width: 100%;
+	font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
 }
-
-#msg:hover {
-	background-color: rgba(0,140,186,0.5);
+#send {
+	margin-bottom: 0;
 }
 
 #notificationContainer {
