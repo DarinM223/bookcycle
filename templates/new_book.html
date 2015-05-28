@@ -30,48 +30,56 @@
 </style>
 
 <main class="story-detail">
+  <h2>New Book Listing</h2>
   <div class="row">
-    <label for="version">Course Department</label>
-    <input id="department" type="text" name="query" placeholder="Enter the course department" />
-    <label for="version">Course Name</label>
-    <input id="courseID" type="text" name="query" placeholder="Enter the course number" />
-    <label for="version">Professor</label>
-    <input id="professor" type="text" name="query" placeholder="Enter the professor for the course" />
+    <div class="medium-6 columns">
+      <label for="version">Course Department</label>
+      <input id="department" type="text" name="query" placeholder="Enter the course department" />
+      <label for="version">Course Name</label>
+      <input id="courseID" type="text" name="query" placeholder="Enter the course number" />
+      <label for="version">Professor</label>
+      <input id="professor" type="text" name="query" placeholder="Enter the professor for the course" />
 
-    <label for="version">Book ISBN</label>
-    <input id="isbn_enter" type="text" name="query" placeholder="Enter the book isbn that you want to sell"/>
-    <button  id="search_button" class="search expand"><i class="fa fa-search"></i>Search ISBN</button>
-    <br/>
+      <form id="post-edit" method="post" action="/books/new">
+        <input type="hidden" id="course_id" name="course_id" value=""/>
+        <input type="hidden" id="title" name="title" value=""/>
+        <input type="hidden" id="isbn" name="isbn" value=""/>
+        <input type="hidden" id="title" name="title" value=""/>
 
-    <div class="hidden" id="dropdown_isbn">
-      <div class="large-3 columns">
-        <img class="book_image" alt="" src=""/>
-      </div>
+        <div class="small-6 columns price">
+          <label for="version">Book Price</label>
+          <input id="price" type="text" name="price" placeholder="Enter price for the book" />
+        </div>
+        <div class="small-6 columns condition">
+          <label for="version">Book Condition (1-10)</label>
+          <input type="text" id="condition" name="condition" placeholder="Enter the book's condition" value="" />
+        </div>
 
-      <div class="large-9 columns">
-        <h2 class="book_title">&nbsp;Book title</h2>
-        <p class="book_authors">&nbsp; Authors</p>
-        <p class="book_date">&nbsp; Date created</p>
+        <label for="details">Other Information</label>
+        <textarea type="text" id="details" name="details" placeholder="Enter other information here" rows="4"></textarea>
+
+        <button id="submit_form" class="button expand success small" style="font-size:1.2rem;">Save posting</button>
+      </form>
+    </div>
+    <div class="medium-6 columns">
+      <label for="version">Book ISBN</label>
+      <input id="isbn_enter" type="text" name="query" placeholder="Enter the ISBN of the book"/>
+      <button  id="search_button" class="isbn search expand"><i class="fa fa-search"></i>Search ISBN</button>
+      <br/>
+
+      <div class="hidden" id="dropdown_isbn">
+        <div class="small-5 columns">
+          <img class="book_image" alt="" src=""/>
+        </div>
+
+
+        <div class="small-7 columns">
+          <h2 class="book_title">&nbsp;Book title</h2>
+          <p class="book_authors">&nbsp; Authors</p>
+          <p class="book_date">&nbsp; Date created</p>
+        </div>
       </div>
     </div>
-
-    <form id="post-edit" method="post" action="/books/new">
-      <input type="hidden" id="course_id" name="course_id" value=""/>
-      <input type="hidden" id="title" name="title" value=""/>
-      <input type="hidden" id="isbn" name="isbn" value=""/>
-      <input type="hidden" id="title" name="title" value=""/>
-
-      <label for="version">Book Price</label>
-      <input id="price" type="text" name="price" placeholder="Enter price for the book" />
-
-      <label for="version">Book Condition (1-10)</label>
-      <input type="text" id="condition" name="condition" placeholder="Enter the book's current condition" value="" />
-
-      <label for="details">Other Information</label>
-      <textarea type="text" id="details" name="details" placeholder="Enter other information here" rows="5"></textarea>
-
-      <button id="submit_form" class="button expand success small">Save posting</button>
-    </form>
   </div>
 </main>
 {{ end }}
