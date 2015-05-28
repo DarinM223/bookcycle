@@ -18,7 +18,7 @@ func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var recentMessages []Message
-	db.Where("receiver_id = ? and read = ?", currentUser.ID, false).
+	db.Where("receiver_id = ? and read = ?", currentUser.ID, 0).
 		Order("created_at desc").Limit(10).Find(&recentMessages)
 	if len(recentMessages) == 0 {
 		w.Header().Set("Content-Type", "application/json")
@@ -85,8 +85,16 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
+	var result *gorm.DB
+	result = db.Model(&Message{}).Where("sender_id = ? and receiver_id = ? and read = ?", receiverID, currentUser.ID, false).UpdateColumn("read", true)
+
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	var user User
-	result := db.Find(&user, receiverID)
+	result = db.Find(&user, receiverID)
 	if result.Error != nil {
 		http.NotFound(w, r)
 		return
