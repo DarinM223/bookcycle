@@ -5,6 +5,7 @@ import (
 	"errors"
 	"html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -158,4 +159,31 @@ func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(userJSON)
+}
+
+// MapSearchHandler Route: /map_search/{id}
+func MapSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+	_, err := CurrentUser(r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	receiverID, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	t, err := template.ParseFiles("templates/boilerplate/nothing_boilerplate.html", "templates/map_search.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	t.Execute(w, struct {
+		ReceiverID int
+	}{
+		ReceiverID: receiverID,
+	})
 }

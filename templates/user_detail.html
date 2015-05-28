@@ -5,7 +5,11 @@
         <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
     
         <div class="large-4 columns user-permissions">
-          <h2 class="username">{{.User.Firstname}} {{.User.Lastname}}</h2>
+          {{ if .HasCurrentUser }}
+            <h2 class="username">{{.User.Firstname}} {{.User.Lastname}}</h2>
+          {{ else }}
+            <h2 class="username">Sign up</h2>
+          {{ end }}
         </div>
     
         <div class="large-8 columns">

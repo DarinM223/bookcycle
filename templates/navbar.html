@@ -18,6 +18,8 @@
         <a class="button small log-out" href="/logout">Log Out</a>
       </div>
     {{ end }}
-    <a class="button small" id="sell" href="/books/new"><i class="fa fa-plus"></i> Sell Book</a>
+    {{ if .HasCurrentUser }}
+      <a class="button small" id="sell" href="/books/new"><i class="fa fa-plus"></i> Sell Book</a>
+    {{ end }}
   </header>
 {{ end }}

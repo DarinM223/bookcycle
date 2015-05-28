@@ -49,6 +49,7 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/messages").HandlerFunc(DBInject(MessagesHandler, db))
 	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))
 	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))
+	r.Methods("GET").Path("/map_search/{id}").HandlerFunc(DBInject(MapSearchHandler, db))
 
 	// Set up static images
 	// ./static/css/main.css maps to

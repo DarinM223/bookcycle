@@ -1,8 +1,4 @@
-
-
-<!DOCTYPE html>
-<html>
-  <head>
+{{ define "main" }}
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
@@ -61,6 +57,14 @@
 // feature. People can enter geographical searches. The search box will return a
 // pick list containing a mix of places and predicted search terms.
 
+function isLocation(msg) {
+  if (typeof(msg.latitude) !== 'undefined' && msg.latitude !== 0 && 
+      typeof(msg.longitude) !== 'undefined' && msg.longitude !== 0) { // if location change
+    return true;
+  }
+  return false;
+}
+
 function initialize() {
 
   var markers = [];
@@ -80,6 +84,7 @@ function initialize() {
   var searchBox = new google.maps.places.SearchBox((input));
 
   var conn = null;
+  var recentLocation = null;
   if (window.WebSocket) {
     conn = new WebSocket("ws://localhost:8080/ws");
 
@@ -90,8 +95,7 @@ function initialize() {
     conn.onmessage = function(evt) {
       var msg = JSON.parse(evt.data);
 
-      if (typeof(msg.latitude) !== 'undefined' && msg.latitude !== 0 && 
-          typeof(msg.longitude) !== 'undefined' && msg.longitude !== 0) { // if location change
+      if (isLocation(msg)) {
         // TODO: get place from lat long 
 
         var image = {
@@ -107,11 +111,32 @@ function initialize() {
           title: place.name,
           position: place.geometry.location
         });
+        markers.push(marker);
       }
     };
   } else {
     alert("<div><b>Your browser does not support WebSockets.</b></div>");
   }
+
+  var receiver_id = {{ .ReceiverID }};
+  $.ajax({
+    type: 'GET',
+    url: '/past_messages/' + receiver_id
+  }).success(function(data, textStatus, jqXHR) {
+    var parsedResults = data;
+    if (parsedResults !== null) {
+      for (var i = 0; i < parsedResults.length-1; i++) {
+        if (isLocation(parsedResults[i])) {
+          console.log(parsedResults[i]);
+          recentLocation = parsedResults[i];
+          // TODO: set map location to recent location
+          break;
+        }
+      }
+    }
+  }).error(function(jqXHR, textStatus, err) {
+    console.log(err);
+  });
 
   // [START region_getplaces]
   // Listen for the event fired when the user selects an item from the
@@ -181,5 +206,4 @@ google.maps.event.addDomListener(window, 'load', initialize);
     <p>Longitude: <input size="20" type="text" id="lngbox" name="lng" ></p>
   </body>
 </html>
-
-
+{{ end }}
