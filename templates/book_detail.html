@@ -2,10 +2,8 @@
 <script src="/js/book_details.js"></script>
   <script>
     var isbn = "{{.Book.ISBN}}";
-    DisplayBook(isbn);
-
     var courseid = "{{.Book.CourseID}}";
-    
+    DisplayBook(isbn, courseid);
   </script>
   <main class="story-detail">
   <div class="row">
@@ -19,6 +17,18 @@
         </div>
         <div class="row buy-detail">
           <div class="small-7 columns author">
+          </div>
+        </div>
+        <div class="row buy-detail">
+          <div class="small-7 columns department">
+          </div>
+        </div>
+        <div class="row buy-detail">
+          <div class="small-7 columns course_id">
+          </div>
+        </div>
+        <div class="row buy-detail">
+          <div class="small-7 columns professor">
           </div>
         </div>
         <div class="row buy-detail">

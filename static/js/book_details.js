@@ -16,7 +16,7 @@
     });
   }
 
-function DisplayBook(isbn) {
+function DisplayBook(isbn, courseid) {
 	$(document).ready(function() {
 
 
@@ -36,6 +36,17 @@ function DisplayBook(isbn) {
         } else {
           $('.bookpicture').attr('src', data.volumeInfo.imageLinks.thumbnail);
         }
+
+    $.ajax({
+	  type: 'GET',
+	  url: '/courses/'+courseid+'/json'
+	}).success(function(data, textStatus, jqXHR) {
+		$('.department').text('Department: ' + data['department']);
+		$('.course_id').text('Class: ' + data['course_id']);
+		$('.professor').text('Professor: ' + data['professor']);
+	}).error(function(jqXHR, textStatus, err) {
+  		console.log(err);
+	});
 
 
   	});
