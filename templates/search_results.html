@@ -12,7 +12,7 @@
   <button class="search" id="search_button" class="expand" style="float: right;" disabled><i class="fa fa-search"></i></button>
 </form>
 <h1>{{ .Title }}</h1>
-<div class="row book-detail-header">
+<!-- <div class="row book-detail-header">
   <div class="small-4 columns">
     Title
   </div>
@@ -22,23 +22,16 @@
   <div class="small-2 columns sellerRating">
     Seller Rating
   </div>
-</div>
+</div> -->
+<div class="row">
 {{ range $element := .Books }}
-<div class="row book-detail">
-  <a href="/books/{{ $element.ID }}">
-    <div class="small-4 columns">
-      {{ $element.Title }}
-    </div>
-    <div class="small-1 columns">
-      {{ $element.Price }}
-    </div>
-    <div class="small-2 columns sellerRating">
-      5/5
-    </div>
-  </a>
+<div class="large-3 medium-4 small-6 columns book-detail">
+    <a href="/books/{{ $element.ID }}">
+      <img src="http://www-fp.pearsonhighered.com/assets/hip/images/bigcovers/0321844351.jpg"/>
+    </a>
 </div>
 {{ end }}
-
+</div>
 </main>
 <script>
 $("#search_text").on("change keyup paste", function() {
