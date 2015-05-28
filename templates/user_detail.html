@@ -20,16 +20,17 @@
             </div>
           </div>
           <label for="email">Email address</label>
-          <input type="email" name="email" value="{{.User.Email}}" {{.DisabledText}}/>
+          <input type="email" id="email" name="email" placeholder="Joe.Bruin@g.ucla.edu" value="{{.User.Email}}" {{.DisabledText}}/>
     
     
           <input type="hidden" name="phone" value="{{.User.Phone}}" {{.DisabledText}}/>
     
           {{if .Disabled}}
           {{else}}
-          <label for="password">Change password</label>
-          <input type="password" id="password1" name="password1" placeholder="password" />
-          <input type="password" id="password2" name="password2" placeholder="again" />
+          <label for="password">Password</label>
+          <input type="password" id="password1" name="password1" placeholder="Password" />
+	 <label for="password">Re-enter password</label>
+          <input type="password" id="password2" name="password2" placeholder="Enter Password again" />
           <input type="submit" value="Save" name="submit" class="button expand" />
           {{end}}
         </div>
