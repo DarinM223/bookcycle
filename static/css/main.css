@@ -211,6 +211,7 @@ a.button.small.user-settings {
 	padding: 8px;
 	font-size: 12px;
 	border-top: 1px solid #dddddd;
+	height: 30px;
 }
 #notification_count {
 	padding: 3px 7px 3px 7px;
