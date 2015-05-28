@@ -1,4 +1,7 @@
 $(document).ready(function() {
+	var messageNum = 0;
+	var msgCounter = 0;
+	var senderIdList = [];
 	$(".messages").click(function() {
 		$("#notificationContainer").fadeToggle(300);
 		$("#notification_count").fadeOut("slow");
@@ -10,14 +13,15 @@ $(document).click(function() {
 	$("#notificationContainer").hide();
 });
 
+setInterval(function() {
 $.ajax({
   type: 'GET',
-  url: '/unread_messages'
+  url: '/messages'
 }).success(function(data, textStatus, jqXHR) {
+	// console.log(data);
 	var senderName;
 	var message = [];
-	var senderIdList = [];
-	var messageNum = 0;
+	var read = false;
 	for(var i = 0; i < data.length; i++) {
 		// console.log(($.inArray(data[i]['senderId'], senderIdList)));
 		if (($.inArray(data[i]['senderId'], senderIdList)) == -1) {
@@ -27,27 +31,40 @@ $.ajax({
 			else {
 				message.push(data[i]['message']);
 			}
+			read = data[i]['read'];
 			senderIdList.push(data[i]['senderId']);
-			(function(messageNum) {
+			(function(messageNum, read) {
 				$.ajax({
 					type: 'GET',
 					url: '/users/' + data[i]['senderId'] + '/json'
 				}).success(function(data, textStatus, jqXHR) {
 					senderName = data['first_name'] + " " + data['last_name'];
 					// console.log(senderName);
-					$('#notificationsBody').append('<a href="/message/' + senderIdList[messageNum] +'"><div id="msg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
+					if(read) {
+						$('#notificationsBody').append('<a class="msg" href="/message/' + senderIdList[messageNum] +'"><div class="readmsg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
+					}
+					else {
+						$('#notificationsBody').append('<a class="msg" href="/message/' + senderIdList[messageNum] +'"><div class="unreadmsg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
+					}
+					
 				});
-			})(messageNum);
+			})(messageNum, read);
 			messageNum++;
+			if(!read) {
+				msgCounter++;
+			}
 		}
 		
 	}
-	if (message.length != 0) {
-		$('.messages').append('<span id="notification_count">' + message.length + '</span>');
+	// console.log(msgCounter);
+	if (msgCounter != 0) {
+		$('.messages').append('<span id="notification_count">' + msgCounter + '</span>');
 	}
 	
 }).error(function(jqXHR, textStatus, err) {
   console.log(err);
 });
+
+}, 1000);
 
 });
