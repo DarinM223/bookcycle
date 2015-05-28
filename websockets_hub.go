@@ -45,18 +45,23 @@ func (h *hub) run(db gorm.DB) {
 			err := json.Unmarshal(m, &parsedMessage)
 			if err == nil {
 				parsedMessage.CreatedAt = time.Now()
-				db.Create(&parsedMessage)
+				received := false
 				for c := range h.connections {
 					// only send it if the receiver matches
 					if c.user.ID == parsedMessage.ReceiverID {
 						select {
 						case c.send <- m:
+							received = true
 						default:
 							close(c.send)
 							delete(h.connections, c)
 						}
 					}
 				}
+				if received {
+					parsedMessage.Read = true
+				}
+				db.Create(&parsedMessage)
 			}
 		}
 	}

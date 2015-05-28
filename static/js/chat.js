@@ -8,6 +8,7 @@ function Message(sender_id, receiver_id) {
     var conn;
     var msg = $("#msg");
     var log = $("#log");
+    var recentLocation = null;
 
 
     function appendLog(msg) {
@@ -16,18 +17,30 @@ function Message(sender_id, receiver_id) {
     }
 
     function addMessage(msg) {
-      var wrapper = document.createElement('div');
-      var wrapDiv = document.createElement('div');
-      wrapDiv.className = 'chat-messages-wrapper';
+      console.log(msg);
+      if (typeof(msg.latitude) !== 'undefined' && msg.latitude !== 0 && 
+          typeof(msg.longitude) !== 'undefined' && msg.longitude !== 0) { // if location change
 
-      var messageDiv = document.createElement('div');
-      var messageTextNode = document.createTextNode(msg.message);
-      messageDiv.className = 'chat-message ' + (msg.senderId === sender_id ? 'to' : 'from');
-      messageDiv.appendChild(messageTextNode);
+        recentLocation = msg;
+        var locationP = document.createElement('p');
+        var _messageDiv = document.createTextNode(msg.message);
+        locationP.appendChild(_messageDiv);
+        appendLog($(locationP.innerHTML));
+        // TODO: change location on map
+      } else { // if chat message
+        var wrapper = document.createElement('div');
+        var wrapDiv = document.createElement('div');
+        wrapDiv.className = 'chat-messages-wrapper';
 
-      wrapDiv.appendChild(messageDiv);
-      wrapper.appendChild(wrapDiv);
-      appendLog($(wrapper.innerHTML));
+        var messageDiv = document.createElement('div');
+        var messageTextNode = document.createTextNode(msg.message);
+        messageDiv.className = 'chat-message ' + (msg.senderId === sender_id ? 'to' : 'from');
+        messageDiv.appendChild(messageTextNode);
+
+        wrapDiv.appendChild(messageDiv);
+        wrapper.appendChild(wrapDiv);
+        appendLog($(wrapper.innerHTML));
+      }
     }
 
     $.ajax({

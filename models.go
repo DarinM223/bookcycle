@@ -90,5 +90,7 @@ type Message struct {
 	ReceiverID int       `sql:"index" json:"receiverId"`
 	Message    string    `json:"message"`
 	Read       bool      `json:"read"`
+	Latitude   float64   `json:"latitude"`
+	Longitude  float64   `json:"longitude"`
 	CreatedAt  time.Time `json:"created_at"`
 }
