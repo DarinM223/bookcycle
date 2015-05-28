@@ -9,8 +9,8 @@ import (
 	"strconv"
 )
 
-// UnreadMessagesHandler Route: /unread_messages
-func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
+// MessagesHandler Route: /unread_messages
+func MessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	currentUser, err := CurrentUser(r)
 	if err != nil {
 		http.NotFound(w, r)
@@ -18,8 +18,7 @@ func UnreadMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var recentMessages []Message
-	db.Where("receiver_id = ? and read = ?", currentUser.ID, 0).
-		Order("created_at desc").Limit(10).Find(&recentMessages)
+	db.Where("receiver_id = ?", currentUser.ID).Order("created_at desc").Limit(10).Find(&recentMessages)
 	if len(recentMessages) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`[]`))

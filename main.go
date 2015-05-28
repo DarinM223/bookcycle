@@ -45,7 +45,7 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJSONHandler, db))
 	r.Methods("GET").Path("/course_search.json").HandlerFunc(DBInject(CourseSearchHandler, db))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
-	r.Methods("GET").Path("/unread_messages").HandlerFunc(DBInject(UnreadMessagesHandler, db))
+	r.Methods("GET").Path("/messages").HandlerFunc(DBInject(MessagesHandler, db))
 	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))
 	r.Methods("GET").Path("/message/{id}").HandlerFunc(DBInject(ChatHandler, db))
 

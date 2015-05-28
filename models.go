@@ -89,6 +89,6 @@ type Message struct {
 	SenderID   int       `json:"senderId"`
 	ReceiverID int       `sql:"index" json:"receiverId"`
 	Message    string    `json:"message"`
-	Read       bool      `json:"-"`
+	Read       bool      `json:"read"`
 	CreatedAt  time.Time `json:"created_at"`
 }
