@@ -166,21 +166,21 @@ form#login-form div {
 	border-bottom: solid 20px rgba(0,140,186,0.5);
 }
 
-.buy-detail-head {
-	border-top: thin solid lightgrey;
-	color: #0078a0;
-	padding: 1rem;
-}
-
 .buy-detail {
-	padding: 1rem;
-	color: #0078a0;
+	margin-top: 0.5rem;
 }
 
-.buy-detail-tail {
-	border-bottom: thin solid lightgrey;
-	color: #0078a0;
-	padding: 1rem;
+.buy-details {
+	/*border-top: lightgrey thin solid;*/
+}
+
+img.bookpicture {
+	width: 100%;
+	height: auto;
+}
+
+#message_seller {
+	margin-top: 1rem;
 }
 
 a#sell {

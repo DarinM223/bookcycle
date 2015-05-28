@@ -9,57 +9,49 @@
   <div class="row">
     <form id="post-edit" method="post">
       <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
-      <div class="large-7 large columns">
-        <div class="row buy-detail-head">
-          <div class="small-7 columns">
-            Book Title: {{.Book.Title}}
-          </div>
+      <div class="large-12 large columns buy-details">
+        <div class="large-4 columns">
+          <img class="bookpicture" alt="" src=""/>
         </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns author">
+        <div class="large-8 columns">
+          <h1 class="buy-detail"> Book Title: {{.Book.Title}}</h1>
+          <h3 class="buy-detail author">
+              Author:
+          </h3>
+          <div class="row">
+            <div class="small-6 columns">
+              <div class="buy-detail department">
+                  Course Department:
+              </div>
+              <div class="buy-detail course_id">
+                  Course Name:
+              </div>
+              <div class="buy-detail professor">
+                  Professor:
+              </div>
+            </div>
+            <div class="small-6 columns">
+              <div class="buy-detail">
+                  Book Price: ${{.Book.Price}}
+              </div>
+              <div class="buy-detail">
+                  Book Condition: {{.Book.Condition}} out of 5
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns department">
+          <div class="buy-detail">
+              Other Information:
           </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns course_id">
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns professor">
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Price: {{.Book.Price}}
-          </div>
-        </div>
-        <div class="row buy-detail">
-          <div class="small-7 columns">
-            Book Condition: {{.Book.Condition}}
-          </div>
-        </div>
-        <div class="row buy-detail-tail">
-          <div class="small-7 columns">
-            Other Information: info
-          </div>
+          {{ if .CanDelete }}
+          <a class="button expand" id="message_seller" disabled><i class="fa fa-envelope-o"></i> Message Seller</a>
+          {{ else }}
+          <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
+          {{ end }}
+          <a class="button expand" href="/users/{{ .UserID }}">View Seller Info</a>
         </div>
       </div>
 
-      <div class="large-5 columns">
-        {{ if .CanDelete }}
-        <a class="button expand" id="message_seller" disabled><i class="fa fa-envelope-o"></i> Message Seller</a>
-        {{ else }}
-        <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
-        {{ end }}
-        <a class="button expand" href="/users/{{ .UserID }}">View Seller Info</a>
-      </div>
-      <div class="row">
-        <div class="large-5 columns">
-          <img class="bookpicture" alt="" src=""/>
-        </div>
+      <div class="large-4 columns">
       </div>
     </form>
   </div>
