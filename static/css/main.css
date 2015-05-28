@@ -1,3 +1,13 @@
+#wrap {
+	max-width: 1040px;
+	padding-top: 0.5em;
+	padding-bottom: 2.5rem;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	overflow: hidden;
+}
+
 header {
 	overflow: auto;
 	margin-bottom: 5%;
