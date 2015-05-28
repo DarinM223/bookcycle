@@ -1,0 +1,80 @@
+{{ define "main" }}
+
+{{ if .HasCurrentUser }}
+<link rel="stylesheet" href="/css/chat.css"/>
+<link rel="stylesheet" href="/css/main.css"/>
+<script src="/js/chat.js"></script>
+<script type="text/javascript">
+    var current_user_id = {{.CurrentUser.ID}};
+    var receiver_id = {{.UserID}};
+    // Set up chatroom for both users
+    Message(current_user_id, receiver_id);
+    window.onload = function() {
+    var input = document.getElementById("msg").focus();
+}
+</script>
+
+<style type="text/css">
+#log {
+    background: white;
+    margin: 0 auto;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    bottom: 3em;
+    height: 60%;
+    width: 60%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#form {
+    padding: 0 1em 0 0.5em;
+    margin: 0;
+    left: 0px;
+    width: 100%;
+    overflow: hidden;
+}
+
+#chatbody {
+  text-align: center;
+  margin: 0 auto;
+  width: 70%;
+}
+</style>
+
+    <div class="header-cont">
+      <span class="foundation">
+        <div class="panel" style="z-index: 6">
+          <span>
+            <h2 style="text-align: center" id="title"></h2>
+          </span>
+        </div>
+      </span>
+    </div>
+
+    <div id="log"></div>
+
+  <span class="foundation">
+    <form id="chatbody">
+      <table style="width: 100%;">
+        <tr>
+          <td style="width: 100%;">
+            <input type="text" id="msg" style="width: 100%" placeholder="Write a reply..."/>
+          </td>
+          <td>
+            <button id="send" style="float: right">Send</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </span>
+
+{{ else }}
+
+<p>You have to be logged in to message other users</p>
+
+{{ end }}
+
+{{ end }}

@@ -1,45 +1,76 @@
 {{ define "main" }}
+<link href="/css/suggestions2.css" rel="stylesheet" type="text/css"/>
+<script src="/js/typeahead.bundle.js"></script>
+<script src="/js/new_book.js"></script>
+
+<style type="text/css">
+.hidden {
+  display: none !important;
+}
+
+.book_image {
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  float: left;
+}
+
+.book_title {
+}
+
+.book_authors {
+}
+
+.book_date {
+}
+
+#post-edit {
+  clear: both;
+}
+</style>
+
 <main class="story-detail">
   <div class="row">
+    <label for="version">Course name</label>
+    <input id="department" type="text" name="query" placeholder="Department" />
+    <label for="version">Course ID</label>
+    <input id="courseID" type="text" name="query" placeholder="Course Name" />
+    <label for="version">Professor</label>
+    <input id="professor" type="text" name="query" placeholder="Enter the professor for the course:" />
+
+    <label for="version">Book ISBN</label>
+    <input id="isbn_enter" type="text" name="query" placeholder="Enter the book isbn that you want to sell"/>
+    <button  id="search_button" class="search expand"><i class="fa fa-search"></i>Search ISBN</button>
+    <br/>
+
+    <div class="hidden" id="dropdown_isbn">
+      <div class="large-3 columns">
+        <img class="book_image" alt="OneTrueTatsuya" src="/images/tatsuya.jpg"/>
+      </div>
+
+      <div class="large-9 columns">
+        <h2 class="book_title">&nbsp;Book title</h2>
+        <p class="book_authors">&nbsp; Authors</p>
+        <p class="book_date">&nbsp; Date created</p>
+      </div>
+    </div>
+
     <form id="post-edit" method="post" action="/books/new">
-      <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
+      <input type="hidden" id="course_id" name="course_id" value=""/>
+      <input type="hidden" id="title" name="title" value=""/>
+      <input type="hidden" id="isbn" name="isbn" value=""/>
+      <input type="hidden" id="title" name="title" value=""/>
 
+      <label for="version">Book Price</label>
+      <input id="price" type="text" name="price" placeholder="Enter price for the book:" />
 
-      <div class="large-7 large-centered columns">
-        <label for="title">Book Title</label>
-        <input type="text" id="title" name="title" placeholder="title here" value="" />
+      <label for="version">Book Condition (1-10)</label>
+      <input type="text" id="condition" name="condition" placeholder="Enter the book's current condition" value="" />
 
-        <label for="author">Book Author</label>
-        <input type="text" id="author" name="author" placeholder="author here" value="" />
+      <label for="details">Other Information</label>
+      <textarea type="text" id="details" name="details" placeholder="other information here" rows="5"></textarea>
 
-        <label for="version">Book Version</label>
-        <input type="text" id="version" name="version" placeholder="version here" value="" />
-
-        <label for="version">Book Class</label>
-        <input type="text" id="class" name="class" placeholder="class here" value="" />
-
-        <label for="version">Book Professor</label>
-        <input type="text" id="professor" name="professor" placeholder="professor here" value="" />
-
-        <label for="version">Book Price</label>
-        <input type="text" id="price" name="price" placeholder="price here" value="" />
-
-        <label for="version">Book Condition (1-10)</label>
-        <input type="text" id="condition" name="condition" placeholder="condition here" value="" />
-
-        <label for="details">Other Information</label>
-        <textarea type="text" id="details" name="details" placeholder="other information here" rows="5"></textarea>
-
-        <div class="small-6 columns">
-          <input type="submit" class="button expand success small" value="Save posting"/>
-        </div>
-        <div class="small-6 columns">
-          <a class="button expand alert small" href="search-results.html">Delete posting</a>
-        </div>
-      </div>
-      <div class="row">
-
-      </div>
+      <button id="submit_form" class="button expand success small">Save posting</button>
     </form>
   </div>
 </main>

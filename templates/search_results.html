@@ -1,16 +1,20 @@
 {{ define "main" }}
+<link href="/css/suggestions.css" rel="stylesheet" type="text/css"/>
+<script src="/js/typeahead.bundle.js"></script>
+<style type="text/css">
+#search_text {
+  width: 100%;
+}
+</style>
 <main class="results">
 <form method="get" action="/search_results">
   <input class="search" id="search_text" type="text" name="query" placeholder="Search by title" />
-  <button class="search" id="search_button" class="expand" disabled><i class="fa fa-search"></i></button>
+  <button class="search" id="search_button" class="expand" style="float: right;" disabled><i class="fa fa-search"></i></button>
 </form>
 <h1>{{ .Title }}</h1>
 <div class="row book-detail-header">
   <div class="small-4 columns">
     Title
-  </div>
-  <div class="small-3 columns">
-    Author
   </div>
   <div class="small-1 columns">
     Price
@@ -18,28 +22,19 @@
   <div class="small-2 columns sellerRating">
     Seller Rating
   </div>
-  <!--<div class="small-2 columns">-->
-  <!--  Post Time-->
-  <!--</div>-->
 </div>
-{{ range $element := .RecentBooks }}
+{{ range $element := .Books }}
 <div class="row book-detail">
-  <a href="/books/{{ $element.Id }}">
+  <a href="/books/{{ $element.ID }}">
     <div class="small-4 columns">
       {{ $element.Title }}
-    </div>
-    <div class="small-3 columns">
-      {{ $element.Author }}
     </div>
     <div class="small-1 columns">
       {{ $element.Price }}
     </div>
     <div class="small-2 columns sellerRating">
       5/5
-    </div>    
-    <!--<div class="small-2 columns">-->
-    <!--  {{ $element.CreatedAt }}-->
-    <!--</div>-->
+    </div>
   </a>
 </div>
 {{ end }}
@@ -55,13 +50,32 @@ $("#search_text").on("change keyup paste", function() {
 });
 
 $('#formid').on("keyup keypress", function(e) {
-  var code = e.keyCode || e.which; 
-  if (code == 13) {               
+  var code = e.keyCode || e.which;
+  if (code == 13) {
     if ($("#search_text").val().trim() === "") {
       e.preventDefault();
       return false;
     }
   }
 });
+
+var bookSuggestion = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace(''),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  remote: {
+    url: '/search_results.json?query=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+bookSuggestion.initialize();
+
+$('#search_text').typeahead({
+  highlight: true
+}, {
+  source: bookSuggestion.ttAdapter(),
+  display: 'title'
+});
+
 </script>
 {{ end }}

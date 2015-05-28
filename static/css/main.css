@@ -250,4 +250,101 @@ span#msgpreview {
 	z-index: 10;
 }
 
+<<<<<<< HEAD
+=======
+a.button.small.user-settings {
+	margin:0 0 0rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	color:white;
+}
 
+.messages {
+	color: white;
+	margin-right: 0.7rem;
+	margin-left: 0.7rem;
+}
+
+.messages:hover {
+	color: #007095;
+	cursor: pointer;
+}
+
+span#sendername {
+	font-weight: bold;
+	color: black;
+	margin-left: 0.5rem;
+}
+
+span#msgpreview {
+	color: grey;
+	margin-left: 0.5rem;
+}
+
+#msg {
+	border-bottom: thin solid lightgrey;
+	height: 70px;
+	width: 100%;
+}
+
+#msg:hover {
+	background-color: rgba(0,140,186,0.5);
+}
+
+#notificationContainer {
+	background-color: #fff;
+	border: 1px solid rgba(100, 100, 100, .4);
+	-webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+	overflow: visible;
+	position: absolute;
+	margin-left: -0.4rem;
+	width: 400px;
+	z-index: 10;
+	display: none;
+}
+#notificationContainer:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: 0;
+	height: 0;
+	color: transparent;
+	border: 10px solid black;
+	border-color: transparent transparent white;
+	margin-top: -20px;
+	margin-left: 188px;
+}
+#notificationTitle {
+	z-index: 1000;
+	font-weight: bold;
+	padding: 8px;
+	font-size: 13px;
+	background-color: #ffffff;
+	border-bottom: 1px solid #dddddd;
+}
+#notificationsBody {
+	min-height:300px;
+	max-height: 300px;
+	overflow: auto;
+}
+#notificationFooter {
+	background-color: #e9eaed;
+	text-align: center;
+	font-weight: bold;
+	padding: 8px;
+	font-size: 12px;
+	border-top: 1px solid #dddddd;
+	height: 30px;
+}
+#notification_count {
+	padding: 3px 7px 3px 7px;
+	background: #cc0000;
+	color: #ffffff;
+	font-weight: bold;
+	margin-top: -1rem;
+	margin-left: -0.5rem;
+	border-radius: 9px;
+	position: absolute;
+	font-size: 11px;
+	z-index: 10;
+}
