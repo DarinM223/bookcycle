@@ -1,9 +1,5 @@
-var messageNum = 0;
-var msgCounter = 0;
-var senderIdList = [];
-var message = [];
 $(document).ready(function() {
-	console.log(senderIdList);
+	// console.log(senderIdList);
 	$(".messages").click(function() {
 		$("#notificationContainer").fadeToggle(300);
 		$("#notification_count").fadeOut("slow");
@@ -26,15 +22,18 @@ $.ajax({
   type: 'GET',
   url: '/messages'
 }).success(function(data, textStatus, jqXHR) {
-  // console.log(senderIdList);
-  // console.log(data);
-  // senderIdList = [];
+  $('.msg').remove();
+  var messageNum = 0;
+  var msgCounter = 0;
+  var senderIdList = [];
+  var message = [];
   var senderName;
   var read = false;
+  
   for(var i = 0; i < data.length; i++) {
     // console.log(($.inArray(data[i]['senderId'], senderIdList)));
     if (($.inArray(data[i]['senderId'], senderIdList)) == -1) {
-    	console.log("here");
+    	// console.log("here");
       if((data[i]['message']).length > 60) {
         message.push((data[i]['message']).substring(0,60) + "...");
       }
@@ -63,46 +62,6 @@ $.ajax({
         msgCounter++;
       }
     }
-    else {
-    	if(!(data[i]['read'])) {
-    		if(!isInArray((data[i]['message']), message)) {
-    		var senderName;
-			message = [];
-			messageNum = 0;
-			var read = false;
-			if((data[i]['message']).length > 60) {
-		    	message.push((data[i]['message']).substring(0,60) + "...");
-		    }
-		      	else {
-		        	message.push(data[i]['message']);
-		    }
-		    	read = data[i]['read'];
-		      	senderIdList.push(data[i]['senderId']);
-		      	(function(messageNum, read) {
-		        	$.ajax({
-		          	type: 'GET',
-		          	url: '/users/' + data[i]['senderId'] + '/json'
-		        	}).success(function(data, textStatus, jqXHR) {
-		          	senderName = data['first_name'] + " " + data['last_name'];
-		          	$('.msg').remove();
-		          	if(read) {
-		            	$('#notificationsBody').append('<a class="msg" href="/message/' + senderIdList[messageNum] +'"><div class="readmsg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
-		          	}
-		          	else {
-		            	$('#notificationsBody').append('<a class="msg" href="/message/' + senderIdList[messageNum] +'"><div class="unreadmsg"><span id="sendername">' + senderName + '</span><br><br><span id="msgpreview">' + message[messageNum] +'</span></div></a>');
-		          	}
-		        	});
-		      	})(messageNum, read);
-		      	messageNum++;
-		      	if(!read) {
-		        	msgCounter++;
-		      	}
-
-    		}
-    	}
-
-    }
-
   }
   // console.log(msgCounter);
   if (msgCounter != 0) {
