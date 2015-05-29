@@ -1,6 +1,6 @@
 # Bookcycle
 
-[![Build Status](https://travis-ci.org/DarinM223/cs130-test.svg?branch=after_midpoint)](https://travis-ci.org/DarinM223/bookcycle)
+[![Build Status](https://travis-ci.org/DarinM223/bookcycle)](https://travis-ci.org/DarinM223/bookcycle)
 
 ### Project for CS130
 
@@ -21,27 +21,43 @@ First you have to install Go. You can do so by using Homebrew or downloading the
 
 Then run:
 ```
-go get github.com/DarinM223/cs130-test
+go get github.com/DarinM223/bookcycle
 ```
-Which should put the project inside $GOPATH/src/github.com/DarinM223/cs130-test. That is the folder where all of the development is done. 
+Which should put the project inside $GOPATH/src/github.com/DarinM223/bookcycle. That is the folder where all of the development is done. 
 
 Before pushing code to master, make sure that the code is formatted with gofmt (a formatting tool that comes with go). Plugins for many text editors like GoSublime for Sublime Text or vim-go for vim automatically do this whenever you save a Go file.
 
-Running
-=======
+Building normally
+=================
+To get the latest version of the dependencies, first run 
+```
+go get
+```
 
-To run the server, first type
+Then to run the server, first type
 ```
 go build
 ```
-to build the application into the cs130-test executable. Then you have to seed the courses into the main database. Type
+to build the application into the bookcycle executable. 
+
+Building with godep
+===================
+This project also has godep versioned dependencies. If you want to use those instead of getting the latest version, after installing godep with 
 ```
-./cs130-test seed
+go get github.com/tools/godep
 ```
 
-Then type 
+Then run
 ```
-./cs130-test
+godep go build
+```
+to build the application into the bookcycle executable.
+
+Running
+=======
+Enter
+```
+./bookcycle
 ```
 into the terminal at the project path to run the application. Navigate to [http://localhost:8080](http://localhost:8080) and it should display the home page.
 
@@ -50,3 +66,7 @@ You might run into an error named something like this when logging in:
 gob: type not registered for interface *main.User
 ```
 If this happens, you have to clear out your cookies by going into the chrome development tools and clicking Resource and the dropdown arrow under Cookies. There should be a localhost option. Right click that and click Clear to c lear the cookies. After that login should work
+
+Documentation
+=============
+Documentation for all methods used for the backend is in https://godoc.org/github.com/DarinM223/bookcycle/server
