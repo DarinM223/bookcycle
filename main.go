@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/DarinM223/cs130-test/server"
+	"github.com/DarinM223/bookcycle/server"
 	"net/http"
 	"os"
 	"time"

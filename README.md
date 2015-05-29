@@ -1,6 +1,6 @@
 # Bookcycle
 
-[![Build Status](https://travis-ci.org/DarinM223/cs130-test.svg?branch=after_midpoint)](https://travis-ci.org/DarinM223/cs130-test)
+[![Build Status](https://travis-ci.org/DarinM223/cs130-test.svg?branch=after_midpoint)](https://travis-ci.org/DarinM223/bookcycle)
 
 ### Project for CS130
 

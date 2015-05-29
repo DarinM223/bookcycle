@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DarinM223/cs130-test/server"
+	"github.com/DarinM223/bookcycle/server"
 	"net/http"
 	"testing"
 )
