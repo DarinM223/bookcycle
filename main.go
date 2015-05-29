@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/DarinM223/bookcycle/server"
+	"github.com/lib/pq"
 	"net/http"
 	"os"
 	"time"
@@ -51,14 +52,7 @@ func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
 }
 
 func main() {
-	// Set up database
-	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	defer db.Close()
-	db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
+	var db gorm.DB
 
 	coursesDB, err := gorm.Open("sqlite3", "./courses.database")
 	if err != nil {
@@ -69,8 +63,15 @@ func main() {
 	coursesDB.AutoMigrate(&server.Course{})
 
 	if len(os.Args) > 1 {
-		seed := os.Args[1]
-		if seed == "seed" {
+		option := os.Args[1]
+		if option == "production" { // configure postgres database
+			url := os.Getenv("DATABASE_URL")
+			connection, _ := pq.ParseURL(url)
+			connection += " sslmode=require"
+			db, err = gorm.Open("postgres", connection)
+			defer db.Close()
+			db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
+		} else if option == "seed" {
 			fmt.Println("Seeding courses from course sqlite file:")
 			db.LogMode(true)
 			seedDB, err := sql.Open("sqlite3", "./CS188")
@@ -86,13 +87,20 @@ func main() {
 			fmt.Println("Finished seeding courses")
 			return
 		}
-	} else {
-		fmt.Println("Listening...")
-		PORT := os.Getenv("PORT")
-		if PORT == "" {
-			PORT = "8080"
-			os.Setenv("PORT", PORT)
+	} else { // configure sqlite database
+		db, err = gorm.Open("sqlite3", "./sqlite_file.db")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
 		}
-		http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB))
+		defer db.Close()
+		db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 	}
+	fmt.Println("Listening...")
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "8080"
+		os.Setenv("PORT", PORT)
+	}
+	http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB))
 }
