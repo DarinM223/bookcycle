@@ -69,6 +69,7 @@ func main() {
 			url := os.Getenv("DATABASE_URL")
 			connection, _ := pq.ParseURL(url)
 			connection += " sslmode=require"
+			fmt.Println(connection)
 			db, err = gorm.Open("postgres", connection)
 			if err != nil {
 				fmt.Println(err)
