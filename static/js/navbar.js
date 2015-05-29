@@ -45,6 +45,10 @@ setInterval(function() {
     var read = false;
 
     for(var i = 0; i < data.length; i++) {
+      read = data[i]['read'];
+      if(!read) {
+        msgCounter++;
+      }
       // console.log(($.inArray(data[i]['senderId'], senderIdList)));
       if (($.inArray(data[i]['senderId'], senderIdList)) == -1) {
         // console.log("here");
@@ -54,7 +58,6 @@ setInterval(function() {
         else {
           message.push(data[i]['message']);
         }
-        read = data[i]['read'];
         senderIdList.push(data[i]['senderId']);
         (function(messageNum, read) {
           $.ajax({
@@ -72,9 +75,6 @@ setInterval(function() {
           });
         })(messageNum, read);
         messageNum++;
-        if(!read) {
-          msgCounter++;
-        }
       }
     }
     // console.log(msgCounter);
