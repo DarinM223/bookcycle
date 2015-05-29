@@ -44,3 +44,9 @@ Then type
 ./cs130-test
 ```
 into the terminal at the project path to run the application. Navigate to [http://localhost:8080](http://localhost:8080) and it should display the home page.
+
+You might run into an error named something like this when logging in:
+```
+gob: type not registered for interface *main.User
+```
+If this happens, you have to clear out your cookies by going into the chrome development tools and clicking Resource and the dropdown arrow under Cookies. There should be a localhost option. Right click that and click Clear to c lear the cookies. After that login should work

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/DarinM223/cs130-test/server"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -17,13 +18,13 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	// Set up database
 	db, _ := gorm.Open("sqlite3", "./sqlite_file_test.db")
 	db.LogMode(false)
-	db.DropTable(&User{})
-	db.DropTable(&Book{})
-	db.DropTable(&Book{})
-	db.AutoMigrate(&User{}, &Book{}, &Message{})
+	db.DropTable(&server.User{})
+	db.DropTable(&server.Book{})
+	db.DropTable(&server.Book{})
+	db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 
 	// set up test db
-	server := httptest.NewServer(Routes(db))
+	server := httptest.NewServer(server.Routes(db))
 
 	return server, db
 }
@@ -64,7 +65,7 @@ func (n UserTesting) ViewUserURL(id int) string {
 }
 
 // MakeTestUser makes a new test user
-func (n UserTesting) MakeTestUser(u User, password string, passwordConfirm string) error {
+func (n UserTesting) MakeTestUser(u server.User, password string, passwordConfirm string) error {
 	userJSON := url.Values{}
 	userJSON.Set("first_name", u.Firstname)
 	userJSON.Set("last_name", u.Lastname)
@@ -93,7 +94,7 @@ func (n UserTesting) MakeTestUser(u User, password string, passwordConfirm strin
 }
 
 // EditTestUser edits an existing user
-func (n UserTesting) EditTestUser(u User, c *http.Cookie, password string, passwordConfirm string) error {
+func (n UserTesting) EditTestUser(u server.User, c *http.Cookie, password string, passwordConfirm string) error {
 	userJSON := url.Values{}
 	userJSON.Set("first_name", u.Firstname)
 	userJSON.Set("last_name", u.Lastname)
@@ -181,7 +182,7 @@ func (b BookTesting) ShowBookURL(id int) string {
 }
 
 // MakeTestBook makes a new test book
-func (b BookTesting) MakeTestBook(book Book, loginCookie *http.Cookie) error {
+func (b BookTesting) MakeTestBook(book server.Book, loginCookie *http.Cookie) error {
 	bookJSON := url.Values{}
 	bookJSON.Set("title", book.Title)
 	bookJSON.Set("isbn", book.ISBN)

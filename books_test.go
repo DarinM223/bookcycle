@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DarinM223/cs130-test/server"
 	"net/http"
 	"testing"
 )
@@ -49,7 +50,7 @@ func TestCreateBook(t *testing.T) {
 		return
 	}
 	// Test that POST new book succeeds when logged in
-	testUser := User{
+	testUser := server.User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
@@ -59,7 +60,7 @@ func TestCreateBook(t *testing.T) {
 	var loginCookie *http.Cookie
 	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
-	testBook := Book{
+	testBook := server.Book{
 		Title:     "Title",
 		ISBN:      "0735619670",
 		CourseID:  1,
@@ -71,7 +72,7 @@ func TestCreateBook(t *testing.T) {
 	bookTesting.MakeTestBook(testBook, loginCookie)
 
 	// Test that new book is created
-	var books []Book
+	var books []server.Book
 	bookTesting.DB.Preload("books").Find(&books)
 
 	if len(books) != 1 {
@@ -106,7 +107,7 @@ func TestCreateBook(t *testing.T) {
 	bookTesting.DB.Delete(&books[0])
 
 	// Delete book
-	var user User
+	var user server.User
 	bookTesting.DB.Where("email LIKE ?", testUser.Email).First(&user)
 	bookTesting.DB.Delete(&user)
 }
@@ -130,7 +131,7 @@ func TestDeleteBook(t *testing.T) {
 		return
 	}
 
-	testUser := User{
+	testUser := server.User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
@@ -153,7 +154,7 @@ func TestDeleteBook(t *testing.T) {
 		return
 	}
 
-	testBook := Book{
+	testBook := server.Book{
 		Title:     "Title",
 		ISBN:      "0735619670",
 		CourseID:  1,
@@ -164,11 +165,11 @@ func TestDeleteBook(t *testing.T) {
 	}
 	bookTesting.MakeTestBook(testBook, loginCookie)
 
-	var myBook Book
+	var myBook server.Book
 	bookTesting.DB.Where("i_s_b_n LIKE ?", testBook.ISBN).First(&myBook)
 
 	// test that deleting book that you do not own when logged in fails
-	newTestUser := User{
+	newTestUser := server.User{
 		Firstname: "New",
 		Lastname:  "User",
 		Email:     "newuser@gmail.com",
@@ -209,7 +210,7 @@ func TestDeleteBook(t *testing.T) {
 	}
 
 	// test that there is no more books after deleting
-	var books []Book
+	var books []server.Book
 	bookTesting.DB.Preload("books").Find(&books)
 	if len(books) != 0 {
 		t.Errorf("Books length 0 expected: %d", len(books))
@@ -217,7 +218,7 @@ func TestDeleteBook(t *testing.T) {
 	}
 
 	// Delete mock created user and book
-	var user, newUser User
+	var user, newUser server.User
 	bookTesting.DB.Where("email LIKE ?", testUser.Email).First(&user)
 	bookTesting.DB.Where("email LIKE ?", newTestUser.Email).First(&newUser)
 	bookTesting.DB.Delete(&user)

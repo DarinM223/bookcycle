@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DarinM223/cs130-test/server"
 	_ "io/ioutil"
 	"net/http"
 	"testing"
@@ -31,7 +32,7 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 
-	testUser := User{
+	testUser := server.User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
@@ -60,7 +61,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	// Test if user is created and proper fields are created
-	var users []User
+	var users []server.User
 	userTesting.DB.Preload("users").Find(&users)
 	if len(users) != 1 {
 		t.Errorf("Users length should be 1, instead: %d", len(users))
@@ -92,7 +93,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestEditUser(t *testing.T) {
-	testUser := User{
+	testUser := server.User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",
@@ -148,7 +149,7 @@ func TestEditUser(t *testing.T) {
 		return
 	}
 
-	editedUser := User{
+	editedUser := server.User{
 		ID:        testUser.ID,
 		Firstname: "T",
 		Lastname:  "U",
@@ -170,7 +171,7 @@ func TestEditUser(t *testing.T) {
 		return
 	}
 
-	var user User
+	var user server.User
 	userTesting.DB.Where("email LIKE ?", "tu@gmail.com").First(&user)
 	if !user.Validate("password") {
 		t.Error("Password should not have changed")
@@ -189,7 +190,7 @@ func TestEditUser(t *testing.T) {
 }
 
 func TestViewUser(t *testing.T) {
-	testUser := User{
+	testUser := server.User{
 		Firstname: "Test",
 		Lastname:  "User",
 		Email:     "testuser@gmail.com",

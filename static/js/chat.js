@@ -22,11 +22,17 @@ function Message(sender_id, receiver_id) {
           typeof(msg.longitude) !== 'undefined' && msg.longitude !== 0) { // if location change
 
         recentLocation = msg;
-        var locationP = document.createElement('p');
-        var _messageDiv = document.createTextNode(msg.message);
-        locationP.appendChild(_messageDiv);
-        appendLog($(locationP.innerHTML));
-        // TODO: change location on map
+        var wrapper = document.createElement('div');
+        var wrapDiv = document.createElement('div');
+        wrapDiv.className = 'chat-messages-wrapper';
+
+        var messageDiv = document.createElement('div');
+        var messageTextNode = document.createTextNode(msg.message);
+        messageDiv.appendChild(messageTextNode);
+
+        wrapDiv.appendChild(messageDiv);
+        wrapper.appendChild(wrapDiv);
+        appendLog($(wrapper.innerHTML));
       } else { // if chat message
         var wrapper = document.createElement('div');
         var wrapDiv = document.createElement('div');
