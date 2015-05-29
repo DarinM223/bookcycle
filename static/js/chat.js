@@ -97,7 +97,7 @@ function Message(sender_id, receiver_id) {
     });
 
     if (window.WebSocket) {
-      conn = new WebSocket("ws://localhost:8080/ws");
+      conn = new WebSocket("ws://" + window.location.host + "/ws");
 
       conn.onclose = function(evt) {
         appendLog($("<div><b>Connection closed.</b></div>"));
