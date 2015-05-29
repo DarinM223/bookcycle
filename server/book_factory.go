@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// BookFactory is an interface for createing books from various parameters
+// BookFactory is an interface for creating books from various parameters
 type BookFactory interface {
 	NewFormBook(r *http.Request, userID int) (Book, error) // Generates new Books from a POST form request
 }
