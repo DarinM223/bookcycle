@@ -46,7 +46,7 @@ type ManyBookTemplateType struct {
 	Title string
 }
 
-// GenerateFullTemplate Returns complete template with navigation bar added and your user login template
+// GenerateFullTemplate returns complete template with navigation bar added and your user login template
 func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.Template, UserTemplateType, error) {
 	currentUser, err := CurrentUser(r)
 	hasCurrentUser := true
@@ -70,7 +70,7 @@ func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.T
  * Route Handlers
  */
 
-// RootHandler Route: /
+// RootHandler is a route for / that either displays the index page if you are not logged in or the main page with the recent books if logged in
 func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	_, err := CurrentUser(r)
 	if err != nil { // show login page if not logged in
@@ -103,7 +103,8 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 }
 
-// LogoutHandler Route: /logout
+// LogoutHandler is a route for /logout that logs out the currently logged in user and redirects to the index page
+// You must be logged in to call this route
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	err := LogoutUser(r, w)
 	if err != nil {
@@ -113,7 +114,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// LoginHandler Route: /login
+// LoginHandler is a route for /login that logs in a user and redirects to the root path
+// POST parameters:
+// email string
+// password string
 func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	r.ParseForm()
 	emailField := r.PostFormValue("email")
@@ -141,7 +145,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// UserJSONHandler Route: /users/{id}/json
+// UserJSONHandler is a route for /users/{id}/json that returns the user with the id in JSON format
 func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	userID := mux.Vars(r)["id"]
 	var user User
@@ -161,7 +165,7 @@ func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	w.Write(userJSON)
 }
 
-// MapSearchHandler Route: /map_search/{id}
+// MapSearchHandler is a route for /map_search/{id} that displays a map where both the user logged in and the user with the id can edit
 func MapSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	currentUser, err := CurrentUser(r)
 	if err != nil {

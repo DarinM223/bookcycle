@@ -7,7 +7,11 @@ import (
 	"net/http"
 )
 
-// SearchCourse helper function for searching courses
+// SearchCourse is a helper function that takes in a search type, department, course id, and professor and returns all courses that match
+// search type can be:
+// department (when searching for department)
+// course (when searching for course)
+// professor (when searching for professor)
 func SearchCourse(searchType string, department string, courseID string, professor string, db gorm.DB) ([]Course, error) {
 	var result *gorm.DB
 	var searchCourses []Course
@@ -34,7 +38,7 @@ func SearchCourse(searchType string, department string, courseID string, profess
 	return searchCourses, nil
 }
 
-// SearchResultsJSONHandler Route /search_results.json?query=
+// SearchResultsJSONHandler is a route for /search_results.json?query= that returns an array of Courses that match the search query in JSON format
 func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
 	if len(query) == 0 {
@@ -59,7 +63,7 @@ func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB
 	w.Write(searchBooksJSON)
 }
 
-// SearchResultsHandler Route /search_results?query=
+// SearchResultsHandler is a route for /search_results?query= that displays a search page with Courses that match the search query
 func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	query := r.URL.Query().Get("query")
 	if len(query) == 0 {
@@ -87,7 +91,12 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	})
 }
 
-// CourseSearchHandler Route /course_search.json?department=&course_id=&professor=
+// CourseSearchHandler is a route for /course_search.json?department=&course_id=&professor= that returns an array of Courses that match the queries
+// GET parameters:
+// type string (type of search (department, course, professor))
+// department string
+// course_id string
+// professor string
 func CourseSearchHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	typeSearch := r.URL.Query().Get("type")
 	department := r.URL.Query().Get("department")

@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// MessagesHandler Route: /unread_messages
+// MessagesHandler is a route for /unread_messages that returns all messages sent to the logged in user in JSON format
 func MessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	currentUser, err := CurrentUser(r)
 	if err != nil {
@@ -33,7 +33,7 @@ func MessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	w.Write(messagesJSON)
 }
 
-// PastMessagesHandler Route: /past_messages/{id}
+// PastMessagesHandler is a route for /past_messages/{id} that returns all messages sent by either the logged in user or the user with the id in JSON format
 func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	receiverID, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
@@ -65,7 +65,7 @@ func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	w.Write(resultsJSON)
 }
 
-// ChatHandler Route: /message/{id}
+// ChatHandler is a route for /message/{id} that displays the chat messaging page between the logged in user and the user with the id
 func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	currentUser, err := CurrentUser(r)
 	if err != nil {

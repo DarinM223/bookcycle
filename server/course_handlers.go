@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// CoursesJSONHandler is a route for /courses/{id}/json that returns the course for an id in JSON format
 func CoursesJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	courseID := mux.Vars(r)["id"]
 
