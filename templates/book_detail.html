@@ -44,9 +44,9 @@
           </div>
           <a class="button expand" id="seller_info" href="/users/{{ .UserID }}">View Seller Info</a>
           {{ if .CanDelete }}
-          <a class="button expand alert" id="delete_book">Delete Book</a>
+          <a class="button expand alert" id="delete_book" href="/books/{{ .Book.ID }}/delete">Delete Book</a>
           {{ else }}
-          <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
+            <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
           {{ end }}
           
         </div>
