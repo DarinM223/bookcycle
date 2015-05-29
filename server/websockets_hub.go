@@ -46,15 +46,30 @@ func (h *hub) run(db gorm.DB) {
 			if err == nil {
 				parsedMessage.CreatedAt = time.Now()
 				received := false
-				for c := range h.connections {
-					// only send it if the receiver matches
-					if c.user.ID == parsedMessage.ReceiverID {
-						select {
-						case c.send <- m:
-							received = true
-						default:
-							close(c.send)
-							delete(h.connections, c)
+				if parsedMessage.Latitude != 0 && parsedMessage.Longitude != 0 {
+					for c := range h.connections {
+						// only send it if the sender or receiver matches
+						if c.user.ID == parsedMessage.ReceiverID || c.user.ID == parsedMessage.SenderID {
+							select {
+							case c.send <- m:
+								received = true
+							default:
+								close(c.send)
+								delete(h.connections, c)
+							}
+						}
+					}
+				} else {
+					for c := range h.connections {
+						// only send it if the receiver matches
+						if c.user.ID == parsedMessage.ReceiverID {
+							select {
+							case c.send <- m:
+								received = true
+							default:
+								close(c.send)
+								delete(h.connections, c)
+							}
 						}
 					}
 				}

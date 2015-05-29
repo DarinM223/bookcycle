@@ -65,11 +65,15 @@ func main() {
 	if len(os.Args) > 1 {
 		option := os.Args[1]
 		if option == "production" { // configure postgres database
+			fmt.Println("Running in production mode")
 			url := os.Getenv("DATABASE_URL")
 			connection, _ := pq.ParseURL(url)
 			connection += " sslmode=require"
 			db, err = gorm.Open("postgres", connection)
-			defer db.Close()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 		} else if option == "seed" {
 			fmt.Println("Seeding courses from course sqlite file:")
@@ -93,7 +97,6 @@ func main() {
 			fmt.Println(err.Error())
 			return
 		}
-		defer db.Close()
 		db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 	}
 	fmt.Println("Listening...")

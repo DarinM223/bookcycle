@@ -123,7 +123,7 @@ console.log(newlon);
   var conn = null;
   var recentLocation = null;
   if (window.WebSocket) {
-    conn = new WebSocket("ws://localhost:8080/ws");
+    conn = new WebSocket("ws://" + window.location.host + "/ws");
 
     conn.onclose = function(evt) {
     };
