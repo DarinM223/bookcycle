@@ -23,8 +23,12 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	db.DropTable(&server.Book{})
 	db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 
+	coursesDB, _ := gorm.Open("sqlite3", "./courses.database")
+	defer coursesDB.Close()
+	coursesDB.AutoMigrate(&server.Course{})
+
 	// set up test db
-	server := httptest.NewServer(server.Routes(db))
+	server := httptest.NewServer(server.Routes(db, coursesDB))
 
 	return server, db
 }

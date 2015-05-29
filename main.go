@@ -52,24 +52,33 @@ func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
 
 func main() {
 	// Set up database
-	db, err := server.SetupDB("sqlite3", "./sqlite_file.db")
+	db, err := gorm.Open("sqlite3", "./sqlite_file.db")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	defer db.Close()
+	db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
+
+	coursesDB, err := gorm.Open("sqlite3", "./courses.database")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	defer coursesDB.Close()
+	coursesDB.AutoMigrate(&server.Course{})
 
 	if len(os.Args) > 1 {
 		seed := os.Args[1]
 		if seed == "seed" {
 			fmt.Println("Seeding courses from course sqlite file:")
 			db.LogMode(true)
-			courseDB, err := sql.Open("sqlite3", "./CS188")
+			seedDB, err := sql.Open("sqlite3", "./CS188")
 			if err != nil {
 				fmt.Println(err.Error())
 			}
 
-			err = SeedCourses(db, courseDB)
+			err = SeedCourses(coursesDB, seedDB)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -84,6 +93,6 @@ func main() {
 			PORT = "8080"
 			os.Setenv("PORT", PORT)
 		}
-		http.ListenAndServe(":"+PORT, server.Routes(db))
+		http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB))
 	}
 }

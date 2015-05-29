@@ -15,22 +15,13 @@ func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) 
 	}
 }
 
-func SetupDB(dbType string, dbFilePath string) (gorm.DB, error) {
-	db, err := gorm.Open(dbType, dbFilePath)
-	if err != nil {
-		return gorm.DB{}, err
-	}
-	db.AutoMigrate(&User{}, &Book{}, &Message{}, &Course{})
-	return db, nil
-}
-
 func init() {
 	// Set up login sessions
 	InitSessions("bookcycle")
 }
 
 // Routes returns a router that includes all of the routes needed for the application
-func Routes(db gorm.DB) *mux.Router {
+func Routes(db gorm.DB, courseDB gorm.DB) *mux.Router {
 	InitSessions("bookcycle")
 
 	// run websocket hub and set websocket handler to /ws route
@@ -51,8 +42,8 @@ func Routes(db gorm.DB) *mux.Router {
 	r.Methods("GET").Path("/books/{id}/delete").HandlerFunc(DBInject(DeleteBookHandler, db))
 	r.Methods("GET").Path("/books/{id}").HandlerFunc(DBInject(BookHandler, db))
 	r.Methods("GET").Path("/search_results.json").HandlerFunc(DBInject(SearchResultsJSONHandler, db))
-	r.Methods("GET").Path("/courses/{id}/json").HandlerFunc(DBInject(CoursesJSONHandler, db))
-	r.Methods("GET").Path("/course_search.json").HandlerFunc(DBInject(CourseSearchHandler, db))
+	r.Methods("GET").Path("/courses/{id}/json").HandlerFunc(DBInject(CoursesJSONHandler, courseDB))
+	r.Methods("GET").Path("/course_search.json").HandlerFunc(DBInject(CourseSearchHandler, courseDB))
 	r.Methods("GET").Path("/search_results").HandlerFunc(DBInject(SearchResultsHandler, db))
 	r.Methods("GET").Path("/messages").HandlerFunc(DBInject(MessagesHandler, db))
 	r.Methods("GET").Path("/past_messages/{id}").HandlerFunc(DBInject(PastMessagesHandler, db))
