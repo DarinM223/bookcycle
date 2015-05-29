@@ -72,12 +72,9 @@ function initialize() {
 var defaultBounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(-33.8902, 151.1759),
       new google.maps.LatLng(-33.8474, 151.2631));
-map.fitBounds(defaultBounds);
   var receiver_id = {{ .UserID }};
   var sender_id = {{ .CurrentUser.ID }};
-var recentLocation;
-var newlat = 0;
-var newlon = 0;
+
   $.ajax({
     type: 'GET',
     url: '/past_messages/' + receiver_id
@@ -89,17 +86,7 @@ var newlon = 0;
           console.log(parsedResults[i]);
           recentLocation = parsedResults[i];
           // TODO: set map location to recent location
-	newlat = recentLocation.latitude;
-	newlon = recentLocation.longitude;
-	var mrkrr = new google.maps.Marker({
-    	// The below line is equivalent to writing:
-    	// position: new google.maps.LatLng(-34.397, 150.644)
-    	position: new google.maps.LatLng(newlat, newlon),
-    	map: map
-  	});
-
-	defaultBounds = new google.maps.LatLngBounds(new google.maps.LatLng(newlat, newlon));
-	map.fitBounds(defaultBounds);
+	defaultBounds = new google.maps.LatLngBounds(new google.maps.LatLng(recentLocation.latitude, recentLocation.longitude));
           break;
         }
       }
@@ -108,10 +95,7 @@ var newlon = 0;
     console.log(err);
   });
 
-
-console.log(newlat);
-console.log(newlon);
-
+  map.fitBounds(defaultBounds);
 
 
 
