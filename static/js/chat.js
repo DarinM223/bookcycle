@@ -27,8 +27,13 @@ function Message(sender_id, receiver_id) {
         wrapDiv.className = 'chat-messages-wrapper';
 
         var messageDiv = document.createElement('div');
+        var strongMessageNode = document.createElement('strong');
         var messageTextNode = document.createTextNode(msg.message);
-        messageDiv.appendChild(messageTextNode);
+        messageDiv.style['text-align'] = 'center';
+        messageDiv.style['margin-left'] = 'auto';
+        messageDiv.style['margin-right'] = 'auto';
+        strongMessageNode.appendChild(messageTextNode);
+        messageDiv.appendChild(strongMessageNode);
 
         wrapDiv.appendChild(messageDiv);
         wrapper.appendChild(wrapDiv);

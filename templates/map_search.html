@@ -169,7 +169,7 @@ console.log(newlon);
     var locationChanged = {
       senderId: sender_id,
       receiverId: receiver_id,
-      message: '{{ .CurrentUser.Firstname }} changed your location to ' + marker.title,
+      message: '{{ .CurrentUser.Firstname }} changed the meetup location to ' + marker.title,
       latitude: marker.position.lat(),
       longitude: marker.position.lng(),
     };
