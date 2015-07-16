@@ -2,7 +2,7 @@
   <main class="user-detail">
     <div class="row">
       <form id="post-edit" class="user-edit" method="post">
-        <input type='hidden' name='csrfmiddlewaretoken' value='tym8d4E77Y35wCFn1YKjOiRkjx4zeQqm' />
+        <input type='hidden' name='csrf_token' value='{{ .Token }}' />
     
         <div class="large-4 columns user-permissions">
           {{ if .HasCurrentUser }}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/justinas/nosurf"
 )
 
 /*
@@ -19,6 +20,7 @@ import (
 type UserTemplateType struct {
 	CurrentUser    User
 	HasCurrentUser bool
+	Token          string
 }
 
 // MessageTemplateType is a struct for the message template
@@ -63,6 +65,7 @@ func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.T
 	return t, UserTemplateType{
 		currentUser,
 		hasCurrentUser,
+		nosurf.Token(r),
 	}, nil
 }
 
@@ -80,7 +83,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 			return
 		}
 
-		t.Execute(w, nil)
+		t.Execute(w, struct{ Token string }{nosurf.Token(r)})
 	} else { // show recent book listings if logged in
 		var recentBooks []Book
 		result := db.Order("created_at desc").Limit(10).Find(&recentBooks)

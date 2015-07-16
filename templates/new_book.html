@@ -41,6 +41,7 @@
       <input id="professor" type="text" name="query" placeholder="Enter the professor for the course" />
 
       <form id="post-edit" method="post" action="/books/new">
+        <input type='hidden' name='csrf_token' value='{{ .Token }}' />
         <input type="hidden" id="course_id" name="course_id" value=""/>
         <input type="hidden" id="title" name="title" value=""/>
         <input type="hidden" id="isbn" name="isbn" value=""/>

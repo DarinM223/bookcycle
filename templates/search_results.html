@@ -8,21 +8,11 @@
 </style>
 <main class="results">
 <form method="get" action="/search_results">
+  <input type='hidden' name='csrf_token' value='{{ .Token }}' />
   <input class="search" id="search_text" type="text" name="query" placeholder="Search by title" />
   <button class="search enable" id="search_button" class="expand" style="float: right;" disabled><i class="fa fa-search"></i></button>
 </form>
 <h1>{{ .Title }}</h1>
-<!-- <div class="row book-detail-header">
-  <div class="small-4 columns">
-    Title
-  </div>
-  <div class="small-1 columns">
-    Price
-  </div>
-  <div class="small-2 columns sellerRating">
-    Seller Rating
-  </div>
-</div> -->
 <div class="row">
 {{ range $element := .Books }}
 <div class="large-3 medium-4 small-6 columns book-detail">

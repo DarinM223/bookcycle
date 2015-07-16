@@ -1,70 +1,28 @@
 {{ define "main" }}
-  <!-- <img src="/images/ackerman.jpg" id="bg" alt=""/> -->
   <header></header>
   <script src="//cdn.jsdelivr.net/vivus/0.2.1/vivus.min.js"></script>
   <main>
-      <div id="logo">
-      </div>
-      <div class="row">
-          <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
-          <h1 class="login-logo">BookCycle</h1>
-          <div class="small-4 columns">
-            <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
-          </div>
-          <div class="small-4 columns">
-            <input id="password" name="password" type="password" placeholder="password" />
-          </div>
-          <div class="small-4 columns">
-            <input type="submit" value="Login" class="button expand"/>
-          </div> 
+    <div id="logo">
+    </div>
+    <div class="row">
+      <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
+        <input type='hidden' name='csrf_token' value='{{ .Token }}' />
+        <h1 class="login-logo">BookCycle</h1>
+        <div class="small-4 columns">
+          <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
         </div>
-        <a href="/users/new" class="create button" >Create an account</a>       
+        <div class="small-4 columns">
+          <input id="password" name="password" type="password" placeholder="password" />
+        </div>
+        <div class="small-4 columns">
+          <input type="submit" value="Login" class="button expand"/>
+        </div> 
+      </form>
+    </div>
+    <a href="/users/new" class="create button" >Create an account</a>       
   </main>
   <footer></footer>
   <script>
       new Vivus('logo', {type: 'oneByOne', duration: 500, file: '/images/book.svg'});
   </script>
 {{end}}
-
-<!--<!DOCTYPE html>-->
-<!--<html>-->
-<!--    <head>-->
-<!--        <meta charset="utf-8" />-->
-<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
-        
-<!--        <link href="favicon.ico" rel="icon" type="image/x-icon" />-->
-<!--        <title>BookCycle</title>-->
-        
-<!--        [> Open Graph <]-->
-<!--        <meta property="og:title" content="Buying and selling books at UCLA" />-->
-<!--        <meta property="og:site_name" content="BookCycle" />-->
-        
-<!--        [> CSS <]-->
-<!--        <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/css/foundation.css" rel="stylesheet" type="text/css">-->
-<!--        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">-->
-<!--        <link href="/css/main.css" rel="stylesheet" type="text/css" />-->
-        
-<!--        [> JavaScript <]-->
-<!--        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.1/js/foundation.min.js"></script>-->
-
-<!--        <script src="js/main.js"></script>-->
-<!--    </head>-->
-<!--    <body>-->
-<!--        <img src="/images/ackerman.jpg" id="bg" alt=""/>-->
-<!--        <header></header>-->
-<!--        <main>-->
-<!--            <div id="wrap">-->
-<!--            <div class="row">-->
-<!--                <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">-->
-<!--                <h1 class="login-logo">BookCycle</h1>-->
-<!--                <input id="email" maxlength="254" name="email" type="text" placeholder="email" />-->
-<!--                <input id="password" name="password" type="password" placeholder="password" />-->
-<!--                <input type="submit" value="Login" class="button expand"/> -->
-<!--                <a href="/users/new" class="button expand" >Create an account</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </main>-->
-<!--        <footer></footer>-->
-<!--    </body>-->
-<!--</html>-->

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
+	"github.com/justinas/nosurf"
 )
 
 // UserHandler abstracts an http handler with an included database parameter
@@ -34,6 +35,7 @@ type UserDetailTemplateType struct {
 	User           User
 	CurrentUser    User
 	HasCurrentUser bool
+	Token          string
 }
 
 func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
@@ -63,6 +65,7 @@ func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, d
 		User:           user,
 		CurrentUser:    currentUser,
 		HasCurrentUser: hasCurrentUser,
+		Token:          nosurf.Token(r),
 	})
 }
 
