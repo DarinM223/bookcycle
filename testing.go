@@ -27,6 +27,8 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	defer coursesDB.Close()
 	coursesDB.AutoMigrate(&server.Course{})
 
+	server.SetTesting(true)
+
 	// set up test db
 	server := httptest.NewServer(server.Routes(db, coursesDB))
 

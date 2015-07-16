@@ -8,9 +8,20 @@ import (
 	"net/http"
 )
 
+var testing bool = false
+
+func SetTesting(new_testing bool) {
+	testing = new_testing
+}
+
 // DBInject injects a database object into a http handler with the database object parameter and
 // turns it into a standard http handler
 func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) http.Handler {
+	if testing {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fn(w, r, db)
+		})
+	}
 	return nosurf.NewPure(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fn(w, r, db)
 	}))
