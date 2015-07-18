@@ -1,7 +1,23 @@
 {
 	"ImportPath": "github.com/DarinM223/bookcycle",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.4.1",
 	"Deps": [
+		{
+			"ImportPath": "github.com/PuerkitoBio/throttled",
+			"Rev": "1c8297c643b774435df8df65f7502b37d014fb6b"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Rev": "a47585eaae68b1d14b02940d2af1b9194f3caa9c"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Rev": "a47585eaae68b1d14b02940d2af1b9194f3caa9c"
+		},
+		{
+			"ImportPath": "github.com/golang/groupcache/lru",
+			"Rev": "604ed5785183e59ae2789449d89e73f3a2a77987"
+		},
 		{
 			"ImportPath": "github.com/gorilla/context",
 			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
@@ -25,6 +41,11 @@
 		{
 			"ImportPath": "github.com/jinzhu/gorm",
 			"Rev": "25772352c2e1cb6a9c00472999015a32dd646218"
+		},
+		{
+			"ImportPath": "github.com/justinas/nosurf",
+			"Comment": "0.1-50-g45adcfc",
+			"Rev": "45adcfcaf70610a5934db447ffe0ea9d13462c9e"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
