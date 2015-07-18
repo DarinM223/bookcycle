@@ -1,31 +1,36 @@
 package server
 
 import (
+	"github.com/PuerkitoBio/throttled"
+	throttledStore "github.com/PuerkitoBio/throttled/store"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/justinas/nosurf"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
+	"time"
 )
 
-var testing bool = false
+type DBInjectFunc func(func(http.ResponseWriter, *http.Request, gorm.DB), gorm.DB) http.Handler
 
-func SetTesting(new_testing bool) {
-	testing = new_testing
+func DBInject(requestsPerMinute int, testing bool) DBInjectFunc {
+	st := throttledStore.NewMemStore(1000)
+	return func(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) http.Handler {
+		if testing {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fn(w, r, db)
+			})
+		}
+		t := throttled.RateLimit(throttled.Q{Requests: requestsPerMinute, Window: time.Minute},
+			&throttled.VaryBy{Path: true}, st)
+		return t.Throttle(nosurf.NewPure(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fn(w, r, db)
+		})))
+	}
 }
 
 // DBInject injects a database object into a http handler with the database object parameter and
 // turns it into a standard http handler
-func DBInject(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) http.Handler {
-	if testing {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fn(w, r, db)
-		})
-	}
-	return nosurf.NewPure(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fn(w, r, db)
-	}))
-}
 
 func init() {
 	// Set up login sessions
@@ -33,11 +38,13 @@ func init() {
 }
 
 // Routes returns a router that includes all of the routes needed for the application
-func Routes(db gorm.DB, courseDB gorm.DB) *mux.Router {
+func Routes(db gorm.DB, courseDB gorm.DB, requestsPerMinute int, testing bool) *mux.Router {
 	InitSessions("bookcycle")
 
 	// run websocket hub and set websocket handler to /ws route
 	go h.run(db)
+
+	DBInject := DBInject(requestsPerMinute, testing)
 
 	// Define routes (route handlers are in route_handlers.go)
 	r := mux.NewRouter()

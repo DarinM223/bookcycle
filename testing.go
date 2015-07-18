@@ -14,7 +14,7 @@ import (
 )
 
 // SetUpTesting starts a test http server and sets up a test database
-func SetUpTesting() (*httptest.Server, gorm.DB) {
+func SetUpTesting(testing bool) (*httptest.Server, gorm.DB) {
 	// Set up database
 	db, _ := gorm.Open("sqlite3", "./sqlite_file_test.db")
 	db.LogMode(false)
@@ -24,13 +24,10 @@ func SetUpTesting() (*httptest.Server, gorm.DB) {
 	db.AutoMigrate(&server.User{}, &server.Book{}, &server.Message{})
 
 	coursesDB, _ := gorm.Open("sqlite3", "./courses.database")
-	defer coursesDB.Close()
 	coursesDB.AutoMigrate(&server.Course{})
 
-	server.SetTesting(true)
-
 	// set up test db
-	server := httptest.NewServer(server.Routes(db, coursesDB))
+	server := httptest.NewServer(server.Routes(db, coursesDB, REQUESTS_PER_MINUTE, testing))
 
 	return server, db
 }
@@ -43,7 +40,7 @@ type UserTesting struct {
 
 // NewUserTesting constructs a new UserTesting
 func NewUserTesting() UserTesting {
-	server, db := SetUpTesting()
+	server, db := SetUpTesting(true)
 	return UserTesting{
 		DB:     db,
 		Server: server,
@@ -163,7 +160,7 @@ type BookTesting struct {
 
 // NewBookTesting constructs a new BookTesting
 func NewBookTesting() BookTesting {
-	server, db := SetUpTesting()
+	server, db := SetUpTesting(true)
 	return BookTesting{UserTesting{DB: db, Server: server}}
 }
 
