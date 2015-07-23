@@ -53,6 +53,19 @@ func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
 	return nil
 }
 
+// IsTesting returns true if there are any command line arguments with the
+// value "loadtest" and false otherwise. It is used as a parameter to server.Routes()
+// so that rate limiting and csrf are turned off when "loadtest" is a command line argument
+func IsTesting(args []string) bool {
+	for _, arg := range args {
+		if arg == "loadtest" {
+			fmt.Println("Load testing enabled")
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	var db gorm.DB
 
@@ -107,5 +120,6 @@ func main() {
 		PORT = "8080"
 		os.Setenv("PORT", PORT)
 	}
-	http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB, REQUESTS_PER_MINUTE, false))
+	http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB,
+		REQUESTS_PER_MINUTE, IsTesting(os.Args)))
 }

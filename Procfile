@@ -1,1 +1,1 @@
-web: bookcycle production
+web: bookcycle production loadtest
