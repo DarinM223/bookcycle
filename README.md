@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DarinM223/bookcycle.svg)](https://travis-ci.org/DarinM223/bookcycle)
 
-![Main Image](http://i.imgur.com/TBwliwF.png)
+![Main Image](http://i.imgur.com/lgGEjsT.png)
 
 Development setup
 =================
@@ -64,11 +64,11 @@ Documentation for all methods used for the backend is in https://godoc.org/githu
 Screenshots
 ===========
 
-![New Book](http://i.imgur.com/kK1ZmK6.png)
+![New Book](http://i.imgur.com/jOqxuKI.png)
 
-![Recent Books](http://i.imgur.com/KFPkmEp.png)
+![Recent Books](http://imgur.com/ykuqznz)
 
-![Book detail](http://i.imgur.com/a52iubn.png)
+![Book detail](http://imgur.com/XLeD4lu)
 
-![Messaging](http://i.imgur.com/yPcghYY.png)
+![Messaging](http://imgur.com/BIdsRdX)
 
