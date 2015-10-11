@@ -2,17 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DarinM223/bookcycle.svg)](https://travis-ci.org/DarinM223/bookcycle)
 
-### Project for CS130
-
-Neil Bedi – 404018872
-
-Han Lee - 804011454
-
-Darin Minamoto – 704140102
-
-Rebecca Pan – 603929588
-
-Belinda Yang- 604021996
+![Main Image](http://i.imgur.com/TBwliwF.png)
 
 Development setup
 =================
@@ -70,3 +60,15 @@ If this happens, you have to clear out your cookies by going into the chrome dev
 Documentation
 =============
 Documentation for all methods used for the backend is in https://godoc.org/github.com/DarinM223/bookcycle/server
+
+Screenshots
+===========
+
+![New Book](http://i.imgur.com/kK1ZmK6.png)
+
+![Recent Books](http://i.imgur.com/KFPkmEp.png)
+
+![Book detail](http://i.imgur.com/a52iubn.png)
+
+![Messaging](http://i.imgur.com/yPcghYY.png)
+
