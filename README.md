@@ -66,9 +66,9 @@ Screenshots
 
 ![New Book](http://i.imgur.com/jOqxuKI.png)
 
-![Recent Books](http://imgur.com/ykuqznz)
+![Recent Books](http://i.imgur.com/ykuqznz.png)
 
-![Book detail](http://imgur.com/XLeD4lu)
+![Book detail](http://i.imgur.com/XLeD4lu.png)
 
-![Messaging](http://imgur.com/BIdsRdX)
+![Messaging](http://i.imgur.com/BIdsRdX.png)
 
