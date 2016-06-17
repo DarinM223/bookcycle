@@ -7,7 +7,7 @@
 Development setup
 =================
 
-First you have to install Go. You can do so by using Homebrew or downloading the distribution off of the Golang home page. Be sure to set the GOPATH environment variable to the root path of Go (most of the time it is in ~/go). 
+First you have to install Go. You can do so by using Homebrew or downloading the distribution off of the Golang home page. Be sure to set the GOPATH environment variable to the root path of Go (most of the time it is in ~/go). Also the version of Go must support vendored dependencies (1.5+).
 
 Then run:
 ```
@@ -17,29 +17,22 @@ Which should put the project inside $GOPATH/src/github.com/DarinM223/bookcycle. 
 
 Before pushing code to master, make sure that the code is formatted with gofmt (a formatting tool that comes with go). Plugins for many text editors like GoSublime for Sublime Text or vim-go for vim automatically do this whenever you save a Go file.
 
-Building normally
+Building
 =================
 To get the latest version of the dependencies, first run 
 ```
 go get
 ```
 
-Then to run the server, first type
+Then to build the project, first type
+```
+go install
+```
+to cache all non-main dependencies.
+
+Then type
 ```
 go build
-```
-to build the application into the bookcycle executable. 
-
-Building with godep
-===================
-This project also has godep versioned dependencies. If you want to use those instead of getting the latest version, after installing godep with 
-```
-go get github.com/tools/godep
-```
-
-Then run
-```
-godep go build
 ```
 to build the application into the bookcycle executable.
 

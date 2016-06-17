@@ -13,6 +13,8 @@ import (
 
 type DBInjectFunc func(func(http.ResponseWriter, *http.Request, gorm.DB), gorm.DB) http.Handler
 
+// DBInject injects a database object into a http handler with the database object parameter and
+// turns it into a standard http handler
 func DBInject(requestsPerMinute int, testing bool) DBInjectFunc {
 	st := throttledStore.NewMemStore(1000)
 	return func(fn func(http.ResponseWriter, *http.Request, gorm.DB), db gorm.DB) http.Handler {
@@ -28,9 +30,6 @@ func DBInject(requestsPerMinute int, testing bool) DBInjectFunc {
 		})))
 	}
 }
-
-// DBInject injects a database object into a http handler with the database object parameter and
-// turns it into a standard http handler
 
 func init() {
 	// Set up login sessions

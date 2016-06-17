@@ -18,14 +18,12 @@ func init() {
 func TestRateLimit(t *testing.T) {
 	// Send 31 requests to the server
 	url := fmt.Sprintf("%s/courses/1/json", rateLimitServer.URL)
-	for i := 0; i < REQUESTS_PER_MINUTE; i++ {
-		resp, _ := http.Get(url)
-		if resp.StatusCode != 200 {
+	for i := 0; i < RequestsPerMinute; i++ {
+		if resp, _ := http.Get(url); resp.StatusCode != 200 {
 			t.Errorf("\"200\" expected: %d", resp.StatusCode)
 		}
 	}
-	resp, _ := http.Get(url)
-	if resp.StatusCode != 429 {
+	if resp, _ := http.Get(url); resp.StatusCode != 429 {
 		t.Errorf("\"429\" expected: %d", resp.StatusCode)
 	}
 }

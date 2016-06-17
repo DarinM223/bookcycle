@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var REQUESTS_PER_MINUTE int = 30
+const RequestsPerMinute int = 30
 
 // SeedCourses seeds the main database with the courses inside the seed database
 func SeedCourses(mainDB gorm.DB, seedDB *sql.DB) error {
@@ -99,8 +99,7 @@ func main() {
 				return
 			}
 
-			err = SeedCourses(coursesDB, seedDB)
-			if err != nil {
+			if err = SeedCourses(coursesDB, seedDB); err != nil {
 				fmt.Println(err)
 				return
 			}
@@ -122,5 +121,5 @@ func main() {
 		os.Setenv("PORT", PORT)
 	}
 	http.ListenAndServe(":"+PORT, server.Routes(db, coursesDB,
-		REQUESTS_PER_MINUTE, IsTesting(os.Args)))
+		RequestsPerMinute, IsTesting(os.Args)))
 }
