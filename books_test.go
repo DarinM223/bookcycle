@@ -16,39 +16,21 @@ func TestCreateBook(t *testing.T) {
 	// Test that GET new book route has success when not logged in
 	request, err := http.NewRequest("GET", bookTesting.NewBookURL(), nil)
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
-
-	res, err := http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	// Test that GET request returns success
-	if res.StatusCode != 200 {
-		t.Errorf("GET Success expected: %d", res.StatusCode)
-		return
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 200 {
+		t.Fatalf("GET 200 expected")
 	}
 
 	// Test that POST new book fails when not logged in
 	request, err = http.NewRequest("POST", bookTesting.NewBookURL(), nil)
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
+	}
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 401 {
+		t.Fatal("POST 401 expected")
 	}
 
-	res, err = http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if res.StatusCode != 401 {
-		t.Errorf("POST 401 expected: %d", res.StatusCode)
-		return
-	}
 	// Test that POST new book succeeds when logged in
 	testUser := server.User{
 		Firstname: "Test",
@@ -56,7 +38,9 @@ func TestCreateBook(t *testing.T) {
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(testUser, "password", "password")
+	if err = bookTesting.MakeTestUser(testUser, "password", "password"); err != nil {
+		t.Fatal(err)
+	}
 	var loginCookie *http.Cookie
 	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
@@ -76,32 +60,26 @@ func TestCreateBook(t *testing.T) {
 	bookTesting.DB.Preload("books").Find(&books)
 
 	if len(books) != 1 {
-		t.Errorf("Books length should be 1, instead: %d", len(books))
-		return
+		t.Fatalf("Books length should be 1, instead: %d", len(books))
 	}
 
 	if books[0].Title != "Title" {
 		t.Errorf("\"Title\" expected: %s", books[0].Title)
-		return
 	}
 	if books[0].ISBN != "0735619670" {
 		t.Errorf("\"0735619670\" expected: %s", books[0].ISBN)
-		return
 	}
 	if books[0].CourseID != 1 {
 		t.Errorf("\"1\" expected: %d", books[0].CourseID)
 	}
 	if books[0].Price != 12.50 {
 		t.Errorf("\"12.50\" expected: %f", books[0].Price)
-		return
 	}
 	if books[0].Condition != 5 {
 		t.Errorf("\"5\" expected: %d", books[0].Condition)
-		return
 	}
 	if books[0].Details != "Sample text" {
 		t.Errorf("\"Sample Text\" expected: %s", books[0].Details)
-		return
 	}
 
 	bookTesting.DB.Delete(&books[0])
@@ -116,19 +94,10 @@ func TestDeleteBook(t *testing.T) {
 	// test that deleting book without being logged in should fail
 	request, err := http.NewRequest("GET", bookTesting.DeleteBookURL(1), nil)
 	if err != nil {
-		t.Error(err)
-		return
+		t.Fatal(err)
 	}
-
-	res, err := http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if res.StatusCode != 401 {
-		t.Errorf("GET 401 expected: %d", res.StatusCode)
-		return
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 401 {
+		t.Fatal("GET 401 expected")
 	}
 
 	testUser := server.User{
@@ -137,21 +106,21 @@ func TestDeleteBook(t *testing.T) {
 		Email:     "testuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(testUser, "password", "password")
-	var loginCookie *http.Cookie
-	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
 
-	// test that deleting book while being logged in fails if book does not exist
-	request.AddCookie(loginCookie)
-	res, err = http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
+	if err = bookTesting.MakeTestUser(testUser, "password", "password"); err != nil {
+		t.Fatal(err)
 	}
 
-	if res.StatusCode != 401 {
-		t.Errorf("GET 401 expected: %d", res.StatusCode)
-		return
+	var loginCookie *http.Cookie
+	loginCookie, err = bookTesting.LoginUser(testUser.Email, "password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.AddCookie(loginCookie)
+
+	// test that deleting book while being logged in fails if book does not exist
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 401 {
+		t.Fatal("GET 401 expected")
 	}
 
 	testBook := server.Book{
@@ -175,46 +144,39 @@ func TestDeleteBook(t *testing.T) {
 		Email:     "newuser@gmail.com",
 		Phone:     123456789,
 	}
-	err = bookTesting.MakeTestUser(newTestUser, "password", "password")
-	var newLoginCookie *http.Cookie
-	newLoginCookie, err = bookTesting.LoginUser(newTestUser.Email, "password")
-	request, err = http.NewRequest("GET", bookTesting.DeleteBookURL(myBook.ID), nil)
-	request.AddCookie(newLoginCookie)
-	if err != nil {
-		t.Error(err)
-		return
+
+	if err = bookTesting.MakeTestUser(newTestUser, "password", "password"); err != nil {
+		t.Fatal(err)
 	}
 
-	if res.StatusCode != 401 {
-		t.Errorf("GET 401 expected: %d", res.StatusCode)
-		return
+	var newLoginCookie *http.Cookie
+	newLoginCookie, err = bookTesting.LoginUser(newTestUser.Email, "password")
+	if err != nil {
+		t.Fatal(err)
 	}
+
+	request, err = http.NewRequest("GET", bookTesting.DeleteBookURL(myBook.ID), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.AddCookie(newLoginCookie)
 
 	// test that deleting book that exists when logged in succeeds
 	request, err = http.NewRequest("GET", bookTesting.DeleteBookURL(myBook.ID), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	request.AddCookie(loginCookie)
-	if err != nil {
-		t.Error(err)
-		return
-	}
 
-	res, err = http.DefaultClient.Do(request)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if res.StatusCode != 200 {
-		t.Errorf("GET success expected: %d", res.StatusCode)
-		return
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 200 {
+		t.Fatal("GET 200 expected")
 	}
 
 	// test that there is no more books after deleting
 	var books []server.Book
 	bookTesting.DB.Preload("books").Find(&books)
 	if len(books) != 0 {
-		t.Errorf("Books length 0 expected: %d", len(books))
-		return
+		t.Fatalf("Books length 0 expected: %d", len(books))
 	}
 
 	// Delete mock created user and book
