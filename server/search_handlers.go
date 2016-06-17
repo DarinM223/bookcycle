@@ -13,17 +13,17 @@ import (
 // course (when searching for course)
 // professor (when searching for professor)
 func SearchCourse(searchType string, department string, courseID string, professor string, db gorm.DB) ([]Course, error) {
-	var result *gorm.DB
+	var coursesQuery *gorm.DB
 	var searchCourses []Course
 
 	switch searchType {
 	case "department":
-		result = db.Select("DISTINCT department").Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
+		coursesQuery = db.Select("DISTINCT department").Where("department LIKE ?", "%"+department+"%").Limit(10).Find(&searchCourses)
 	case "course":
-		result = db.Select("DISTINCT course_id").Where("department LIKE ? AND course_id LIKE ?", department, "%"+courseID+"%").
+		coursesQuery = db.Select("DISTINCT course_id").Where("department LIKE ? AND course_id LIKE ?", department, "%"+courseID+"%").
 			Limit(10).Find(&searchCourses)
 	case "professor":
-		result = db.Where(`department LIKE ? 
+		coursesQuery = db.Where(`department LIKE ? 
 						   AND course_id LIKE ? 
 						   AND professor LIKE ?`,
 			department, courseID, "%"+professor+"%").
@@ -32,8 +32,8 @@ func SearchCourse(searchType string, department string, courseID string, profess
 		return []Course{}, errors.New("No search type")
 	}
 
-	if result.Error != nil {
-		return []Course{}, result.Error
+	if coursesQuery.Error != nil {
+		return []Course{}, coursesQuery.Error
 	}
 	return searchCourses, nil
 }
@@ -47,8 +47,7 @@ func SearchResultsJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB
 	}
 
 	var searchBooks []Book
-	result := db.Select("DISTINCT title").Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
-	if result.Error != nil {
+	if result := db.Select("DISTINCT title").Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks); result.Error != nil {
 		http.NotFound(w, r)
 		return
 	}
@@ -72,8 +71,7 @@ func SearchResultsHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var searchBooks []Book
-	result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks)
-	if result.Error != nil {
+	if result := db.Where("title LIKE ?", "%"+query+"%").Limit(10).Find(&searchBooks); result.Error != nil {
 		http.NotFound(w, r)
 		return
 	}

@@ -21,8 +21,7 @@ func NewMuxBookFactory() MuxBookFactory {
 
 // NewFormBook creates a new book object from a http post form request
 func (u MuxBookFactory) NewFormBook(r *http.Request, userID int) (Book, error) {
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		return Book{}, err
 	}
 	isbn := r.PostFormValue("isbn")

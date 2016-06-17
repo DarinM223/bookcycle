@@ -51,10 +51,7 @@ type ManyBookTemplateType struct {
 // GenerateFullTemplate returns complete template with navigation bar added and your user login template
 func GenerateFullTemplate(r *http.Request, bodyTemplatePath string) (*template.Template, UserTemplateType, error) {
 	currentUser, err := CurrentUser(r)
-	hasCurrentUser := true
-	if err != nil {
-		hasCurrentUser = false
-	}
+	hasCurrentUser := err == nil
 
 	t, err := template.ParseFiles("templates/boilerplate/navbar_boilerplate.html",
 		"templates/navbar.html", bodyTemplatePath)
@@ -86,8 +83,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		t.Execute(w, struct{ Token string }{nosurf.Token(r)})
 	} else { // show recent book listings if logged in
 		var recentBooks []Book
-		result := db.Order("created_at desc").Limit(10).Find(&recentBooks)
-		if result.Error != nil {
+		if result := db.Order("created_at desc").Limit(10).Find(&recentBooks); result.Error != nil {
 			http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 			return
 		}
@@ -109,8 +105,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 // LogoutHandler is a route for /logout that logs out the currently logged in user and redirects to the index page
 // You must be logged in to call this route
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	err := LogoutUser(r, w)
-	if err != nil {
+	if err := LogoutUser(r, w); err != nil {
 		http.Error(w, "You are not logged in", http.StatusUnauthorized)
 		return
 	}
@@ -128,8 +123,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 
 	validateFn := func() (User, error) {
 		var user User
-		result := db.First(&user, "email = ?", emailField)
-		if result.Error != nil {
+		if result := db.First(&user, "email = ?", emailField); result.Error != nil {
 			return User{}, errors.New("Email or password is incorrect")
 		}
 
@@ -139,8 +133,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return User{}, errors.New("Email or password is incorrect")
 	}
 
-	err := LoginUser(r, w, validateFn)
-	if err != nil {
+	if err := LoginUser(r, w, validateFn); err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
@@ -152,8 +145,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 func UserJSONHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	userID := mux.Vars(r)["id"]
 	var user User
-	result := db.First(&user, userID)
-	if result.Error != nil {
+	if result := db.First(&user, userID); result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}

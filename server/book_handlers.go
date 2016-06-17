@@ -15,8 +15,7 @@ func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var myBooks []Book
-	result := db.Model(&params.CurrentUser).Related(&myBooks)
-	if result.Error != nil {
+	if result := db.Model(&params.CurrentUser).Related(&myBooks); result.Error != nil {
 		http.Error(w, "Error retrieving books", http.StatusInternalServerError)
 		return
 	}
@@ -32,8 +31,7 @@ func ShowBooksHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	bookID := mux.Vars(r)["id"]
 	var book Book
-	result := db.First(&book, bookID)
-	if result.Error != nil {
+	if result := db.First(&book, bookID); result.Error != nil {
 		http.Error(w, "Book does not exist", http.StatusUnauthorized)
 		return
 	}
@@ -43,13 +41,12 @@ func BookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		http.NotFound(w, r)
 		return
 	}
-	canDelete := params.CurrentUser.ID == book.UserID
 
 	t.Execute(w, BookTemplateType{
 		UserTemplateType: params,
 		Book:             book,
 		UserID:           book.UserID,
-		CanDelete:        canDelete,
+		CanDelete:        params.CurrentUser.ID == book.UserID,
 	})
 }
 
@@ -64,8 +61,7 @@ func DeleteBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var book Book
-	result := db.First(&book, bookID)
-	if result.Error != nil {
+	if result := db.First(&book, bookID); result.Error != nil {
 		http.Error(w, "Book does not exist", http.StatusUnauthorized)
 		return
 	}
@@ -111,8 +107,7 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 			return
 		}
 
-		result := db.Create(&book)
-		if result.Error != nil {
+		if result := db.Create(&book); result.Error != nil {
 			http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 			return
 		}

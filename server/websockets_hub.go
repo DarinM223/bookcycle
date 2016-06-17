@@ -42,38 +42,32 @@ func (h *hub) run(db gorm.DB) {
 			}
 		case m := <-h.broadcast:
 			var parsedMessage Message
-			err := json.Unmarshal(m, &parsedMessage)
-			if err == nil {
+			if err := json.Unmarshal(m, &parsedMessage); err == nil {
 				parsedMessage.CreatedAt = time.Now()
-				received := false
-				if parsedMessage.Latitude != 0 && parsedMessage.Longitude != 0 {
-					for c := range h.connections {
-						// only send it if the sender or receiver matches
-						if c.user.ID == parsedMessage.ReceiverID || c.user.ID == parsedMessage.SenderID {
-							select {
-							case c.send <- m:
-								received = true
-							default:
-								close(c.send)
-								delete(h.connections, c)
-							}
-						}
+				numReceived := 0
+				isMapMessage := parsedMessage.Latitude != 0 && parsedMessage.Longitude != 0
+				// Find receivers to send the message to
+				for c := range h.connections {
+					var receiverMatches bool
+					if isMapMessage {
+						// Send map changes to both sender and receiver
+						receiverMatches = c.user.ID == parsedMessage.ReceiverID || c.user.ID == parsedMessage.SenderID
+					} else {
+						// Send messages only to the receiver
+						receiverMatches = c.user.ID == parsedMessage.ReceiverID
 					}
-				} else {
-					for c := range h.connections {
-						// only send it if the receiver matches
-						if c.user.ID == parsedMessage.ReceiverID {
-							select {
-							case c.send <- m:
-								received = true
-							default:
-								close(c.send)
-								delete(h.connections, c)
-							}
+
+					if receiverMatches {
+						select {
+						case c.send <- m:
+							numReceived++
+						default:
+							close(c.send)
+							delete(h.connections, c)
 						}
 					}
 				}
-				if received {
+				if (isMapMessage && numReceived == 2) || (!isMapMessage && numReceived == 1) {
 					parsedMessage.Read = true
 				}
 				db.Create(&parsedMessage)

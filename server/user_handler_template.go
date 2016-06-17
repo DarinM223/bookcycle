@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"html/template"
 	"net/http"
 
@@ -40,10 +39,7 @@ type UserDetailTemplateType struct {
 
 func (u *UserHandlerTemplate) getRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	currentUser, err := CurrentUser(r)
-	hasCurrentUser := true
-	if err != nil {
-		hasCurrentUser = false
-	}
+	hasCurrentUser := err == nil
 	user, err := u.i.user(r, db)
 	if err != nil {
 		http.NotFound(w, r)
@@ -106,8 +102,7 @@ func (u *UserNewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db g
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	result := db.Create(&newUser)
-	if result.Error != nil {
+	if result := db.Create(&newUser); result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
@@ -130,11 +125,7 @@ func NewUserEditTemplate() UserEditTemplate {
 func (u UserEditTemplate) isDisabled() bool { return false }
 
 func (u UserEditTemplate) user(r *http.Request, db gorm.DB) (User, error) {
-	user, err := CurrentUser(r)
-	if err != nil {
-		return User{}, errors.New("You are not logged in")
-	}
-	return user, nil
+	return CurrentUser(r)
 }
 
 func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {
@@ -148,21 +139,18 @@ func (u UserEditTemplate) postRoute(w http.ResponseWriter, r *http.Request, db g
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-	result := db.Model(&currentUser).Updates(editedUser)
-	if result.Error != nil {
+	if result := db.Model(&currentUser).Updates(editedUser); result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
 	// get edited user from database
 	var newUser User
-	result = db.First(&newUser, currentUser.ID)
-	if result.Error != nil {
+	if result := db.First(&newUser, currentUser.ID); result.Error != nil {
 		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
 		return
 	}
-	err = SetUserInSession(r, w, newUser)
-	if err != nil {
-		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+	if err = SetUserInSession(r, w, newUser); err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
@@ -184,11 +172,7 @@ func NewUserViewTemplate() UserViewTemplate {
 func (u UserViewTemplate) isDisabled() bool { return true }
 
 func (u UserViewTemplate) user(r *http.Request, db gorm.DB) (User, error) {
-	user, err := u.userFactory.NewExistingUser(r, "id", db)
-	if err != nil {
-		return User{}, err
-	}
-	return user, nil
+	return u.userFactory.NewExistingUser(r, "id", db)
 }
 
 func (u UserViewTemplate) postRoute(w http.ResponseWriter, r *http.Request, db gorm.DB) {} // do nothing

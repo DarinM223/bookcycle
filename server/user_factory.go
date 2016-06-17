@@ -42,8 +42,7 @@ func (u MuxUserFactory) NewExistingUser(r *http.Request, paramName string, db go
 		return User{}, errors.New("User is not defined!")
 	}
 	var user User
-	result := db.First(&user, userID)
-	if result.Error != nil {
+	if result := db.First(&user, userID); result.Error != nil {
 		return User{}, result.Error
 	}
 
@@ -52,8 +51,7 @@ func (u MuxUserFactory) NewExistingUser(r *http.Request, paramName string, db go
 
 // NewFormUser creates a user object from a http post form request
 func (u MuxUserFactory) NewFormUser(r *http.Request, editing bool) (User, error) {
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		return User{}, err
 	}
 	firstName := r.PostFormValue("first_name")

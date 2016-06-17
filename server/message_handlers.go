@@ -24,6 +24,7 @@ func MessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		w.Write([]byte(`[]`))
 		return
 	}
+
 	messagesJSON, err := json.Marshal(recentMessages)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -48,9 +49,9 @@ func PastMessagesHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 	}
 
 	var results []Message
-	res := db.Where("(receiver_id = ? and sender_id = ?) or (receiver_id = ? and sender_id = ?)",
-		currentUser.ID, receiverID, receiverID, currentUser.ID).Limit(20).Order("created_at desc").Find(&results)
-	if res.Error != nil {
+	messagesQuery := "(receiver_id = ? and sender_id = ?) or (receiver_id = ? and sender_id = ?)"
+	chatMessages := db.Where(messagesQuery, currentUser.ID, receiverID, receiverID, currentUser.ID)
+	if res := chatMessages.Limit(20).Order("created_at desc").Find(&results); res.Error != nil {
 		http.Error(w, res.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -84,17 +85,15 @@ func ChatHandler(w http.ResponseWriter, r *http.Request, db gorm.DB) {
 		return
 	}
 
-	var result *gorm.DB
-	result = db.Model(&Message{}).Where("sender_id = ? and receiver_id = ? and read = ?", receiverID, currentUser.ID, false).UpdateColumn("read", true)
-
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusUnauthorized)
+	messagesQuery := "sender_id = ? and receiver_id = ? and read = ?"
+	unreadMessages := db.Model(&Message{}).Where(messagesQuery, receiverID, currentUser.ID, false)
+	if res := unreadMessages.UpdateColumn("read", true); res.Error != nil {
+		http.Error(w, res.Error.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	var user User
-	result = db.Find(&user, receiverID)
-	if result.Error != nil {
+	if res := db.Find(&user, receiverID); res.Error != nil {
 		http.NotFound(w, r)
 		return
 	}
