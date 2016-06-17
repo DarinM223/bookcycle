@@ -1,60 +1,41 @@
 {{ define "main" }}
 <script src="/js/book_details.js"></script>
-  <script>
-    var isbn = "{{.Book.ISBN}}";
-    var courseid = "{{.Book.CourseID}}";
-    DisplayBook(isbn, courseid);
-  </script>
-  <main class="story-detail">
-  <div class="row">
-    <form id="post-edit" method="post">
-      <input type='hidden' name='csrf_token' value='{{ .Token }}' />
-      <div class="large-12 large columns buy-details">
-        <div class="large-4 columns">
-          <img class="bookpicture" alt="" src=""/>
-        </div>
-        <div class="large-8 columns">
-          <h1 class="buy-detail"> Book Title: {{.Book.Title}}</h1>
-          <h3 class="buy-detail author">
-              Author:
-          </h3>
-          <div class="row">
-            <div class="small-6 columns">
-              <div class="buy-detail department">
-                  Course Department:
-              </div>
-              <div class="buy-detail course_id">
-                  Course Name:
-              </div>
-              <div class="buy-detail professor">
-                  Professor:
-              </div>
-            </div>
-            <div class="small-6 columns">
-              <div class="buy-detail">
-                  Book Price: ${{.Book.Price}}
-              </div>
-              <div class="buy-detail">
-                  Book Condition: {{.Book.Condition}} out of 10
-              </div>
-            </div>
+<script>
+var isbn = "{{.Book.ISBN}}"
+var courseid = "{{.Book.CourseID}}"
+DisplayBook(isbn, courseid)
+</script>
+<main class="story-detail">
+<div class="row">
+  <form id="post-edit" method="post">
+    <input type='hidden' name='csrf_token' value='{{ .Token }}' />
+    <div class="large-12 large columns buy-details">
+      <div class="large-4 columns"><img class="bookpicture" alt="" src=""/></div>
+      <div class="large-8 columns">
+        <h1 class="buy-detail"> Book Title: {{.Book.Title}}</h1>
+        <h3 class="buy-detail author">Author:</h3>
+        <div class="row">
+          <div class="small-6 columns">
+            <div class="buy-detail department">Course Department:</div>
+            <div class="buy-detail course_id">Course Name:</div>
+            <div class="buy-detail professor">Professor:</div>
           </div>
-          <div class="buy-detail">
-              Other Information:
+          <div class="small-6 columns">
+            <div class="buy-detail">Book Price: ${{.Book.Price}}</div>
+            <div class="buy-detail">Book Condition: {{.Book.Condition}} out of 10</div>
           </div>
-          <a class="button expand" id="seller_info" href="/users/{{ .UserID }}">View Seller Info</a>
-          {{ if .CanDelete }}
-          <a class="button expand alert" id="delete_book" href="/books/{{ .Book.ID }}/delete">Delete Book</a>
-          {{ else }}
-            <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
-          {{ end }}
-          
         </div>
+        <div class="buy-detail">Other Information:</div>
+        <a class="button expand" id="seller_info" href="/users/{{ .UserID }}">View Seller Info</a>
+        {{ if .CanDelete }}
+        <a class="button expand alert" id="delete_book" href="/books/{{ .Book.ID }}/delete">Delete Book</a>
+        {{ else }}
+        <a class="button expand" id="message_seller" href="/message/{{ .UserID }}"><i class="fa fa-envelope-o"></i> Message Seller</a>
+        {{ end }}
       </div>
-
-      <div class="large-4 columns">
-      </div>
-    </form>
-  </div>
-  </main>
+    </div>
+    <div class="large-4 columns"></div>
+  </form>
+</div>
+</main>
 {{ end }}

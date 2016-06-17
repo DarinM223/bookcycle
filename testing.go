@@ -83,13 +83,8 @@ func (n UserTesting) MakeTestUser(u server.User, password string, passwordConfir
 	}
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return err
-	}
-
 	// Test that POST request returns success
-	if res.StatusCode != 200 {
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 200 {
 		return errors.New("POST Success should be 200")
 	}
 
@@ -107,19 +102,14 @@ func (n UserTesting) EditTestUser(u server.User, c *http.Cookie, password string
 	userJSON.Set("password2", passwordConfirm)
 
 	request, err := http.NewRequest("POST", n.EditUserURL(), bytes.NewBufferString(userJSON.Encode()))
-	request.AddCookie(c)
 	if err != nil {
 		return err
 	}
+	request.AddCookie(c)
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return err
-	}
-
 	// Test that POST request returns success
-	if res.StatusCode != 200 {
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 200 {
 		return errors.New("POST Success should be 200")
 	}
 
@@ -195,19 +185,14 @@ func (b BookTesting) MakeTestBook(book server.Book, loginCookie *http.Cookie) er
 	bookJSON.Set("details", book.Details)
 
 	request, err := http.NewRequest("POST", b.NewBookURL(), bytes.NewBufferString(bookJSON.Encode()))
-	request.AddCookie(loginCookie)
 	if err != nil {
 		return err
 	}
+	request.AddCookie(loginCookie)
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return err
-	}
-
 	// Test that POST request returns success
-	if res.StatusCode != 200 {
+	if res, err := http.DefaultClient.Do(request); err != nil || res.StatusCode != 200 {
 		return errors.New("POST Success should be 200")
 	}
 

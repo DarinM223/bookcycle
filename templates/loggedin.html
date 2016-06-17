@@ -1,7 +1,7 @@
 {{ define "main" }}
-  <h1>Logged in as {{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}!</h1>
-  <h2>Recent books:</h2>
-  {{ range $element := .RecentBooks }}
-  <h2>{{ $element.Title }}</h2>
-  {{ end }}
+<h1>Logged in as {{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}!</h1>
+<h2>Recent books:</h2>
+{{ range $element := .RecentBooks }}
+<h2>{{ $element.Title }}</h2>
+{{ end }}
 {{ end }}

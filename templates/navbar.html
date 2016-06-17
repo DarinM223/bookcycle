@@ -1,25 +1,24 @@
 {{ define "navbar" }}
+{{ if .HasCurrentUser }}
+<script src="/js/navbar.js"></script>
+{{ end }}
+<header>
+  <a class="logo" href="/">BookCycle</a>
   {{ if .HasCurrentUser }}
-    <script src="/js/navbar.js"></script>
+  <div class="user-info">
+    <a class="button small user-settings" href="/users/edit">{{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}</a>
+    <a class="button small log-out" href="/books">My Books</a>
+    <i class="fa fa-envelope-o fa-lg messages"></i>
+    <div id="notificationContainer">
+      <div id="notificationTitle">Messages</div>
+      <div id="notificationsBody" class="notifications"></div>
+      <div id="notificationFooter"></div>
+    </div>
+    <a class="button small log-out" href="/logout">Log Out</a>
+  </div>
   {{ end }}
-  <header>
-    <a class="logo" href="/">BookCycle</a>
-    {{ if .HasCurrentUser }}
-      <div class="user-info">
-        <a class="button small user-settings" href="/users/edit">{{.CurrentUser.Firstname}} {{.CurrentUser.Lastname}}</a>
-        <a class="button small log-out" href="/books">My Books</a>
-        <i class="fa fa-envelope-o fa-lg messages"></i>
-          <div id="notificationContainer">
-            <div id="notificationTitle">Messages</div>
-            <div id="notificationsBody" class="notifications">
-            </div>
-            <div id="notificationFooter"></div>
-          </div>
-        <a class="button small log-out" href="/logout">Log Out</a>
-      </div>
-    {{ end }}
-    {{ if .HasCurrentUser }}
-      <a class="button small" id="sell" href="/books/new"><i class="fa fa-plus"></i> Sell Book</a>
-    {{ end }}
-  </header>
+  {{ if .HasCurrentUser }}
+  <a class="button small" id="sell" href="/books/new"><i class="fa fa-plus"></i> Sell Book</a>
+  {{ end }}
+</header>
 {{ end }}

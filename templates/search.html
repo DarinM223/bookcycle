@@ -1,16 +1,16 @@
 {{ define "main" }}
 <main class="home">
-  <input id="search" type="text" placeholder="Search by title, class, professor or UID." />
-  <button id="search" class="expand"><i class="fa fa-search"></i></button>
+<input id="search" type="text" placeholder="Search by title, class, professor or UID." />
+<button id="search" class="expand"><i class="fa fa-search"></i></button>
 </main>
 <script>
-window.onload = function() {
-  var input = document.getElementById("search").focus();
+window.onload = function () {
+  var input = document.getElementById("search").focus()
 }
 $("#search").keyup(function (e) {
   if (e.keyCode == 13) {
-    window.location.assign('/search-results.html');
+    window.location.assign('/search-results.html')
   }
-});
+})
 </script>
 {{ end }}

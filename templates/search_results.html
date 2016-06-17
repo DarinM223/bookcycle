@@ -14,70 +14,69 @@
 </form>
 <h1>{{ .Title }}</h1>
 <div class="row">
-{{ range $element := .Books }}
-<div class="large-3 medium-4 small-6 columns book-detail">
+  {{ range $element := .Books }}
+  <div class="large-3 medium-4 small-6 columns book-detail">
     <a href="/books/{{ $element.ID }}">
       <img class="book_element" id="{{ $element.ISBN }}" src=""/>
     </a>
-</div>
-{{ end }}
+  </div>
+  {{ end }}
 </div>
 </main>
+
 <script>
-function getISBN(isbn, callback) {
+function getISBN (isbn, callback) {
   if (isbn.trim().length === 0) {
-    return callback(Error('ISBN field is empty'), null);
+    return callback(Error('ISBN field is empty'), null)
   }
   $.ajax({
     method: 'GET',
     url: 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + encodeURIComponent(isbn)
-  }).success(function(data) {
+  }).success(function (data) {
     if (data.totalItems === 0) {
-      callback(new Error('ISBN is invalid'), null);
+      return callback(new Error('ISBN is invalid'), null)
     } else if (data.totalItems > 1) {
-      callback(new Error('ISBN is ambiguous'), null);
-    } else {
-      callback(null, data.items[0]);
+      return callback(new Error('ISBN is ambiguous'), null)
     }
-  });
+    return callback(null, data.items[0])
+  })
 }
 
-$(".book_element").each(function(index, value) {
-  var isbn = $(value).attr('id');
-  getISBN(isbn, function(err, data) {
+$('.book_element').each(function (index, value) {
+  var isbn = $(value).attr('id')
+  getISBN(isbn, function (err, data) {
     if (err) {
-      console.log(err.message);
-      return;
+      console.log(err.message)
+      return
     }
-    if (typeof(data.volumeInfo.imageLinks) === 'undefined' || 
+    if (typeof (data.volumeInfo.imageLinks) === 'undefined' || 
         data.volumeInfo.imageLinks === null || 
-        typeof(data.volumeInfo.imageLinks.thumbnail) === 'undefined' ||
+        typeof (data.volumeInfo.imageLinks.thumbnail) === 'undefined' ||
         data.volumeInfo.imageLinks.thumbnail === null) {
-
-      $(value).attr('src', '/images/no_image.png');
+      $(value).attr('src', '/images/no_image.png')
     } else {
-      $(value).attr('src', data.volumeInfo.imageLinks.thumbnail);
+      $(value).attr('src', data.volumeInfo.imageLinks.thumbnail)
     }
-  });
-});
+  })
+})
 
-$("#search_text").on("change keyup paste", function() {
-  if ($("#search_text").val().trim() !== "") {
-    $("#search_button").attr("disabled", null);
+$('#search_text').on('change keyup paste', function () {
+  if ($('#search_text').val().trim() !== '') {
+    $('#search_button').attr('disabled', null)
   } else {
-    $("#search_button").attr("disabled", "");
+    $('#search_button').attr('disabled', '')
   }
-});
+})
 
-$('#formid').on("keyup keypress", function(e) {
-  var code = e.keyCode || e.which;
+$('#formid').on('keyup keypress', function (e) {
+  var code = e.keyCode || e.which
   if (code == 13) {
-    if ($("#search_text").val().trim() === "") {
-      e.preventDefault();
-      return false;
+    if ($('#search_text').val().trim() === '') {
+      e.preventDefault()
+      return false
     }
   }
-});
+})
 
 var bookSuggestion = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.obj.whitespace(''),
@@ -86,16 +85,15 @@ var bookSuggestion = new Bloodhound({
     url: '/search_results.json?query=%QUERY',
     wildcard: '%QUERY'
   }
-});
+})
 
-bookSuggestion.initialize();
+bookSuggestion.initialize()
 
 $('#search_text').typeahead({
   highlight: true
 }, {
   source: bookSuggestion.ttAdapter(),
   display: 'title'
-});
-
+})
 </script>
 {{ end }}

@@ -1,28 +1,28 @@
 {{ define "main" }}
-  <header></header>
-  <script src="//cdn.jsdelivr.net/vivus/0.2.1/vivus.min.js"></script>
-  <main>
-    <div id="logo">
+<header></header>
+<script src="//cdn.jsdelivr.net/vivus/0.2.1/vivus.min.js"></script>
+<main>
+<div id="logo">
+</div>
+<div class="row">
+  <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
+    <input type='hidden' name='csrf_token' value='{{ .Token }}' />
+    <h1 class="login-logo">BookCycle</h1>
+    <div class="small-4 columns">
+      <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
     </div>
-    <div class="row">
-      <form method="POST" action="/login" id="login-form" class="large-4 columns small-centered">
-        <input type='hidden' name='csrf_token' value='{{ .Token }}' />
-        <h1 class="login-logo">BookCycle</h1>
-        <div class="small-4 columns">
-          <input id="email" maxlength="254" name="email" type="text" placeholder="email" />
-        </div>
-        <div class="small-4 columns">
-          <input id="password" name="password" type="password" placeholder="password" />
-        </div>
-        <div class="small-4 columns">
-          <input type="submit" value="Login" class="button expand"/>
-        </div> 
-      </form>
+    <div class="small-4 columns">
+      <input id="password" name="password" type="password" placeholder="password" />
     </div>
-    <a href="/users/new" class="create button" >Create an account</a>       
-  </main>
-  <footer></footer>
-  <script>
-      new Vivus('logo', {type: 'oneByOne', duration: 500, file: '/images/book.svg'});
-  </script>
+    <div class="small-4 columns">
+      <input type="submit" value="Login" class="button expand"/>
+    </div> 
+  </form>
+</div>
+<a href="/users/new" class="create button" >Create an account</a>       
+</main>
+<footer></footer>
+<script>
+new Vivus('logo', { type: 'oneByOne', duration: 500, file: '/images/book.svg' })
+</script>
 {{end}}

@@ -1,45 +1,45 @@
 {{ define "main" }}
-  <main class="user-detail">
-    <div class="row">
-      <form id="post-edit" class="user-edit" method="post">
-        <input type='hidden' name='csrf_token' value='{{ .Token }}' />
-    
-        <div class="large-4 columns user-permissions">
-          {{ if .HasCurrentUser }}
-            <h2 class="username">{{.User.Firstname}} {{.User.Lastname}}</h2>
-          {{ else }}
-            <h2 class="username">Sign up</h2>
-          {{ end }}
+<main class="user-detail">
+<div class="row">
+  <form id="post-edit" class="user-edit" method="post">
+    <input type='hidden' name='csrf_token' value='{{ .Token }}' />
+
+    <div class="large-4 columns user-permissions">
+      {{ if .HasCurrentUser }}
+      <h2 class="username">{{.User.Firstname}} {{.User.Lastname}}</h2>
+      {{ else }}
+      <h2 class="username">Sign up</h2>
+      {{ end }}
+    </div>
+
+    <div class="large-8 columns">
+      <div class="row">
+        <div class="large-6 columns">
+          <label for="first_name">First name</label>
+          <input type="text" id="first_name" name="first_name" placeholder="Joe" value="{{.User.Firstname}}" {{.DisabledText}}/>
         </div>
-    
-        <div class="large-8 columns">
-          <div class="row">
-            <div class="large-6 columns">
-              <label for="first_name">First name</label>
-              <input type="text" id="first_name" name="first_name" placeholder="Joe" value="{{.User.Firstname}}" {{.DisabledText}}/>
-            </div>
-            <div class="large-6 columns">
-              <label for="last_name">Last name</label>
-              <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="{{.User.Lastname}}" {{.DisabledText}}/>
-            </div>
-          </div>
-          <label for="email">Email address</label>
-          <input type="email" id="email" name="email" placeholder="Joe.Bruin@g.ucla.edu" value="{{.User.Email}}" {{.DisabledText}}/>
-    
-    
-          <input type="hidden" name="phone" value="{{.User.Phone}}" {{.DisabledText}}/>
-    
-          {{if .Disabled}}
-          {{else}}
-          <label for="password">Password</label>
-          <input type="password" id="password1" name="password1" placeholder="Password" />
-	 <label for="password">Re-enter password</label>
-          <input type="password" id="password2" name="password2" placeholder="Enter Password again" />
-          <input type="submit" value="Save" name="submit" class="button expand" />
-          {{end}}
+        <div class="large-6 columns">
+          <label for="last_name">Last name</label>
+          <input type="text" id="last_name" name="last_name" placeholder="Bruin" value="{{.User.Lastname}}" {{.DisabledText}}/>
         </div>
-      </form>
-    </div> 
-  </main>
-  <footer></footer>
+      </div>
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="Joe.Bruin@g.ucla.edu" value="{{.User.Email}}" {{.DisabledText}}/>
+
+
+      <input type="hidden" name="phone" value="{{.User.Phone}}" {{.DisabledText}}/>
+
+      {{if .Disabled}}
+      {{else}}
+      <label for="password">Password</label>
+      <input type="password" id="password1" name="password1" placeholder="Password" />
+      <label for="password">Re-enter password</label>
+      <input type="password" id="password2" name="password2" placeholder="Enter Password again" />
+      <input type="submit" value="Save" name="submit" class="button expand" />
+      {{end}}
+    </div>
+  </form>
+</div> 
+</main>
+<footer></footer>
 {{ end }}

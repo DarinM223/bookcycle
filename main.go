@@ -96,6 +96,7 @@ func main() {
 			seedDB, err := sql.Open("sqlite3", "./CS188")
 			if err != nil {
 				fmt.Println(err.Error())
+				return
 			}
 
 			err = SeedCourses(coursesDB, seedDB)
